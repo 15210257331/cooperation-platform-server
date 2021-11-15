@@ -1,30 +1,35 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Logger } from '../../config/log.config';
 
 /**
- * http异常过滤器，捕获http异常 HttpException 打印日志
- */ 
+ * http异常过滤器，捕获http异常 HttpException
+ * 当某一个请求发生错误时，拦截请求，返回前端标准格式的返回信息
+ * 当一个请求成功是，返回前端标准格式的信息使用拦截器处理的
+ * 全局使用
+ */
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    catch(exception: HttpException, host: ArgumentsHost): void {
+    catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
-        const response = ctx.getResponse<Response>();
-        const request = ctx.getRequest<Request>();
-        const status = exception.getStatus();
-
-        const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                            Request original url: ${request.originalUrl}
-    Method: ${request.method}
-    IP: ${request.ip}
-    Status code: ${status}
-    Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    `;
-        Logger.info(logFormat);
-        response.status(status).json({
-            statusCode: status,
-            error: exception.message,
-            msg: `${status >= 500 ? 'Service Error' : 'Client Error'}`,
-        });
+        const response = ctx.getResponse();
+        const request = ctx.getRequest();
+        // 获取全部的错误信息
+        const message = exception.message;
+        Logger.log('错误提示', message);
+        const errorResponse = {
+            data: message,
+            message: '请求失败',
+            code: 9999, // 自定义code
+            url: request.originalUrl, // 错误的url地址
+        };
+        const status =
+            exception instanceof HttpException
+                ? exception.getStatus()
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+        // 设置返回的状态码、请求头、发送错误信息
+        response.status(status);
+        response.header('Content-Type', 'application/json; charset=utf-8');
+        response.send(errorResponse);
     }
 }
