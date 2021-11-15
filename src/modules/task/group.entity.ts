@@ -5,7 +5,7 @@ import { Task } from './task.entity';
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
  */
 @Entity()
-export class Type {
+export class Group {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -15,26 +15,24 @@ export class Type {
         charset: 'utf8mb4',
         unique: false,
         name: 'name',
-        comment: '类型名称',
+        comment: '分组名称',
     })
     name: string;
 
 
-    @Column({
-        type: 'int',
-        name: 'status',
-        nullable: false,
-        default: () => 1,
-        comment: '类型状态 1表示正常 2表示禁用'
-    })
-    status: number;
-
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,
-        name: 'createTime',
-        comment: '项目创建时间',
+        name: 'createDate',
+        comment: '分组创建时间',
     })
-    createTime: Date;
+    createDate: Date;
+
+    /**
+    * 分组和任务是一对多的关系
+    * 一个分组可以包含多个任务
+    *  */
+    @OneToMany(() => Task, task => task.group)
+    tasks: Task[];
 
 }

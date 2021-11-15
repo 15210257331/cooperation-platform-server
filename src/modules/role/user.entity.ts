@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Role } from './role.entity';
+import { Task } from '../task/task.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -51,7 +52,7 @@ export class User {
     @Column({
         type: 'varchar',
         nullable: false,
-        default: 'http://pic2.zhimg.com/50/v2-ba6924fc1a52e5de70b1cf93bd9e392f_hd.jpg',
+        default: 'https://c-ssl.duitang.com/uploads/item/201608/02/20160802001436_CtfiH.jpeg',
         name: 'avatar',
         comment: '头像'
     })
@@ -87,10 +88,18 @@ export class User {
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,
-        name: 'createTime',
+        name: 'createDate',
         comment: '创建时间',
     })
-    createTime: Date;
+    createDate: Date;
+
+
+    /**
+     * 用户和任务是一对多的关系
+     * 该用户所拥有的的所有任务
+     *  */
+    @OneToMany(() => Task, task => task.owner)
+    tasks: Task[];
 
 
     /**

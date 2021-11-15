@@ -1,14 +1,13 @@
-import { Project } from './entity/project.entity';
-import { Injectable, Request, } from '@nestjs/common';
+import { group } from 'console';
+import { Group } from './group.entity';
+import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
-import { Result } from '../../interface/result.interface';
-import { Task } from './entity/task.entity';
-import { Repository } from 'typeorm';
+import { Result } from '../../common/interface/result.interface';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generate8Code } from '../../utils/utils';
-import { User } from '../../entity/user.entity';
-import { Tag } from './entity/tag.entity';
-import { Type } from './entity/type.entity';
+import { User } from '../role/user.entity';
+import { Task } from './task.entity';
 
 @Injectable()
 export class TaskService {
@@ -16,29 +15,23 @@ export class TaskService {
     constructor(
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        @InjectRepository(Project) private readonly projectRepository: Repository<Project>,
-        @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>,
-        @InjectRepository(Type) private readonly typeRepository: Repository<Type>,
+        @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
     ) { }
 
     async taskAdd(body: TaskAddDTO, request: any): Promise<Result> {
         try {
-            const {name, content, tags,projectId, type} = body;
+            const { name, detail, groupId } = body;
             const task = new Task();
             task.name = name;
-            task.content = content;
+            task.detail = detail;
             task.number = generate8Code(8);
-            task.status = 1;
-            task.principal = await this.userRepository.findOne(request.user.userId);
-            task.project = await this.projectRepository.findOne(projectId);
-            task.tags = await this.tagRepository.findByIds(tags)
-            task.type = await this.typeRepository.findOne(type)
+            task.owner = await this.userRepository.findOne(request.user.userId);
+            task.group = await this.groupRepository.findOne(groupId);
             const doc = await this.taskRepository.save(task);
-            delete doc.project;
             return {
                 code: 10000,
                 data: doc,
-                msg: 'success'
+                msg: '任务添加成功'
             }
         } catch (err) {
             return {
@@ -47,15 +40,15 @@ export class TaskService {
             }
         }
     }
-    
+
     /**
      * 切换任务状态
      * @param id 
      * @param status 
      */
-    async changeStatus(body:any): Promise<Result> {
+    async changeStatus(body: any): Promise<Result> {
         try {
-            const {id, status} = body;
+            const { id, status } = body;
             const doc = await this.taskRepository.update(id, {
                 status: status
             });
@@ -77,7 +70,7 @@ export class TaskService {
      * @param id 
      * @param status 
      */
-    async delete(id:number): Promise<Result> {
+    async delete(id: number): Promise<Result> {
         try {
             const doc = await this.taskRepository.update(id, {
                 status: 5
@@ -99,35 +92,14 @@ export class TaskService {
      * 查询任务详情
      * @param id 
      */
-    async detail(id:number): Promise<Result> {
+    async detail(id: number): Promise<Result> {
         try {
             const doc = await this.taskRepository.findOne(id, {
-              relations: ['principal','project', 'type', 'tags']
+                relations: ['principal', 'project', 'type', 'tags']
             });
             return {
                 code: 10000,
                 data: doc,
-                msg: 'success'
-            }
-        } catch (err) {
-            return {
-                code: 9999,
-                msg: err
-            }
-        }
-    }
-    /**
-     * 查询项目评论
-     * @param id 
-     */
-    async comment(id:number): Promise<Result> {
-        try {
-            const doc = await this.taskRepository.findOne(id, {
-              relations: ['principal','project', 'type', 'tags']
-            });
-            return {
-                code: 10000,
-                data: [],
                 msg: 'success'
             }
         } catch (err) {
@@ -142,7 +114,7 @@ export class TaskService {
      * 分页查询已删除的任务
      * @param id 
      */
-    async deleteList(body:any): Promise<Result> {
+    async deleteList(body: any): Promise<Result> {
         try {
             const { name, page, size } = body;
             const [doc, count] = await this.taskRepository.findAndCount({
@@ -152,7 +124,7 @@ export class TaskService {
                 relations: ['principal'],
                 cache: true,
                 order: {
-                    createTime: 'DESC'
+                    createDate: 'DESC'
                 },
                 skip: (page - 1) * size,
                 take: size,
@@ -173,30 +145,50 @@ export class TaskService {
         }
     }
     /**
-     * 分页查询所有任务
+     * 查询某一分组下的任务列表
+     * @param groupId
+     */
+    async list(groupId: number): Promise<Result> {
+        try {
+            const doc = await this.taskRepository.createQueryBuilder('task')
+                .where('task.groupId = :id', { groupId })
+                .setParameter("id", groupId)
+                // .leftJoinAndSelect('task.principal', 'principal')
+                // .select(`
+                // principal.avatar as avatar
+                // `)
+                .getMany()
+            return {
+                code: 10000,
+                data: doc,
+                msg: 'success',
+            };
+        } catch (error) {
+            return {
+                code: 9999,
+                msg: error,
+            };
+        }
+    }
+    /**
+     * 查询所有任务分组列表
      * @param id 
      */
-    async list(body:any): Promise<Result> {
+    async groupList(name: string): Promise<Result> {
         try {
-            const { name, page, size } = body;
-            const [doc, count] = await this.taskRepository.findAndCount({
-                // where: {
-                //     'status': 5,
-                // },
-                // relations: ['principal'],
+            const doc = await this.groupRepository.find({
+                where: {
+                    'name': Like(`%${name}%`),
+                },
+                // relations: ['tasks'],
                 cache: true,
                 order: {
-                    createTime: 'DESC'
+                    createDate: 'DESC'
                 },
-                skip: (page - 1) * size,
-                take: size,
             });
             return {
                 code: 10000,
-                data: {
-                    list: doc,
-                    total: count
-                },
+                data: doc,
                 msg: 'success',
             };
         } catch (error) {

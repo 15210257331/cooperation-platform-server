@@ -3,9 +3,9 @@ import { Controller, Get, Body, UseGuards, Post, UsePipes, Delete, Param, Reques
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
-import { ValidationPipe } from '../../pipe/validation.pipe';
-import { Result } from '../../interface/result.interface';
-import { PostBody } from '../../interface/post-body.interface';
+import { ValidationPipe } from '../../common/pipe/validation.pipe';
+import { Result } from '../../common/interface/result.interface';
+import { PostBody } from '../../common/interface/post-body.interface';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
 @Controller('/user')
@@ -16,8 +16,8 @@ export class UserController {
     ) { }
 
     // 登录
-    // @UseGuards(AuthGuard('local'))
     @Post('/login')
+    // @UseGuards(AuthGuard('local'))
     @UsePipes(new ValidationPipe())
     public async login(@Body() loginDTO: LoginDTO,): Promise<Result> {
         return this.userService.login(loginDTO);
@@ -33,23 +33,17 @@ export class UserController {
     // 获取用户信息
     @Get('/info')
     @UseGuards(AuthGuard('jwt'))
-    @UsePipes(new ValidationPipe())
+    @UsePipes(ValidationPipe)
     public async getUserInfo(@Request() request: any): Promise<Result> {
         return this.userService.getUserInfo(request);
     }
 
+    // 更新用户信息
     @Post('/update')
     @UseGuards(AuthGuard('jwt'))
     @UsePipes(new ValidationPipe())
     public async updateUserInfo(@Request() request: any): Promise<Result> {
         return this.userService.updateUserInfo(request);
-    }
-
-    // 删除用户
-    @UseGuards(AuthGuard('jwt'))
-    @Delete('/delete/:id')
-    public async delete(@Param('id') id: string): Promise<Result> {
-        return this.userService.deleteUser(id);
     }
 
     // 分页查询用户列表
@@ -60,7 +54,7 @@ export class UserController {
     }
 
     // 查询所有用户列表
-    @UseGuards(AuthGuard('jwt'))
+    // @UseGuards(AuthGuard('jwt'))
     @Get('/all')
     public async all(@Body() body: PostBody): Promise<Result> {
         return this.userService.all(body);

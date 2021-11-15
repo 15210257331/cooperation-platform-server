@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Logger } from '../config/log.config';
+import { Logger } from '../../config/log.config';
 
 /**
  * http异常过滤器，捕获http异常 HttpException 打印日志

@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user.entity';
+import { User } from '../role/user.entity';
 import { Repository, Like } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { makeSalt, encryptPassword } from '../../utils/utils';
-import { Result } from '../../interface/result.interface';
-import { PostBody } from '../../interface/post-body.interface';
+import { Result } from '../../common/interface/result.interface';
+import { PostBody } from '../../common/interface/post-body.interface';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
-import { Role } from '../../entity/role.entity';
+import { Role } from '../role/role.entity';
 
 @Injectable()
 export class UserService {
@@ -40,7 +40,6 @@ export class UserService {
                     msg: '密码错误',
                 }
             }
-
         } else {
             return {
                 code: 9999,
@@ -60,7 +59,6 @@ export class UserService {
             const doc = await this.userRepository.findOne(id, {
                 relations: ['roles'],
             });
-            // console.log(doc);
             return {
                 code: 10000,
                 data: doc,
@@ -140,7 +138,7 @@ export class UserService {
                 relations: ['roles'],
                 cache: true,
                 order: {
-                    createTime: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+                    createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
                 },
                 skip: (page - 1) * size,
                 take: size,
@@ -167,7 +165,7 @@ export class UserService {
             const doc = await this.userRepository.find({
                 cache: true,
                 order: {
-                    createTime: 'DESC'
+                    createDate: 'DESC'
                 },
             })
             return {
@@ -181,10 +179,6 @@ export class UserService {
                 msg: error,
             };
         }
-    }
-
-    async deleteUser(id: string): Promise<any> {
-        return await this.userRepository.delete(id)
     }
 
     async setRole(body: PostBody): Promise<any> {

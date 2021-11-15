@@ -2,7 +2,7 @@
 import { ArgumentMetadata, Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { Logger } from '../config/log.config';
+import { Logger } from '../../config/log.config';
 
 
 /**

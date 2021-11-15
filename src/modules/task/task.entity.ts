@@ -1,5 +1,7 @@
+import { group } from 'console';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { User } from './user.entity';
+import { Group } from './group.entity';
+import { User } from '../role/user.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -22,11 +24,11 @@ export class Task {
     @Column({
         type: 'text',
         nullable: false,
-        name: 'content',
+        name: 'detail',
         charset: 'utf8mb4',
-        comment: '任务内容',
+        comment: '任务详情',
     })
-    content: string;
+    detail: string;
 
     @Column({
         type: 'int',
@@ -48,31 +50,44 @@ export class Task {
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,
-        name: 'createTime',
+        name: 'createDate',
         comment: '任务创建时间',
     })
-    createTime: Date;
+    createDate: Date;
 
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,
-        name: 'startTime',
+        name: 'startDate',
         comment: '任务开始时间',
     })
-    startTime: Date;
+    startDate: Date;
 
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,
-        name: 'endTime',
+        name: 'endDate',
         comment: '任务结束时间',
     })
-    endTime: Date;
+    endDate: Date;
+
 
     /**
-     * 任务和任务负责人是多对一的关系
+     * 任务和用户是多对一的关系
+     * ManyToOne 可以省略JoinColumn装饰器
+     * 拥有ManyToOne装饰器的表会生成外键
+     * 外键默认名称是 字段名+关联的表的主键名
+     * 如果不特殊指定那这里的外键是 creatorId
      */
-    @ManyToOne(() => User,)
-    @JoinColumn()
-    principal: User;
+     @ManyToOne(() => User, user => user.tasks)
+     @JoinColumn()
+     owner: User;
+
+    /**
+     * 任务和分组是多对一的关系
+     * 多个任务隶属于同一个分组
+     */
+     @ManyToOne(() => Group, group => group.tasks)
+     @JoinColumn()
+     group: Group;
 }

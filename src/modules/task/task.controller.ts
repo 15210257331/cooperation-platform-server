@@ -3,7 +3,7 @@ import { Controller, Post, UseGuards, Body, Request, Get, Query } from '@nestjs/
 import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
-import { Result } from '../../interface/result.interface';
+import { Result } from '../../common/interface/result.interface';
 
 @Controller('task')
 export class TaskController {
@@ -23,12 +23,6 @@ export class TaskController {
         return this.taskService.delete(id);
     }
 
-    @Post('/deleteList')
-    @UseGuards(AuthGuard('jwt'))
-    public async deleteList(@Body() body: any): Promise<Result> {
-        return this.taskService.deleteList(body);
-    }
-
     @Post('/status')
     @UseGuards(AuthGuard('jwt'))
     public async status(@Body() body: any): Promise<Result> {
@@ -41,15 +35,16 @@ export class TaskController {
         return this.taskService.detail(id);
     }
 
-    @Get('/comment')
+    @Get('/list')
     @UseGuards(AuthGuard('jwt'))
-    public async comment(@Query('id') id: number): Promise<Result> {
-        return this.taskService.comment(id);
+    public async list(@Query('groupId') groupId: number): Promise<Result> {
+        return this.taskService.list(groupId);
     }
 
-    @Post('/list')
+
+    @Get('/groupList')
     @UseGuards(AuthGuard('jwt'))
-    public async list(@Body() body: any): Promise<Result> {
-        return this.taskService.list(body);
+    public async groupList(@Query('name') name: string): Promise<Result> {
+        return this.taskService.groupList(name);
     }
 }

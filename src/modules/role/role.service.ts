@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostBody } from '../../interface/post-body.interface';
+import { PostBody } from '../../common/interface/post-body.interface';
 import { Like, Repository } from 'typeorm';
 import { RoleAddDTO } from './dto/role-add.dto';
 import { RoleAuthorityDTO } from './dto/role-authority';
 import { RoleUpdateDTO } from './dto/role-update.dto';
-import { Role } from '../../entity/role.entity';
+import { Role } from './role.entity';
 
 @Injectable()
 export class RoleService {

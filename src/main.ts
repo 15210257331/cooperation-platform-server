@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
-import { logger } from './middleware/loger.middleware';
-import { LogerInterceptor } from './interceptor/loger.interceptor';
+import { logger } from './common/middleware/loger.middleware';
+import { LogerInterceptor } from './common/interceptor/loger.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';

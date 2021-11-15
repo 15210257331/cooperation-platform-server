@@ -1,7 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Logger } from '../config/log.config';
+import { Logger } from '../../config/log.config';
 
 /**
  * 日志拦截器 用来打印返回数据
