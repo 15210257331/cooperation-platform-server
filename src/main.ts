@@ -18,17 +18,19 @@ async function bootstrap() {
   // app.use(express.json()); // For parsing application/json
   // app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
   // app.use(logger);
-  // // 使用拦截器打印出参
-  // app.useGlobalInterceptors(new LogerInterceptor());
+  
 
   // 设置api前缀
   app.setGlobalPrefix('api');
 
-  // 设置静态目录 /public/ 表示地址栏输入xxxx:5000/public/ 时会找到upload目录
+  // 设置静态目录 /public/ 在地址栏输入xxxx:5000/public/ 时会找到upload目录
   app.useStaticAssets(path.resolve(__dirname, './public'), { "prefix": "/public/" });
 
   // 全局注册拦截器 格式化接口成功返回数据
   app.useGlobalInterceptors(new TransformInterceptor());
+
+  // 全局注册拦截器 打印日志
+  app.useGlobalInterceptors(new LogerInterceptor());
 
   // 全局注册错误的过滤器  格式化接口异常返回数据
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -36,13 +38,14 @@ async function bootstrap() {
   // 配置 Swagger
   const options = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('simple-pm-nest')
-    .setDescription('simple-pm-nest  API description')
+    .setTitle('Nice todo api')
+    .setDescription('Nice todo 的api文档')
     .setVersion('1.0')
     .addTag('test')
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api-doc', app, document);
+  SwaggerModule.setup('doc', app, document);
+
   await app.listen(4000);
 }
 bootstrap();

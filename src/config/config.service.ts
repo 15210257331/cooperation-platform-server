@@ -24,6 +24,10 @@ export class ConfigService {
             NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
             PORT: Joi.number().default(3000),
             HOST: Joi.string(),
+            DB_PORT: Joi.number().default(3306),
+            USERNAME: Joi.string(),
+            PASSWORD: Joi.string(),
+            DATABASE: Joi.string(),
         });
 
         const { error, value: validatedEnvConfig } = envVarsSchema.validate(envConfig);
@@ -43,5 +47,21 @@ export class ConfigService {
 
     get host(): string {
         return String(this.envConfig.HOST);
+    }
+
+    get dbPort(): number {
+        return Number(this.envConfig.DB_PORT);
+    }
+
+    get username(): string {
+        return String(this.envConfig.USERNAME);
+    }
+
+    get password(): string {
+        return String(this.envConfig.PASSWORD);
+    }
+    
+    get database(): string {
+        return String(this.envConfig.DATABASE);
     }
 }

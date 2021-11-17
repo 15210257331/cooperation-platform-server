@@ -14,9 +14,28 @@ import { User } from './modules/role/user.entity';
 import { Role } from './modules/role/role.entity';
 import { Task } from './modules/task/task.entity';
 import { Group } from './modules/task/group.entity';
+import { ConfigService } from './config/config.service';
 
 @Module({
   imports: [
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => {
+    //     const { host, dbPort, username, password, database } = configService;
+    //     return {
+    //       type: 'mysql',
+    //       host,
+    //       port: dbPort,
+    //       username,
+    //       password,
+    //       database,
+    //       entities: ['dist/**/*.entity{.ts,.js}'],
+    //       charset: "utf8mb4",
+    //       synchronize: true,
+    //     };
+    //   },
+    // }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: '129.211.164.125',
@@ -24,7 +43,8 @@ import { Group } from './modules/task/group.entity';
       username: 'root',
       password: '123456',
       database: 'nice-todo',
-      entities: [User, Role, Task,Group],
+      entities: [User, Role, Task, Group],
+      // entities: ['dist/**/*.entity{.ts,.js}']，
       // 设置chatset编码为utf8mb4
       charset: "utf8mb4",
       synchronize: true,
