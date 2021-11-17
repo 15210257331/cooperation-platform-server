@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../role/user.entity';
+import { User } from '../../common/entity/user.entity';
 import { Repository, Like } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { makeSalt, encryptPassword } from '../../utils/utils';
-import { Result } from '../../common/interface/result.interface';
-import { PostBody } from '../../common/interface/post-body.interface';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
-import { Role } from '../role/role.entity';
+import { Role } from '../../common/entity/role.entity';
 
 @Injectable()
 export class UserService {
@@ -53,7 +51,7 @@ export class UserService {
      * @param request 
      * 获取用户信息
      */
-    async getUserInfo(request: any): Promise<Result> {
+    async getUserInfo(request: any): Promise<any> {
         try {
             const id = request.user.userId;
             const doc = await this.userRepository.findOne(id, {
@@ -72,7 +70,7 @@ export class UserService {
         }
     }
 
-    async updateUserInfo(request: any): Promise<Result> {
+    async updateUserInfo(request: any): Promise<any> {
         try {
             const doc = await this.userRepository.update(request.user.userId, {
                 nickname: request.body.nickname,
@@ -128,7 +126,7 @@ export class UserService {
     }
 
     // 分页查询用户列表
-    async userList(body: PostBody): Promise<Result> {
+    async userList(body: any): Promise<any> {
         try {
             const { name, page, size } = body;
             const [doc, count] = await this.userRepository.findAndCount({
@@ -160,7 +158,7 @@ export class UserService {
     }
 
     // 查询所有用户
-    async all(body: PostBody): Promise<Result> {
+    async all(body: any): Promise<any> {
         try {
             const doc = await this.userRepository.find({
                 cache: true,
@@ -181,7 +179,7 @@ export class UserService {
         }
     }
 
-    async setRole(body: PostBody): Promise<any> {
+    async setRole(body: any): Promise<any> {
         try {
             const { userId, roleIds } = body;
             const roles = await this.roleRepository.findByIds(roleIds);

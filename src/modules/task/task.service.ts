@@ -1,13 +1,12 @@
 import { group } from 'console';
-import { Group } from './group.entity';
+import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
-import { Result } from '../../common/interface/result.interface';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generate8Code } from '../../utils/utils';
-import { User } from '../role/user.entity';
-import { Task } from './task.entity';
+import { User } from '../../common/entity/user.entity';
+import { Task } from '../../common/entity/task.entity';
 
 @Injectable()
 export class TaskService {
@@ -18,7 +17,7 @@ export class TaskService {
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
     ) { }
 
-    async taskAdd(body: TaskAddDTO, request: any): Promise<Result> {
+    async taskAdd(body: TaskAddDTO, request: any): Promise<any> {
         try {
             const { name, detail, groupId } = body;
             const task = new Task();
@@ -46,7 +45,7 @@ export class TaskService {
      * @param id 
      * @param status 
      */
-    async changeStatus(body: any): Promise<Result> {
+    async changeStatus(body: any): Promise<any> {
         try {
             const { id, status } = body;
             const doc = await this.taskRepository.update(id, {
@@ -70,7 +69,7 @@ export class TaskService {
      * @param id 
      * @param status 
      */
-    async delete(id: number): Promise<Result> {
+    async delete(id: number): Promise<any> {
         try {
             const doc = await this.taskRepository.update(id, {
                 status: 5
@@ -92,7 +91,7 @@ export class TaskService {
      * 查询任务详情
      * @param id 
      */
-    async detail(id: number): Promise<Result> {
+    async detail(id: number): Promise<any> {
         try {
             const doc = await this.taskRepository.findOne(id, {
                 relations: ['principal', 'project', 'type', 'tags']
@@ -114,7 +113,7 @@ export class TaskService {
      * 分页查询已删除的任务
      * @param id 
      */
-    async deleteList(body: any): Promise<Result> {
+    async deleteList(body: any): Promise<any> {
         try {
             const { name, page, size } = body;
             const [doc, count] = await this.taskRepository.findAndCount({
@@ -148,7 +147,7 @@ export class TaskService {
      * 查询某一分组下的任务列表
      * @param groupId
      */
-    async list(groupId: number): Promise<Result> {
+    async list(groupId: number): Promise<any> {
         try {
             const doc = await this.taskRepository.createQueryBuilder('task')
                 .where('task.groupId = :id', { groupId })
@@ -174,7 +173,7 @@ export class TaskService {
      * 查询所有任务分组列表
      * @param id 
      */
-    async groupList(name: string): Promise<Result> {
+    async groupList(name: string): Promise<any> {
         try {
             const doc = await this.groupRepository.find({
                 where: {

@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostBody } from '../../common/interface/post-body.interface';
 import { Like, Repository } from 'typeorm';
 import { RoleAddDTO } from './dto/role-add.dto';
 import { RoleAuthorityDTO } from './dto/role-authority';
 import { RoleUpdateDTO } from './dto/role-update.dto';
-import { Role } from './role.entity';
+import { Role } from '../../common/entity/role.entity';
 
 @Injectable()
 export class RoleService {
@@ -38,7 +37,7 @@ export class RoleService {
      * 分页角色列表
      * @param body 
      */
-    async roleList(body: PostBody): Promise<any> {
+    async roleList(body: any): Promise<any> {
         try {
             const { name, page, size } = body;
             const [doc, count] = await this.roleRepository.findAndCount({

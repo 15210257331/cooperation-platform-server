@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { ConfigService } from '../../config/config.service';
 
 @Injectable()
 export class FileService {
 
-    constructor(private config: ConfigService) {
+    constructor(private configService: ConfigService) {
 
     }
 
     // 文件上传
     async uploadedFile(file: any, body: any): Promise<any> {
         try {
+            const { host, port} = this.configService.get('db');
             return {
                 code: 10000,
                 data: {
                     name: file.filename,
-                    path: `http://${this.config.host}:${this.config.port}/public/${file.filename}`
+                    path: `http://${host}:${port}/public/${file.filename}`
                 },
                 msg: '上传成功'
             }
@@ -32,7 +33,8 @@ export class FileService {
 
     // 图片查看
     async getImg(filePath: string, res: any) {
-        const path = `http://${this.config.host}:${this.config.port}/public/${filePath}`
+        const { host, port} = this.configService.get('db');
+        const path = `http://${host}:${port}/public/${filePath}`
         res.sendFile(path);
     }
 }

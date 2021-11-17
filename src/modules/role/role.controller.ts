@@ -2,7 +2,6 @@ import { Body, Controller, Get, Param, Post, UseGuards, UsePipes } from '@nestjs
 import { RoleService } from './role.service';
 import { ValidationPipe } from '../../common/pipe/validation.pipe';
 import { RoleAddDTO } from './dto/role-add.dto';
-import { Result } from '../../common/interface/result.interface';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleUpdateDTO } from './dto/role-update.dto';
 import { RoleAuthorityDTO } from './dto/role-authority';
@@ -17,7 +16,7 @@ export class RoleController {
     @Post('/add')
     @UsePipes(new ValidationPipe())
     @UseGuards(AuthGuard('jwt'))
-    public async roleAdd(@Body() roleAddDTO: RoleAddDTO,): Promise<Result> {
+    public async roleAdd(@Body() roleAddDTO: RoleAddDTO,): Promise<any> {
         return this.roleService.roleAdd(roleAddDTO);
     }
 
@@ -28,7 +27,7 @@ export class RoleController {
      @Post('/list')
      @UsePipes(new ValidationPipe())
      @UseGuards(AuthGuard('jwt'))
-     public async roleList(@Body() data: any,): Promise<Result> {
+     public async roleList(@Body() data: any,): Promise<any> {
          return this.roleService.roleList(data);
      }
 
@@ -39,7 +38,7 @@ export class RoleController {
      @Get('/all')
      @UsePipes(new ValidationPipe())
      @UseGuards(AuthGuard('jwt'))
-     public async allRole(): Promise<Result> {
+     public async allRole(): Promise<any> {
          return this.roleService.allRole();
      }
 
@@ -47,7 +46,7 @@ export class RoleController {
      @Get('/delete/:id')
      @UsePipes(new ValidationPipe())
      @UseGuards(AuthGuard('jwt'))
-     public async roleDelete(@Param('id') id: number | string): Promise<Result> {
+     public async roleDelete(@Param('id') id: number | string): Promise<any> {
          return this.roleService.roleDelete(id);
      }
 
@@ -55,7 +54,7 @@ export class RoleController {
      @Post('/update')
      @UsePipes(new ValidationPipe())
      @UseGuards(AuthGuard('jwt'))
-     public async roleUpdate(@Body() roleUpdateDTO: RoleUpdateDTO,): Promise<Result> {
+     public async roleUpdate(@Body() roleUpdateDTO: RoleUpdateDTO,): Promise<any> {
          return this.roleService.roleUpdate(roleUpdateDTO);
      }
 
@@ -63,7 +62,7 @@ export class RoleController {
      @Post('/relevanceAuthority')
      @UsePipes(new ValidationPipe())
      @UseGuards(AuthGuard('jwt'))
-     public async relevanceAuthority(@Body() roleAuthorityDTO: RoleAuthorityDTO,): Promise<Result> {
+     public async relevanceAuthority(@Body() roleAuthorityDTO: RoleAuthorityDTO,): Promise<any> {
          return this.roleService.relevanceAuthority(roleAuthorityDTO);
      }
 

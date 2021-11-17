@@ -21,7 +21,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
             data: message,
             message: '请求失败',
             code: 9999, // 自定义code
-            url: request.originalUrl, // 错误的url地址
         };
         const status =
             exception instanceof HttpException

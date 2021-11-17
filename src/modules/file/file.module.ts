@@ -5,7 +5,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import * as dayjs from 'dayjs';
-import { ConfigModule } from '../../config/config.module';
 import * as fs from 'fs';
 
 /**
@@ -14,7 +13,6 @@ import * as fs from 'fs';
 
 @Module({
   imports: [
-    ConfigModule,
     MulterModule.register({
       storage: diskStorage({
         // 设置图片的存储文件夹 如果不存在则创建

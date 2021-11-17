@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { User } from '../role/user.entity';
+import { User } from '../../common/entity/user.entity';
 import { AuthModule } from '../auth/auth.module';
-import { Role } from '../role/role.entity';
+import { Role } from '../../common/entity/role.entity';
 
 @Module({
     imports: [
