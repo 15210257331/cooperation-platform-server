@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import { tar } from 'compressing';
 
 @Injectable()
 export class FileService {
@@ -37,4 +38,11 @@ export class FileService {
         const path = `http://${host}:${port}/public/${filePath}`
         res.sendFile(path);
     }
+
+    async downloadAll() {
+        const uploadDir = this.configService.get('file').root;
+        const tarStream = new tar.Stream();
+        await tarStream.addEntry(uploadDir);
+        return { filename: 'hello-world.tar', tarStream };
+      }
 }

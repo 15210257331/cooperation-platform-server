@@ -3,6 +3,7 @@ import { Controller, Post, UseInterceptors, UploadedFile, Body, Get, Param, Res 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { FileService } from './file.service';
+import { Response } from 'express';
 
 @Controller('file')
 export class FileController {
@@ -20,4 +21,15 @@ export class FileController {
     render(@Param('filePath') filePath, @Res() res) {
         return this.fileService.getImg(filePath,res);
     }
+
+    @Get('export')
+    async downloadAll(@Res() res: Response) {
+    const { filename, tarStream } = await this.fileService.downloadAll();
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=${filename}`,
+    );
+    tarStream.pipe(res);
+  }
 }
