@@ -6,6 +6,9 @@ import { AuthService } from '../auth/auth.service';
 import { ValidationPipe } from '../../common/pipe/validation.pipe';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+
+@ApiTags('用户相关接口')
 @Controller('/user')
 export class UserController {
     constructor(

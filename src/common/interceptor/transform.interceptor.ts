@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Code } from 'typeorm';
 
 export interface Response {
     data: any,
@@ -18,10 +19,12 @@ export class TransformInterceptor<T> implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<Response> {
         return next.handle().pipe(
             map(data => {
+                console.log(data);
                 return {
                     data,
-                    message: '请求成功',
-                    code: 10000
+                    message: '操作成功',
+                    code: 10000,
+                    ...data
                 };
             }),
         );

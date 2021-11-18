@@ -3,7 +3,9 @@ import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe } 
 import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('任务相关接口')
 @Controller('task')
 export class TaskController {
     constructor(

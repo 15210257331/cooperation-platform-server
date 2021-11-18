@@ -12,6 +12,9 @@ import { RoleModule } from './modules/role/role.module';
 
 import configuration from './config/environment.config';
 import * as Joi from '@hapi/joi';
+import { RequestModule } from './modules/request/request.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './modules/cron/cron.module';
 
 
 @Module({
@@ -59,11 +62,14 @@ import * as Joi from '@hapi/joi';
         };
       },
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     FileModule,
     TaskModule,
     RoleModule,
+    RequestModule,
+    // CronModule
   ],
   controllers: [AppController],
   providers: [AppService, EventsGateway],

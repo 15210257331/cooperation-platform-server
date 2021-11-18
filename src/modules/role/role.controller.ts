@@ -5,7 +5,9 @@ import { RoleAddDTO } from './dto/role-add.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleUpdateDTO } from './dto/role-update.dto';
 import { RoleAuthorityDTO } from './dto/role-authority';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('角色相关接口')
 @Controller('/role')
 export class RoleController {
     constructor(

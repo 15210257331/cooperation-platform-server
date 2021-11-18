@@ -27,21 +27,23 @@ export class UserService {
                     userId: doc.id
                 }
                 return {
-                    code: 10000,
-                    msg: '登录成功',
-                    // 生成token
-                    token: this.jwtService.sign(payload),
+                    data: {
+                        // 生成token
+                        token: this.jwtService.sign(payload),
+                    }
                 }
             } else {
                 return {
                     code: 9999,
-                    msg: '密码错误',
+                    message: '密码错误',
+                    data: null
                 }
             }
         } else {
             return {
                 code: 9999,
-                msg: '用户名不存在',
+                message: '用户名不存在',
+                data: null
             }
         }
     }
@@ -52,43 +54,25 @@ export class UserService {
      * 获取用户信息
      */
     async getUserInfo(request: any): Promise<any> {
-        try {
-            const id = request.user.userId;
-            const doc = await this.userRepository.findOne(id, {
-                relations: ['roles'],
-            });
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'success'
-            }
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error
-            }
+        const id = request.user.userId;
+        const doc = await this.userRepository.findOne(id, {
+            relations: ['roles'],
+        });
+        return {
+            data: doc,
         }
     }
 
     async updateUserInfo(request: any): Promise<any> {
-        try {
-            const doc = await this.userRepository.update(request.user.userId, {
-                nickname: request.body.nickname,
-                username: request.body.username,
-                email: request.body.email,
-                avatar: request.body.avatar,
-                introduction: request.body.introduction
-            });
-            return {
-                code: 10000,
-                data: '更新成功',
-                msg: 'success'
-            }
-        } catch (error) {
-            return {
-                code: 999,
-                msg: error
-            }
+        const doc = await this.userRepository.update(request.user.userId, {
+            nickname: request.body.nickname,
+            username: request.body.username,
+            email: request.body.email,
+            avatar: request.body.avatar,
+            introduction: request.body.introduction
+        });
+        return {
+            data: '更新成功',
         }
     }
 
@@ -102,102 +86,66 @@ export class UserService {
         }
         const salt = makeSalt(); // 制作密码盐
         const hashPwd = encryptPassword(registerDTO.password, salt); // 加密后的密码
-        try {
-            const data = new User();
-            data.username = registerDTO.username;
-            data.password = registerDTO.password;
-            data.nickname = registerDTO.nickname;
-            data.email = registerDTO.email;
-            data.phone = registerDTO.phone;
-            data.sex = 1;
-            data.introduction = registerDTO.introduction;
-            data.roles = []
-            await this.userRepository.insert(data);
-            return {
-                code: 10000,
-                msg: 'Success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const data = new User();
+        data.username = registerDTO.username;
+        data.password = registerDTO.password;
+        data.nickname = registerDTO.nickname;
+        data.email = registerDTO.email;
+        data.phone = registerDTO.phone;
+        data.sex = 1;
+        data.introduction = registerDTO.introduction;
+        data.roles = []
+        await this.userRepository.insert(data);
+        return {
+            data: data
+        };
     }
 
     // 分页查询用户列表
     async userList(body: any): Promise<any> {
-        try {
-            const { name, page, size } = body;
-            const [doc, count] = await this.userRepository.findAndCount({
-                where: {
-                    'nickname': Like(`%${name}%`),
-                },
-                relations: ['roles'],
-                cache: true,
-                order: {
-                    createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
-                },
-                skip: (page - 1) * size,
-                take: size,
-            })
-            return {
-                code: 10000,
-                data: {
-                    list: doc,
-                    total: count
-                },
-                msg: 'success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const { name, page, size } = body;
+        const [doc, count] = await this.userRepository.findAndCount({
+            where: {
+                'nickname': Like(`%${name}%`),
+            },
+            relations: ['roles'],
+            cache: true,
+            order: {
+                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+            },
+            skip: (page - 1) * size,
+            take: size,
+        })
+        return {
+            data: {
+                list: doc,
+                total: count
+            },
+        };
     }
 
     // 查询所有用户
     async all(body: any): Promise<any> {
-        try {
-            const doc = await this.userRepository.find({
-                cache: true,
-                order: {
-                    createDate: 'DESC'
-                },
-            })
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const doc = await this.userRepository.find({
+            cache: true,
+            order: {
+                createDate: 'DESC'
+            },
+        })
+        return {
+            data: doc,
+        };
     }
 
     async setRole(body: any): Promise<any> {
-        try {
-            const { userId, roleIds } = body;
-            const roles = await this.roleRepository.findByIds(roleIds);
-            const user = await this.userRepository.findOne(userId);
-            user.roles = roles;
-            const doc = await this.userRepository.save(user);
-            if (doc) {
-                return {
-                    code: 10000,
-                    data: doc,
-                    msg: 'success'
-                }
-            }
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const doc = await this.userRepository.find({
+            cache: true,
+            order: {
+                createDate: 'DESC'
+            },
+        })
+        return {
+            data: doc,
+        };
     }
 }
