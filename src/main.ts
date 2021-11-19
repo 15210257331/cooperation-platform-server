@@ -9,6 +9,7 @@ import * as path from 'path';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { join, resolve } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,13 +20,21 @@ async function bootstrap() {
   // app.use(express.json()); // For parsing application/json
   // app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
   // app.use(logger);
-  
+
 
   // 设置api前缀
   app.setGlobalPrefix('api');
 
-  // 设置静态目录 /public/ 在地址栏输入xxxx:5000/public/ 时会找到upload目录
-  app.useStaticAssets(path.resolve(__dirname, './public'), { "prefix": "/public/" });
+  // 设置静态目录 public 
+  // 还支持第二个参数prefix来设置虚拟目录
+  // 在地址栏输入xxxx:4000/public/test.png时会找到upload目录下的tes.png
+  app.useStaticAssets(resolve(__dirname, './public'), { "prefix": "/public" });
+
+  // 设置views目录存放模板文件
+  app.setBaseViewsDir(resolve(__dirname, '../views'));
+
+  // 设置hbs为模板引擎
+  app.setViewEngine('hbs');
 
   // 全局注册拦截器 格式化接口成功返回数据
   app.useGlobalInterceptors(new TransformInterceptor());
@@ -45,7 +54,7 @@ async function bootstrap() {
     .setTitle('Nice todo api')
     .setDescription('Nice todo 的api文档')
     .setVersion('1.0')
-    .addTag('test')
+    .addTag('这是一个测试版本')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('doc', app, document);
