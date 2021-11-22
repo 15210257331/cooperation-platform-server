@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-11-19 09:40:46
+ * @LastEditTime: 2021-11-19 10:32:04
+ * @LastEditors: your name
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: /nice-todo-nest/src/modules/file/file.service.ts
+ */
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
@@ -39,6 +47,7 @@ export class FileService {
         res.sendFile(path);
     }
 
+    // 文件打包下载
     async downloadAll() {
         const uploadDir = this.configService.get('file').root;
         const tarStream = new tar.Stream();

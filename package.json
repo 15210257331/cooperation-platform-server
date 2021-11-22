@@ -35,6 +35,7 @@
     "@nestjs/websockets": "^8.2.0",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "compressing": "^1.5.1",
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "hbs": "^4.2.0",
