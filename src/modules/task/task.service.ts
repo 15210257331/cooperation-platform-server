@@ -124,7 +124,7 @@ export class TaskService {
             where: {
                 'name': Like(`%${name}%`),
             },
-            // relations: ['tasks'],
+            relations: ['tasks'],
             cache: true,
             order: {
                 createDate: 'DESC'
