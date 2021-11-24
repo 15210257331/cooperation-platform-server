@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-11-17 17:23:24
+ * @LastEditTime: 2021-11-24 11:18:01
+ * @LastEditors: Please set LastEditors
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: /nice-todo-nest/src/modules/task/task.controller.ts
+ */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe } from '@nestjs/common';
 import { TaskService } from './task.service';
@@ -53,5 +61,11 @@ export class TaskController {
     @UseGuards(AuthGuard('jwt'))
     public async groupList(@Query('name') name: string): Promise<any> {
         return this.taskService.groupList(name);
+    }
+
+    @Get('/groupAdd')
+    @UseGuards(AuthGuard('jwt'))
+    public async groupAdd(@Body() body: any, @Request() request: any): Promise<any> {
+        return this.taskService.groupAdd(body, request);
     }
 }

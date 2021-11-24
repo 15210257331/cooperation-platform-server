@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Group } from './group.entity';
 import { Role } from './role.entity';
 import { Task } from './task.entity';
 /**
@@ -93,6 +94,12 @@ export class User {
     })
     createDate: Date;
 
+
+    /**
+     * 用户和分组是一对多的关系
+     *  */
+    @OneToMany(() => Group, group => group.creator)
+    groups: Group[];
 
     /**
      * 用户和任务是一对多的关系

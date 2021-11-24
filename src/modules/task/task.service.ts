@@ -31,6 +31,21 @@ export class TaskService {
         }
     }
 
+    // 添加分组
+    async groupAdd(body: TaskAddDTO, request: any): Promise<any> {
+        const { name, detail, groupId } = body;
+        const task = new Task();
+        task.name = name;
+        task.detail = detail;
+        task.number = generate8Code(8);
+        task.owner = await this.userRepository.findOne(request.user.userId);
+        task.group = await this.groupRepository.findOne(groupId);
+        const doc = await this.taskRepository.save(task);
+        return {
+            data: doc,
+        }
+    }
+
     /**
      * 切换任务状态
      * @param id 

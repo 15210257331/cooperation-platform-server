@@ -6,13 +6,15 @@ import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { Task } from '../../common/entity/task.entity';
 import { Group } from '../../common/entity/group.entity';
+import { GroupService } from './group.service';
+import { GroupController } from './group.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task,User,Group]),
     UserModule
   ],
-  providers: [TaskService],
-  controllers: [TaskController]
+  providers: [TaskService,GroupService],
+  controllers: [TaskController,GroupController]
 })
 export class TaskModule { }
