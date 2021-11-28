@@ -62,10 +62,4 @@ export class TaskController {
     public async groupList(@Query('name') name: string): Promise<any> {
         return this.taskService.groupList(name);
     }
-
-    @Get('/groupAdd')
-    @UseGuards(AuthGuard('jwt'))
-    public async groupAdd(@Body() body: any, @Request() request: any): Promise<any> {
-        return this.taskService.groupAdd(body, request);
-    }
 }

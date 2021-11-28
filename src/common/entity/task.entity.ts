@@ -1,7 +1,7 @@
-import { group } from 'console';
+import { User } from './user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Group } from './group.entity';
-import { User } from './user.entity';
+import { SubItem } from './sub-item.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -35,17 +35,44 @@ export class Task {
         name: 'status',
         default: 1,
         nullable: false,
-        comment: '任务状态 1未开始  2进行中  3已完成  4已作废  5 已删除'
+        comment: '任务状态 1未开始  2进行中  3已完成'
     })
     status: number;
 
     @Column({
-        type: 'varchar',
-        nullable: true,
-        name: 'number',
-        comment: '项目编号'
+        type: 'int',
+        name: 'priority',
+        default: 1,
+        nullable: false,
+        comment: '任务优先级 1 L1  2L2  3L3 4L4 5L5 6L6  依次升高'
     })
-    number: string;
+    priority: number;
+
+    @Column({
+        type: 'int',
+        name: 'reminder',
+        default: 0,
+        nullable: false,
+        comment: '是否设置提醒'
+    })
+    reminder: number;
+
+    @Column({
+        type: 'timestamp',
+        name: 'reminderDate',
+        nullable: true,
+        comment: '提醒时间'
+    })
+    reminderDate: Date;
+
+    @Column({
+        type: 'int',
+        name: 'workload',
+        default: 1,
+        nullable: false,
+        comment: '工作量 1低  2中  3高'
+    })
+    workload: number;
 
     @CreateDateColumn({
         type: 'timestamp',
@@ -71,6 +98,15 @@ export class Task {
     })
     endDate: Date;
 
+    @Column({
+        type: 'varchar',
+        nullable: true,
+        default: 'https://c-ssl.duitang.com/uploads/item/201608/02/20160802001436_CtfiH.jpeg',
+        name: 'pictures',
+        comment: '任务截图'
+    })
+    pictures: string;
+
 
     /**
      * 任务和用户是多对一的关系
@@ -90,4 +126,14 @@ export class Task {
      @ManyToOne(() => Group, group => group.tasks)
      @JoinColumn()
      group: Group;
+
+
+     
+    /**
+     * 任务和任务子项是一对多的关系
+     * 该任务所有的子任务
+     *  */
+    @OneToMany(() => SubItem, SubItem => SubItem.belong)
+    subItems: Task[];
+
 }

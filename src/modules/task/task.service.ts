@@ -1,3 +1,5 @@
+import { map } from 'rxjs/operators';
+import { SubItem } from './../../common/entity/sub-item.entity';
 import { group } from 'console';
 import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
@@ -15,31 +17,38 @@ export class TaskService {
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
+        @InjectRepository(SubItem) private readonly subItemRepository: Repository<SubItem>,
     ) { }
 
+    /**
+     * 添加任务
+     * @param body 
+     * @param request 
+     * @returns 
+     */
     async taskAdd(body: TaskAddDTO, request: any): Promise<any> {
-        const { name, detail, groupId } = body;
+        const { name, detail, groupId, priority, reminder, reminderDate, workload, startDate, endDate, pictures, subItems } = body;
         const task = new Task();
         task.name = name;
         task.detail = detail;
-        task.number = generate8Code(8);
-        task.owner = await this.userRepository.findOne(request.user.userId);
+        task.priority = priority;
+        task.reminder = reminder;
+        task.reminderDate = reminderDate;
+        task.workload = workload;
+        task.startDate = startDate;
+        task.endDate = endDate;
+        task.pictures = pictures;
         task.group = await this.groupRepository.findOne(groupId);
-        const doc = await this.taskRepository.save(task);
-        return {
-            data: doc,
+        let arr = [];
+        if(subItems) {
+            subItems.split(',').map(item => {
+                const subItem = new SubItem();
+                subItem.name = item;
+                arr.push(subItem);
+            })
+            await this.subItemRepository.save(arr);
         }
-    }
-
-    // 添加分组
-    async groupAdd(body: TaskAddDTO, request: any): Promise<any> {
-        const { name, detail, groupId } = body;
-        const task = new Task();
-        task.name = name;
-        task.detail = detail;
-        task.number = generate8Code(8);
-        task.owner = await this.userRepository.findOne(request.user.userId);
-        task.group = await this.groupRepository.findOne(groupId);
+        task.subItems = arr;
         const doc = await this.taskRepository.save(task);
         return {
             data: doc,

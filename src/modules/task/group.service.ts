@@ -12,11 +12,13 @@ import { TaskAddDTO } from './dto/task-add.dto';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
+import { Task } from 'src/common/entity/task.entity';
 
 @Injectable()
 export class GroupService {
 
     constructor(
+        @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
     ) { }
@@ -30,7 +32,7 @@ export class GroupService {
             where: {
                 'name': Like(`%${groupName}%`),
             },
-            relations: ['tasks'],
+            relations: ['tasks', "tasks.subItems", "creator"],
             cache: true,
             order: {
                 createDate: 'ASC'
