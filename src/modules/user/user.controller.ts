@@ -43,8 +43,8 @@ export class UserController {
     @Post('/update')
     @UseGuards(AuthGuard('jwt'))
     @UsePipes(new ValidationPipe())
-    public async updateUserInfo(@Request() request: any): Promise<any> {
-        return this.userService.updateUserInfo(request);
+    public async updateUserInfo(@Body() data: any, @Request() request: any): Promise<any> {
+        return this.userService.updateUserInfo(data, request);
     }
 
     // 分页查询用户列表

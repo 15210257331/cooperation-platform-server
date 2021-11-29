@@ -35,15 +35,15 @@ export class UserService {
             } else {
                 return {
                     code: 9999,
-                    message: '密码错误',
-                    data: null
+                    message: '您输入的密码错误',
+                    data: "您输入的密码错误!"
                 }
             }
         } else {
             return {
                 code: 9999,
-                message: '用户名不存在',
-                data: null
+                message: '改用户名不存在',
+                data: '改用户名不存在!'
             }
         }
     }
@@ -63,16 +63,16 @@ export class UserService {
         }
     }
 
-    async updateUserInfo(request: any): Promise<any> {
+    async updateUserInfo(body: any, request: any): Promise<any> {
         const doc = await this.userRepository.update(request.user.userId, {
-            nickname: request.body.nickname,
-            username: request.body.username,
-            email: request.body.email,
-            avatar: request.body.avatar,
-            introduction: request.body.introduction
+            nickname: body.nickname,
+            username: body.username,
+            email: body.email,
+            avatar: body.avatar,
+            introduction: body.introduction
         });
         return {
-            data: '更新成功',
+            data: '操作成功！',
         }
     }
 

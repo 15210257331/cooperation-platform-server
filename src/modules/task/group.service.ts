@@ -57,5 +57,28 @@ export class GroupService {
     }
 
 
+    /**
+     * 查询分组详情
+     * @param groupId
+     */
+     async detail(groupId: number): Promise<any> {
+        // const doc = await this.taskRepository.createQueryBuilder('task')
+        //     .where('task.groupId = :id', { groupId })
+        //     .setParameter("id", groupId)
+            // .leftJoinAndSelect('task.principal', 'principal')
+            // .select(`
+            // principal.avatar as avatar
+            // `)
+            // .getMany()
+
+        const doc = await this.groupRepository.findOne(groupId, {
+            relations: ["creator", "tasks"]
+        })
+        return {
+            data: doc,
+        };
+    }
+
+
 
 }

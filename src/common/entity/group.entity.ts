@@ -30,7 +30,7 @@ export class Group {
     createDate: Date;
 
     /**
-     * 创建改分组的用户
+     * 创建该分组的用户
     * 分组和用户是多对一的关系
     * ManyToOne 可以省略JoinColumn装饰器
     * 拥有ManyToOne装饰器的表会生成外键

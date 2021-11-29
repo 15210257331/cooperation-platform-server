@@ -107,18 +107,6 @@ export class Task {
     })
     pictures: string;
 
-
-    /**
-     * 任务和用户是多对一的关系
-     * ManyToOne 可以省略JoinColumn装饰器
-     * 拥有ManyToOne装饰器的表会生成外键
-     * 外键默认名称是 字段名+关联的表的主键名
-     * 如果不特殊指定那这里的外键是 creatorId
-     */
-     @ManyToOne(() => User, user => user.tasks)
-     @JoinColumn()
-     owner: User;
-
     /**
      * 任务和分组是多对一的关系
      * 多个任务隶属于同一个分组

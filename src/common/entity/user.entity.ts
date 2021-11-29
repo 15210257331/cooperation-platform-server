@@ -102,14 +102,6 @@ export class User {
     groups: Group[];
 
     /**
-     * 用户和任务是一对多的关系
-     * 该用户所拥有的的所有任务
-     *  */
-    @OneToMany(() => Task, task => task.owner)
-    tasks: Task[];
-
-
-    /**
      * 角色和用户是多对多的关系
      */
     @ManyToMany(() => Role, role => role.users,)

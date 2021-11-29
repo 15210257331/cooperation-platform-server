@@ -24,4 +24,15 @@ export class GroupController {
         return this.groupService.list(groupName);
     }
 
+    /**
+     * 分组详情
+     * @param groupName 
+     * @returns 
+     */
+    @Get('/detail')
+    @UseGuards(AuthGuard('jwt'))
+    public async detail(@Query('groupId', new ParseIntPipe()) groupId: number): Promise<any> {
+        return this.groupService.detail(groupId);
+    }
+
 }

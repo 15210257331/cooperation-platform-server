@@ -4,7 +4,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { FileService } from './file.service';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('文件相关')
 @Controller('file')
 export class FileController {
     constructor(
