@@ -27,7 +27,7 @@ import * as fs from 'fs';
         },
         filename: (req, file, cb) => {
           // 自定义文件名
-          const filename = `${dayjs().format('x')}.${file.mimetype.split('/')[1]}`;
+          const filename = `${dayjs().unix()}.${file.mimetype.split('/')[1]}`;
           return cb(null, filename);
         },
       }),
