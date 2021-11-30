@@ -17,7 +17,7 @@ export class FileService {
         return {
             data: {
                 name: file.filename,
-                path: `http://${host}:${port}/public/${file.filename}`
+                url: `http://${host}:${port}/public/${file.filename}`
             },
         }
     }
