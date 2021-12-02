@@ -20,8 +20,8 @@ export class GroupController {
 
     @Get('/list')
     @UseGuards(AuthGuard('jwt'))
-    public async list(@Query('name') groupName: string): Promise<any> {
-        return this.groupService.list(groupName);
+    public async list(@Query('name') groupName: string, @Request() request: any): Promise<any> {
+        return this.groupService.list(groupName, request);
     }
 
     /**

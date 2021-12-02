@@ -27,10 +27,11 @@ export class GroupService {
      * 查询分组列表
      * @param id 
      */
-    async list(groupName: string): Promise<any> {
+    async list(groupName: string, request: any): Promise<any> {
         const doc = await this.groupRepository.find({
             where: {
                 'name': Like(`%${groupName}%`),
+                'creatorId': request.user.userId
             },
             relations: ['tasks', "tasks.subItems", "creator"],
             cache: true,
@@ -61,15 +62,15 @@ export class GroupService {
      * 查询分组详情
      * @param groupId
      */
-     async detail(groupId: number): Promise<any> {
+    async detail(groupId: number): Promise<any> {
         // const doc = await this.taskRepository.createQueryBuilder('task')
         //     .where('task.groupId = :id', { groupId })
         //     .setParameter("id", groupId)
-            // .leftJoinAndSelect('task.principal', 'principal')
-            // .select(`
-            // principal.avatar as avatar
-            // `)
-            // .getMany()
+        // .leftJoinAndSelect('task.principal', 'principal')
+        // .select(`
+        // principal.avatar as avatar
+        // `)
+        // .getMany()
 
         const doc = await this.groupRepository.findOne(groupId, {
             relations: ["creator", "tasks"]

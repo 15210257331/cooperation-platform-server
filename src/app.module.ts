@@ -15,6 +15,7 @@ import * as Joi from '@hapi/joi';
 import { RequestModule } from './modules/request/request.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './modules/cron/cron.module';
+import { NoteModule } from './modules/note/note.module';
 
 
 @Module({
@@ -69,6 +70,7 @@ import { CronModule } from './modules/cron/cron.module';
     TaskModule,
     RoleModule,
     RequestModule,
+    NoteModule,
     // CronModule
   ],
   controllers: [AppController],
