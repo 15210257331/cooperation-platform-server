@@ -40,7 +40,7 @@ export class TaskService {
         task.pictures = pictures;
         task.group = await this.groupRepository.findOne(groupId);
         let arr = [];
-        if(subItems) {
+        if (subItems) {
             subItems.split(',').map(item => {
                 const subItem = new SubItem();
                 subItem.name = item;
@@ -59,9 +59,9 @@ export class TaskService {
      * 查询任务详情
      * @param id 
      */
-     async detail(id: number): Promise<any> {
-        const doc = await this.taskRepository.findOne(id, {
-            relations: ['group', 'subItems']
+    async detail(taskId: number): Promise<any> {
+        const doc = await this.taskRepository.findOne(taskId, {
+            relations: ['owner', 'group', 'subItems']
         });
         return {
             data: doc,
@@ -97,7 +97,58 @@ export class TaskService {
         }
     }
 
-    
+    // 任务数量排行榜
+    async rank(): Promise<any> {
+        const doc = await this.userRepository.find({
+            status: 5
+        });
+        return {
+            data: doc,
+        }
+    }
+
+    // 任务数量排行榜
+    async message(): Promise<any> {
+        return {
+            data: [
+                {
+                    content: '陈晓飞刚刚创建了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: 'admin刚刚完成了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: '陈晓飞刚刚创建了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: 'admin刚刚完成了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: '陈晓飞刚刚创建了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: 'admin刚刚完成了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: '陈晓飞刚刚创建了一个任务',
+                    date: new Date().toLocaleDateString(),
+                },
+                {
+                    content: 'admin刚刚完成了一个任务',
+                    date: new Date().toLocaleDateString(),
+                }
+            ],
+        }
+    }
+
+
+
 
     /**
      * 分页查询已删除的任务
@@ -124,6 +175,6 @@ export class TaskService {
             },
         };
     }
-    
-    
+
+
 }

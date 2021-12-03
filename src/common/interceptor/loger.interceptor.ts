@@ -14,9 +14,9 @@ export class LogerInterceptor implements NestInterceptor {
       map(data => {
         const logFormat = `
               请求地址: ${req.originalUrl} \n
-              Method:  ${req.method} \n
-              返回数据: ${JSON.stringify(data.data)}
               `
+              // Method:  ${req.method} \n
+              // 返回数据: ${JSON.stringify(data.data)}
         Logger.info(logFormat);
         Logger.access(logFormat);
         return data;

@@ -16,7 +16,7 @@ export class TaskAddDTO {
     readonly priority: number;
 
     @IsNotEmpty({ message: '任务提醒' })
-    readonly reminder: number;
+    readonly reminder: boolean;
 
     @IsNotEmpty({ message: '提醒时间' })
     readonly reminderDate: Date;

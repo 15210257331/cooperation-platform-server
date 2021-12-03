@@ -49,13 +49,13 @@ export class Task {
     priority: number;
 
     @Column({
-        type: 'int',
+        type: 'bool',
         name: 'reminder',
-        default: 0,
+        default: false,
         nullable: false,
         comment: '是否设置提醒'
     })
-    reminder: number;
+    reminder: boolean;
 
     @Column({
         type: 'timestamp',
@@ -111,12 +111,19 @@ export class Task {
      * 任务和分组是多对一的关系
      * 多个任务隶属于同一个分组
      */
-     @ManyToOne(() => Group, group => group.tasks)
-     @JoinColumn()
-     group: Group;
+    @ManyToOne(() => Group, group => group.tasks)
+    @JoinColumn()
+    group: Group;
+
+    /**
+     * 任务和用户是多对一的关系
+     * 多个任务隶属于同一个分组
+     */
+    @ManyToOne(() => User, user => user.tasks)
+    @JoinColumn()
+    owner: User;
 
 
-     
     /**
      * 任务和任务子项是一对多的关系
      * 该任务所有的子任务

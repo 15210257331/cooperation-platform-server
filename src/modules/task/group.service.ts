@@ -24,21 +24,25 @@ export class GroupService {
     ) { }
 
     /**
-     * 查询分组列表
+     * 查询当前登录用户的分组列表
      * @param id 
      */
     async list(groupName: string, request: any): Promise<any> {
-        const doc = await this.groupRepository.find({
-            where: {
-                'name': Like(`%${groupName}%`),
-                'creatorId': request.user.userId
-            },
-            relations: ['tasks', "tasks.subItems", "creator"],
-            cache: true,
-            order: {
-                createDate: 'ASC'
-            },
-        });
+        const doc = await this.groupRepository.createQueryBuilder("group")
+            .where(qb => {
+                const subQuery = qb
+                    .subQuery()
+                    .select("user.id")
+                    .from(User, "user")
+                    .where("user.id = :id")
+                    .getQuery();
+                return "group.creator= " + subQuery;
+            })
+            .andWhere('group.name like "%' + groupName + '%"')
+            .setParameter("id", request.user.userId)
+            .leftJoinAndSelect('group.tasks', 'tasks')
+            .leftJoinAndSelect('tasks.subItems', 'subItems')
+            .getMany();
         return {
             data: doc,
         };

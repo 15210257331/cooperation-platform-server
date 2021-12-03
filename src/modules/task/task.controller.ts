@@ -54,7 +54,29 @@ export class TaskController {
      */
     @Get('/detail')
     @UseGuards(AuthGuard('jwt'))
-    public async detail(@Query('id') id: number): Promise<any> {
-        return this.taskService.detail(id);
+    public async detail(@Query('taskId') taskId: number): Promise<any> {
+        return this.taskService.detail(taskId);
     }
+
+    /**
+     * 任务数量排行榜
+     * @param id 
+     * @returns 
+     */
+    @Get('/detail')
+    @UseGuards(AuthGuard('jwt'))
+    public async rank(): Promise<any> {
+        return this.taskService.rank();
+    }
+
+    /**
+     * 任务消息
+     * @param id 
+     * @returns 
+     */
+     @Get('/message')
+    //  @UseGuards(AuthGuard('jwt'))
+     public async message(): Promise<any> {
+         return this.taskService.message();
+     }
 }
