@@ -8,6 +8,7 @@ import { makeSalt, encryptPassword } from '../../utils/utils';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { Role } from '../../common/entity/role.entity';
+import { from } from 'rxjs';
 
 @Injectable()
 export class UserService {
@@ -42,46 +43,23 @@ export class UserService {
         } else {
             return {
                 code: 9999,
-                message: '改用户名不存在',
-                data: '改用户名不存在!'
+                message: '该用户名不存在',
+                data: '该用户名不存在!'
             }
         }
     }
 
     /**
-     * 
-     * @param request 
-     * 获取用户信息
+     * 注册
+     * @param registerDTO 
+     * @returns 
      */
-    async getUserInfo(request: any): Promise<any> {
-        const id = request.user.userId;
-        const doc = await this.userRepository.findOne(id, {
-            relations: ['roles'],
-        });
-        return {
-            data: doc,
-        }
-    }
-
-    async updateUserInfo(body: any, request: any): Promise<any> {
-        const doc = await this.userRepository.update(request.user.userId, {
-            nickname: body.nickname,
-            username: body.username,
-            email: body.email,
-            avatar: body.avatar,
-            introduction: body.introduction
-        });
-        return {
-            data: '操作成功！',
-        }
-    }
-
     async register(registerDTO: RegisterDTO): Promise<any> {
         const doc = await this.userRepository.findOne({ username: registerDTO.username });
         if (doc) {
             return {
                 code: 9999,
-                msg: '用户已存在'
+                message: '用户已存在'
             }
         }
         const salt = makeSalt(); // 制作密码盐
@@ -100,6 +78,37 @@ export class UserService {
             data: data
         };
     }
+
+    /**
+     * 
+     * @param request 
+     * 获取用户信息
+     */
+    async getUserInfo(request: any): Promise<any> {
+        const id = request.user.userId;
+        const doc = await this.userRepository.findOne(id, {
+            relations: ['roles'],
+        });
+        return {
+            data: doc,
+        }
+    }
+
+    async updateUserInfo(body: any, request: any): Promise<any> {
+        const { nickname, username, email, avatar, introduction } = body;
+        const doc = await this.userRepository.update(request.user.userId, {
+            nickname: nickname,
+            username: username,
+            email: email,
+            avatar: avatar,
+            introduction: introduction
+        });
+        return {
+            data: doc,
+        }
+    }
+
+
 
     // 分页查询用户列表
     async userList(body: any): Promise<any> {
@@ -124,19 +133,11 @@ export class UserService {
         };
     }
 
-    // 查询所有用户
-    async all(body: any): Promise<any> {
-        const doc = await this.userRepository.find({
-            cache: true,
-            order: {
-                createDate: 'DESC'
-            },
-        })
-        return {
-            data: doc,
-        };
-    }
-
+    /**
+     * 为用户设置角色
+     * @param body 
+     * @returns 
+     */
     async setRole(body: any): Promise<any> {
         const doc = await this.userRepository.find({
             cache: true,

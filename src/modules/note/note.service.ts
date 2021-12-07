@@ -16,8 +16,9 @@ export class NoteService {
         const note = new Note();
         note.title = noteAddDTO.title;
         note.content = noteAddDTO.content;
+        note.overview = noteAddDTO.overview;
         note.owner = await this.userRepository.findOne(request.user.userId);
-        const doc = await this.noteRepository.insert(note);
+        const doc = await this.noteRepository.save(note);
         return {
             data: doc,
         };
@@ -25,9 +26,14 @@ export class NoteService {
 
     async list(keywords: string): Promise<any> {
         const doc = await this.noteRepository.find({
-            where: {
-                'title': Like(`%${keywords}%`),
-            },
+            where: [
+                {
+                    'title': Like(`%${keywords}%`),
+                },
+                {
+                    'overview': Like(`%${keywords}%`),
+                }
+            ],
             relations: ["owner"],
             cache: true,
             order: {
@@ -40,19 +46,29 @@ export class NoteService {
     }
 
     async delete(id: number | string): Promise<any> {
-        try {
-            const doc = await this.noteRepository.delete(id)
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'Success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const doc = await this.noteRepository.delete(id)
+        return {
+            data: doc,
+        };
+    }
+
+    // 笔记详情
+    async detail(noteId: number): Promise<any> {
+        // const doc = await this.taskRepository.createQueryBuilder('task')
+        //     .where('task.groupId = :id', { groupId })
+        //     .setParameter("id", groupId)
+        // .leftJoinAndSelect('task.principal', 'principal')
+        // .select(`
+        // principal.avatar as avatar
+        // `)
+        // .getMany()
+
+        const doc = await this.noteRepository.findOne(noteId, {
+            relations: ["owner",]
+        })
+        return {
+            data: doc,
+        };
     }
 
 }

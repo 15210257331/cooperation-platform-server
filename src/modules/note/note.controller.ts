@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query,Request, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { ValidationPipe } from '../../common/pipe/validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
@@ -9,7 +9,7 @@ import { NoteAddDTO } from './dto/note-add.dto';
 @Controller('/note')
 export class NoteController {
     constructor(
-        private readonly roleService: NoteService,
+        private readonly noteService: NoteService,
     ) { }
 
     // 添加笔记
@@ -17,7 +17,15 @@ export class NoteController {
     @UsePipes(new ValidationPipe())
     @UseGuards(AuthGuard('jwt'))
     public async add(@Body() roleAddDTO: NoteAddDTO, @Request() request: any): Promise<any> {
-        return this.roleService.add(roleAddDTO, request);
+        return this.noteService.add(roleAddDTO, request);
+    }
+
+    // 笔记详情
+    @Get('/detail')
+    @UsePipes(new ValidationPipe())
+    @UseGuards(AuthGuard('jwt'))
+    public async detail(@Query('noteId', new ParseIntPipe()) noteId: number): Promise<any> {
+        return this.noteService.detail(noteId);
     }
 
     // 查询笔记不分页
@@ -25,7 +33,7 @@ export class NoteController {
     @UsePipes(new ValidationPipe())
     @UseGuards(AuthGuard('jwt'))
     public async list(@Query('keywords') keywords?: string): Promise<any> {
-        return this.roleService.list(keywords);
+        return this.noteService.list(keywords);
     }
 
     // 删除笔记
@@ -33,7 +41,7 @@ export class NoteController {
     @UsePipes(new ValidationPipe())
     @UseGuards(AuthGuard('jwt'))
     public async delete(@Param('id') id: number | string): Promise<any> {
-        return this.roleService.delete(id);
+        return this.noteService.delete(id);
     }
 
 }

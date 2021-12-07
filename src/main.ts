@@ -5,7 +5,6 @@ import { logger } from './common/middleware/loger.middleware';
 import { LogerInterceptor } from './common/interceptor/loger.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as path from 'path';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';

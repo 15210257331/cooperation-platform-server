@@ -20,6 +20,15 @@ export class Note {
     title: string;
 
     @Column({
+        comment: '概览',
+        type: 'text',
+        nullable: false,
+        charset: 'utf8mb4',
+        name: 'overview',
+    })
+    overview: string;
+
+    @Column({
         comment: '内容',
         type: 'text',
         name: 'content',

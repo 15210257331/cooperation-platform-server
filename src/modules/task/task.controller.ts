@@ -74,9 +74,9 @@ export class TaskController {
      * @param id 
      * @returns 
      */
-     @Get('/message')
-    //  @UseGuards(AuthGuard('jwt'))
-     public async message(): Promise<any> {
-         return this.taskService.message();
-     }
+    @Get('/message')
+    @UseGuards(AuthGuard('jwt'))
+    public async message(): Promise<any> {
+        return this.taskService.message();
+    }
 }

@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { GroupService } from './group.service';
+import { GroupAddDTO } from './dto/group-add.dto';
 
 @ApiTags('分组相关接口')
 @Controller('group')
@@ -14,7 +15,7 @@ export class GroupController {
 
     @Post('/add')
     @UseGuards(AuthGuard('jwt'))
-    public async taskAdd(@Body() groupAddDTO: any, @Request() request: any): Promise<any> {
+    public async taskAdd(@Body() groupAddDTO: GroupAddDTO, @Request() request: any): Promise<any> {
         return this.groupService.add(groupAddDTO, request);
     }
 

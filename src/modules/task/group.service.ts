@@ -1,11 +1,3 @@
-/*
- * @Author: your name
- * @Date: 2021-11-24 11:24:02
- * @LastEditTime: 2021-11-24 11:24:03
- * @LastEditors: Please set LastEditors
- * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: /nice-todo-nest/src/modules/task/group.service.ts
- */
 import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
@@ -13,6 +5,7 @@ import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
 import { Task } from 'src/common/entity/task.entity';
+import { GroupAddDTO } from './dto/group-add.dto';
 
 @Injectable()
 export class GroupService {
@@ -49,8 +42,8 @@ export class GroupService {
     }
 
     // 添加分组
-    async add(body: any, request: any): Promise<any> {
-        const { name } = body;
+    async add(groupAddDTO: GroupAddDTO, request: any): Promise<any> {
+        const { name } = groupAddDTO;
         const group = new Group();
         group.name = name;
         group.creator = await this.userRepository.findOne(request.user.userId);

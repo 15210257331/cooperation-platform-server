@@ -8,7 +8,7 @@ import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('用户相关接口')
+@ApiTags('用户相关')
 @Controller('/user')
 export class UserController {
     constructor(
@@ -52,13 +52,6 @@ export class UserController {
     @Post('/list')
     public async list(@Body() body: any): Promise<any> {
         return this.userService.userList(body);
-    }
-
-    // 查询所有用户列表
-    // @UseGuards(AuthGuard('jwt'))
-    @Get('/all')
-    public async all(@Body() body: any): Promise<any> {
-        return this.userService.all(body);
     }
 
     // 为用户关联角色
