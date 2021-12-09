@@ -4,6 +4,7 @@ import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { EntityManager, Transaction, TransactionManager } from 'typeorm';
 
 @ApiTags('任务相关接口')
 @Controller('task')
@@ -28,12 +29,12 @@ export class TaskController {
      * 删除任务
      * @param id 
      * @returns 
-     * 使用了内置的ParseIntPipe管道，可以将id 转换成number类型
      */
-    @Get('/delete')
+    @Post('/delete')
     @UseGuards(AuthGuard('jwt'))
-    public async delete(@Query('id', new ParseIntPipe()) id: number): Promise<any> {
-        return this.taskService.delete(id);
+    @Transaction()
+    public async delete(@Body() body: any, @TransactionManager() maneger: EntityManager): Promise<any> {
+        return this.taskService.delete(body, maneger);
     }
 
     /**
@@ -45,6 +46,13 @@ export class TaskController {
     @UseGuards(AuthGuard('jwt'))
     public async status(@Body() body: any): Promise<any> {
         return this.taskService.changeStatus(body);
+    }
+
+    // 更新任务
+    @Post('/update')
+    @UseGuards(AuthGuard('jwt'))
+    public async update(@Body() body: any): Promise<any> {
+        return this.taskService.update(body);
     }
 
     /**
@@ -67,6 +75,13 @@ export class TaskController {
     @UseGuards(AuthGuard('jwt'))
     public async rank(): Promise<any> {
         return this.taskService.rank();
+    }
+
+    // 完成子任务
+    @Post('/completeSub')
+    @UseGuards(AuthGuard('jwt'))
+    public async completeSub(@Body() body: any): Promise<any> {
+        return this.taskService.completeSub(body);
     }
 
     /**

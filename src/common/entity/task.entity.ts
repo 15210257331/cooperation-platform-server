@@ -49,21 +49,14 @@ export class Task {
     priority: number;
 
     @Column({
-        type: 'bool',
+        type: 'varchar',
         name: 'reminder',
         default: false,
         nullable: false,
-        comment: '是否设置提醒'
+        comment: '设置提醒'
     })
-    reminder: boolean;
+    reminder: string;
 
-    @Column({
-        type: 'timestamp',
-        name: 'reminderDate',
-        nullable: true,
-        comment: '提醒时间'
-    })
-    reminderDate: Date;
 
     @Column({
         type: 'int',
@@ -129,6 +122,6 @@ export class Task {
      * 该任务所有的子任务
      *  */
     @OneToMany(() => SubItem, SubItem => SubItem.belong)
-    subItems: Task[];
+    subItems: SubItem[];
 
 }

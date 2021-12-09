@@ -1,11 +1,13 @@
+import { Task } from './../../common/entity/task.entity';
 import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
-import { Like, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
-import { Task } from 'src/common/entity/task.entity';
 import { GroupAddDTO } from './dto/group-add.dto';
+import { SubItem } from '../../common/entity/sub-item.entity';
+import { GroupUpdateDTO } from './dto/group-update.dto';
 
 @Injectable()
 export class GroupService {
@@ -52,6 +54,37 @@ export class GroupService {
         return {
             data: doc,
         }
+    }
+
+    // 更新分组
+    async update(groupUpdateDTO: GroupUpdateDTO): Promise<any> {
+        const { groupId, name } = groupUpdateDTO;
+        await this.groupRepository.update(groupId, {
+            name: name
+        });
+        const doc = await this.groupRepository.findOne(groupId);
+        return {
+            data: doc
+        }
+    }
+
+    // 删除分组
+    async delete(id: number | string, maneger: EntityManager): Promise<any> {
+        const group = await this.groupRepository.findOne(id);
+        // 如果该分组下的任务不为空则不允许删除
+        const tasks = await maneger.find(Task, { group: group });
+        if (tasks.length > 0) {
+            return {
+                code: 9999,
+                data: '该分组下存在任务，请先删除该分组下的任务',
+                message: '该分组任务不为空，无法删除'
+            }
+        }
+        // 删除分组数据
+        const doc = await maneger.delete(Group, id);
+        return {
+            data: doc,
+        };
     }
 
 

@@ -1,10 +1,9 @@
 import { map } from 'rxjs/operators';
 import { SubItem } from './../../common/entity/sub-item.entity';
-import { group } from 'console';
 import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
-import { Like, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generate8Code } from '../../utils/utils';
 import { User } from '../../common/entity/user.entity';
@@ -27,13 +26,12 @@ export class TaskService {
      * @returns 
      */
     async taskAdd(body: TaskAddDTO, request: any): Promise<any> {
-        const { name, detail, groupId, priority, reminder, reminderDate, workload, startDate, endDate, pictures, subItems } = body;
+        const { name, detail, groupId, priority, reminder, workload, startDate, endDate, pictures, subItems } = body;
         const task = new Task();
         task.name = name;
         task.detail = detail;
         task.priority = priority;
         task.reminder = reminder;
-        task.reminderDate = reminderDate;
         task.workload = workload;
         task.startDate = startDate;
         task.endDate = endDate;
@@ -41,9 +39,10 @@ export class TaskService {
         task.group = await this.groupRepository.findOne(groupId);
         let arr = [];
         if (subItems) {
-            subItems.split(',').map(item => {
+            (JSON.parse(subItems) || []).map(item => {
                 const subItem = new SubItem();
                 subItem.name = item;
+                subItem.status = item.status
                 arr.push(subItem);
             })
             await this.subItemRepository.save(arr);
@@ -83,14 +82,49 @@ export class TaskService {
         }
     }
 
+    // 更新任务
+    async update(body: any): Promise<any> {
+        const { id, name, detail, startDate, endDate, priority, reminder, workload, pictures, subItems } = body;
+        const doc = await this.taskRepository.update(id, {
+            name: name,
+            detail: detail,
+            startDate: startDate,
+            endDate: endDate,
+            priority: priority,
+            reminder: reminder,
+            workload: workload,
+            pictures: pictures,
+        });
+        return {
+            data: doc,
+        }
+    }
+
     /**
      * 删除任务
      * @param id 
      * @param status 
      */
-    async delete(id: number): Promise<any> {
-        const doc = await this.taskRepository.update(id, {
-            status: 5
+    async delete(body: any, maneger: EntityManager): Promise<any> {
+        const { taskId, subItemId } = body;
+        // const task = this.taskRepository.findOne(taskId);
+        // // 删除关联的subItem
+        // await maneger.delete(SubItem, { belong: task })
+        const subItemIds = subItemId.split(',');
+        if (subItemIds.length > 0) {
+            await this.subItemRepository.delete(subItemIds);
+        }
+        const doc = await this.taskRepository.delete(taskId);
+        return {
+            data: doc,
+        }
+    }
+
+    // 完成子任务
+    async completeSub(body: any): Promise<any> {
+        const { subId } = body;
+        const doc = await this.subItemRepository.update(subId, {
+            status: 2
         });
         return {
             data: doc,
@@ -107,7 +141,7 @@ export class TaskService {
         }
     }
 
-    // 任务数量排行榜
+    // 消息
     async message(): Promise<any> {
         return {
             data: [
