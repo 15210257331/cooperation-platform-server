@@ -9,10 +9,11 @@ import { Group } from '../../common/entity/group.entity';
 import { GroupService } from './group.service';
 import { GroupController } from './group.controller';
 import { SubItem } from '../../common/entity/sub-item.entity'
+import { Message } from '../../common/entity/message.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task,User,Group,SubItem]),
+    TypeOrmModule.forFeature([Task,User,Group,SubItem,Message]),
     UserModule
   ],
   providers: [TaskService,GroupService],

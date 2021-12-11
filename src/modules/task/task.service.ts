@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { generate8Code } from '../../utils/utils';
 import { User } from '../../common/entity/user.entity';
 import { Task } from '../../common/entity/task.entity';
+import { Message } from '../../common/entity/message.entity';
+import * as dayjs from 'dayjs'
 
 @Injectable()
 export class TaskService {
@@ -17,6 +19,7 @@ export class TaskService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
         @InjectRepository(SubItem) private readonly subItemRepository: Repository<SubItem>,
+        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
     ) { }
 
     /**
@@ -38,17 +41,30 @@ export class TaskService {
         task.pictures = pictures;
         task.group = await this.groupRepository.findOne(groupId);
         let arr = [];
+        console.log(123123123123);
         if (subItems) {
             (JSON.parse(subItems) || []).map(item => {
                 const subItem = new SubItem();
-                subItem.name = item;
+                subItem.name = item.name;
                 subItem.status = item.status
                 arr.push(subItem);
             })
             await this.subItemRepository.save(arr);
         }
+        console.log(123123123123);
         task.subItems = arr;
         const doc = await this.taskRepository.save(task);
+        // 消息通知相关
+        const user = await this.userRepository.findOne({
+            where: {
+                id: request.user.userId
+            },
+            select: ["nickname",]
+
+        });
+        const message = new Message();
+        message.content = `${user.nickname}在分组${task.group.name}下创建了一个新任务:${name}`
+        await this.messageRepository.save(message)
         return {
             data: doc,
         }
@@ -134,55 +150,60 @@ export class TaskService {
     // 任务数量排行榜
     async rank(): Promise<any> {
         const doc = await this.userRepository.find({
-            status: 5
+            relations: ["groups", "groups.tasks"],
+            take: 7
         });
+        const data = doc.map(item => {
+            let taskNum = 0;
+            item.groups.map(item => {
+                taskNum += item.tasks.length;
+            })
+            return {
+                nickname: item.nickname,
+                groupNum: item.groups.length,
+                taskNum: taskNum
+            }
+        })
         return {
-            data: doc,
+            data: data,
+        }
+    }
+
+    // 近14天任务完成情况
+    async trend(): Promise<any> {
+        const doc = await this.userRepository.find({
+            relations: ["groups", "groups.tasks"],
+            take: 7
+        });
+        const data = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14].reverse().map((item) => {
+            return {
+                date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
+                total: Math.floor(Math.random() * 101)
+            }
+        })
+        return {
+            data: data,
         }
     }
 
     // 消息
     async message(): Promise<any> {
+        const doc = await this.messageRepository.find({
+            order: {
+                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+            },
+            take: 10
+        })
         return {
-            data: [
-                {
-                    content: '陈晓飞刚刚创建了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: 'admin刚刚完成了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: '陈晓飞刚刚创建了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: 'admin刚刚完成了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: '陈晓飞刚刚创建了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: 'admin刚刚完成了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: '陈晓飞刚刚创建了一个任务',
-                    date: new Date().toLocaleDateString(),
-                },
-                {
-                    content: 'admin刚刚完成了一个任务',
-                    date: new Date().toLocaleDateString(),
-                }
-            ],
+            data: doc
         }
     }
 
-
-
+    async addMessage(content: string): Promise<any> {
+        const message = new Message();
+        message.content = content;
+        await this.messageRepository.save(message)
+    }
 
     /**
      * 分页查询已删除的任务

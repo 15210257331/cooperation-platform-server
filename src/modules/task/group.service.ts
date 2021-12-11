@@ -8,6 +8,7 @@ import { User } from '../../common/entity/user.entity';
 import { GroupAddDTO } from './dto/group-add.dto';
 import { SubItem } from '../../common/entity/sub-item.entity';
 import { GroupUpdateDTO } from './dto/group-update.dto';
+import { Message } from '../../common/entity/message.entity';
 
 @Injectable()
 export class GroupService {
@@ -16,6 +17,7 @@ export class GroupService {
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
+        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
     ) { }
 
     /**
@@ -51,6 +53,17 @@ export class GroupService {
         group.creator = await this.userRepository.findOne(request.user.userId);
         group.tasks = [];
         const doc = await this.groupRepository.save(group);
+        // 消息通知相关
+        const user = await this.userRepository.findOne({
+            where: {
+                id: request.user.userId
+            },
+            select: ["nickname",]
+
+        });
+        const message = new Message();
+        message.content = `${user.nickname}新创建了一个新分组:${name}`;
+        await this.messageRepository.save(message)
         return {
             data: doc,
         }

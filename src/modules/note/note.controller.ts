@@ -29,11 +29,11 @@ export class NoteController {
     }
 
     // 查询笔记不分页
-    @Get('/list')
+    @Post('/list')
     @UsePipes(new ValidationPipe())
     @UseGuards(AuthGuard('jwt'))
-    public async list(@Query('keywords') keywords?: string): Promise<any> {
-        return this.noteService.list(keywords);
+    public async list(@Body() body: any): Promise<any> {
+        return this.noteService.list(body);
     }
 
     // 删除笔记

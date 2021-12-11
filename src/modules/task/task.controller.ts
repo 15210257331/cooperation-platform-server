@@ -66,17 +66,6 @@ export class TaskController {
         return this.taskService.detail(taskId);
     }
 
-    /**
-     * 任务数量排行榜
-     * @param id 
-     * @returns 
-     */
-    @Get('/detail')
-    @UseGuards(AuthGuard('jwt'))
-    public async rank(): Promise<any> {
-        return this.taskService.rank();
-    }
-
     // 完成子任务
     @Post('/completeSub')
     @UseGuards(AuthGuard('jwt'))
@@ -94,4 +83,26 @@ export class TaskController {
     public async message(): Promise<any> {
         return this.taskService.message();
     }
+
+    /**
+     * 任务数量排行榜
+     * @param id 
+     * @returns 
+     */
+    @Get('/rank')
+    @UseGuards(AuthGuard('jwt'))
+    public async rank(): Promise<any> {
+        return this.taskService.rank();
+    }
+
+    /**
+     * 任务数量排行榜
+     * @param id 
+     * @returns 
+     */
+     @Get('/trend')
+     @UseGuards(AuthGuard('jwt'))
+     public async trend(): Promise<any> {
+         return this.taskService.trend();
+     }
 }

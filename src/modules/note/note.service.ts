@@ -24,8 +24,9 @@ export class NoteService {
         };
     }
 
-    async list(keywords: string): Promise<any> {
-        const doc = await this.noteRepository.find({
+    async list(body: any): Promise<any> {
+        const { keywords, page, size } = body;
+        const [doc, total] = await this.noteRepository.findAndCount({
             where: [
                 {
                     'title': Like(`%${keywords}%`),
@@ -37,11 +38,16 @@ export class NoteService {
             relations: ["owner"],
             cache: true,
             order: {
-                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+                createDate: 'DESC'
             },
+            skip: (page - 1) * size,
+            take: size,
         });
         return {
-            data: doc,
+            data: {
+                list: doc,
+                total: total
+            },
         };
     }
 
