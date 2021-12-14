@@ -1,3 +1,4 @@
+import { Task } from 'src/common/entity/task.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 /**
@@ -44,6 +45,12 @@ export class Note {
     })
     createDate: Date;
 
+    // // 关联到哪个任务
+    // @ManyToOne(() => Task, task => task.notes)
+    // @JoinColumn()
+    // owner: Task;
+
+    // 创建人
     @ManyToOne(() => User, user => user.notes)
     @JoinColumn()
     owner: User;

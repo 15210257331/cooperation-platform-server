@@ -39,6 +39,7 @@ export class User {
     nickname: string;
 
     @Column({
+        type: 'varchar',
         length: 50,
         comment: '邮箱'
     })
@@ -49,7 +50,7 @@ export class User {
         length: 11,
         comment: '电话'
     })
-    phone: number;
+    phone: string;
 
     @Column({
         type: 'varchar',
@@ -63,6 +64,7 @@ export class User {
     @Column({
         type: 'text',
         comment: '个人介绍',
+        nullable: true,
         name: 'introduction',
         charset: 'utf8mb4',
     })
@@ -82,7 +84,7 @@ export class User {
         name: 'status',
         default: () => 1,
         nullable: false,
-        comment: '用户状态 1在职 2离职'
+        comment: '用户状态 1正常 2异常'
     })
     status: number;
 
@@ -111,8 +113,8 @@ export class User {
     /**
     * 用户和笔记是一对多的关系
     *  */
-     @OneToMany(() => Task, task => task.owner)
-     tasks: Task[];
+    @OneToMany(() => Task, task => task.owner)
+    tasks: Task[];
 
     /**
      * 角色和用户是多对多的关系

@@ -26,7 +26,8 @@ export class NoteService {
 
     async list(body: any): Promise<any> {
         const { keywords, page, size } = body;
-        const [doc, total] = await this.noteRepository.findAndCount({
+        const total = await this.noteRepository.count();
+        const doc = await this.noteRepository.find({
             where: [
                 {
                     'title': Like(`%${keywords}%`),
