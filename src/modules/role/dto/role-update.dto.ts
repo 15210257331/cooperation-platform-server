@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class RoleUpdateDTO {
     @IsNotEmpty({ message: '角色名称不能为空' })
@@ -7,5 +7,8 @@ export class RoleUpdateDTO {
     readonly description: string;
     @IsNotEmpty({ message: 'id不能为空' })
     readonly id: number;
+    @IsArray({ message: '权限列表' })
+    readonly authority: Array<string>;
+
 }
 

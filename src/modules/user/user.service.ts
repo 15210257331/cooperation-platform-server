@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, Any } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { makeSalt, encryptPassword } from '../../utils/utils';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { Role } from '../../common/entity/role.entity';
-import { from } from 'rxjs';
 
 @Injectable()
 export class UserService {
@@ -18,6 +16,7 @@ export class UserService {
         private readonly jwtService: JwtService,
     ) { }
 
+    // 登录
     async login(loginDTO: LoginDTO): Promise<any> {
         const { username, password } = loginDTO;
         const doc = await this.userRepository.findOne({ username: username });
@@ -66,7 +65,8 @@ export class UserService {
         const hashPwd = encryptPassword(registerDTO.password, salt); // 加密后的密码
         const data = new User();
         data.username = registerDTO.username;
-        data.password = registerDTO.password;
+        // data.password = registerDTO.password;
+        data.password = hashPwd;
         data.nickname = registerDTO.nickname;
         data.email = registerDTO.email;
         data.phone = registerDTO.phone;
@@ -94,6 +94,15 @@ export class UserService {
         }
     }
 
+    // 删除用户
+    async deleteUser(id: number | string): Promise<any> {
+        const doc = await this.userRepository.delete(id)
+        return {
+            data: doc,
+        };
+    }
+
+    // 更新用户信息
     async updateUserInfo(body: any, request: any): Promise<any> {
         const { nickname, username, email, avatar, introduction } = body;
         const doc = await this.userRepository.update(request.user.userId, {
@@ -107,8 +116,6 @@ export class UserService {
             data: doc,
         }
     }
-
-
 
     // 分页查询用户列表
     async userList(body: any): Promise<any> {
@@ -138,13 +145,25 @@ export class UserService {
      * @param body 
      * @returns 
      */
-    async setRole(body: any): Promise<any> {
-        const doc = await this.userRepository.find({
-            cache: true,
-            order: {
-                createDate: 'DESC'
-            },
-        })
+    async setRole(body: any, request: any): Promise<any> {
+        const { userId, roleIds } = body;
+        const user = await this.userRepository.findOne(userId);
+        user.roles = await this.roleRepository.find(roleIds);
+        const doc = await this.userRepository.save(user);
+        return {
+            data: doc,
+        };
+    }
+
+    /**
+     * 查询用户角色
+     * @param body 
+     * @returns 
+     */
+    async getRole(id: number): Promise<any> {
+        const doc = await this.userRepository.findOne(id, {
+            relations: ['roles'],
+        });
         return {
             data: doc,
         };

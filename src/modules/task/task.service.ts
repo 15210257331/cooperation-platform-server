@@ -41,7 +41,6 @@ export class TaskService {
         task.pictures = pictures;
         task.group = await this.groupRepository.findOne(groupId);
         let arr = [];
-        console.log(123123123123);
         if (subItems) {
             (JSON.parse(subItems) || []).map(item => {
                 const subItem = new SubItem();

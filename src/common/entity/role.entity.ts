@@ -40,7 +40,6 @@ export class Role {
         type: 'timestamp',
         nullable: true,
         name: 'createDate',
-        // default: Date.now,
         comment: '创建时间',
     })
     createDate: Date;
@@ -49,7 +48,6 @@ export class Role {
         type: 'timestamp',
         nullable: true,
         name: 'updateDate',
-        // default: Date.now,
         comment: '更新时间',
     })
     updateDate: Date;

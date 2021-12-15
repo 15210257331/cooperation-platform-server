@@ -111,13 +111,13 @@ export class User {
     notes: Note[];
 
     /**
-    * 用户和笔记是一对多的关系
+    * 用户和任务是一对多的关系
     *  */
     @OneToMany(() => Task, task => task.owner)
     tasks: Task[];
 
     /**
-     * 角色和用户是多对多的关系
+     * 用户和用户是多对多的关系
      */
     @ManyToMany(() => Role, role => role.users,)
     roles: Role[];

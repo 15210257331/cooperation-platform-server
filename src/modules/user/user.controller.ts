@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Controller, Get, Body, UseGuards, Post, UsePipes, Delete, Param, Request } from '@nestjs/common';
+import { Controller, Get, Body, UseGuards, Post, UsePipes, Delete, Param, Request, Query, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
@@ -39,6 +39,14 @@ export class UserController {
         return this.userService.getUserInfo(request);
     }
 
+    // 用户删除
+    @Get('/delete/:id')
+    @UsePipes(new ValidationPipe())
+    @UseGuards(AuthGuard('jwt'))
+    public async deleteUser(@Param('id') id: number | string): Promise<any> {
+        return this.userService.deleteUser(id);
+    }
+
     // 更新用户信息
     @Post('/update')
     @UseGuards(AuthGuard('jwt'))
@@ -57,7 +65,14 @@ export class UserController {
     // 为用户关联角色
     @Post('/setRole')
     @UseGuards(AuthGuard('jwt'))
-    public async setRole(@Body() body: any): Promise<any> {
-        return this.userService.setRole(body);
+    public async setRole(@Body() body: any, @Request() request: any): Promise<any> {
+        return this.userService.setRole(body, request);
+    }
+
+    // 查询用户关联的角色
+    @Get('/getRole')
+    @UseGuards(AuthGuard('jwt'))
+    public async getRole(@Query('id', new ParseIntPipe()) id: number): Promise<any> {
+        return this.userService.getRole(id);
     }
 }

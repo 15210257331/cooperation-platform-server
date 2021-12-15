@@ -13,24 +13,17 @@ export class RoleService {
     ) { }
 
     async roleAdd(roleAddDTO: RoleAddDTO): Promise<any> {
-        try {
-            const data = new Role();
-            data.name = roleAddDTO.name;
-            data.description = roleAddDTO.description;
-            data.valid = 1;
-            data.authority = [];
-            const doc = await this.roleRepository.insert(data);
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'Success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const data = new Role();
+        data.name = roleAddDTO.name;
+        data.description = roleAddDTO.description;
+        data.valid = 1;
+        data.authority = [];
+        const doc = await this.roleRepository.insert(data);
+        return {
+            code: 10000,
+            data: doc,
+            msg: 'Success',
+        };
     }
 
     /**
@@ -38,113 +31,66 @@ export class RoleService {
      * @param body 
      */
     async roleList(body: any): Promise<any> {
-        try {
-            const { name, page, size } = body;
-            const [doc, count] = await this.roleRepository.findAndCount({
-                where: {
-                    'name': Like(`%${name}%`),
-                },
-                cache: true,
-                order: {
-                    createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
-                },
-                skip: (page - 1) * size,
-                take: size,
-            });
-            return {
-                code: 10000,
-                data: {
-                    list: doc,
-                    total: count
-                },
-                msg: 'success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const { name, page, size } = body;
+        const [doc, count] = await this.roleRepository.findAndCount({
+            where: {
+                'name': Like(`%${name}%`),
+            },
+            cache: true,
+            order: {
+                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+            },
+            skip: (page - 1) * size,
+            take: size,
+        });
+        return {
+            data: {
+                list: doc,
+                total: count
+            },
+        };
     }
 
     /**
      * 角色列表部分页
      * @param body 
      */
-    async allRole(): Promise<any> {
-        try {
-            const doc = await this.roleRepository.find({
-                cache: true,
-                order: {
-                    createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
-                },
-            });
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+    async roleAll(): Promise<any> {
+        const doc = await this.roleRepository.find({
+            cache: true,
+            order: {
+                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+            },
+        });
+        return {
+            data: doc,
+        };
     }
 
     async roleDelete(id: number | string): Promise<any> {
-        try {
-            const doc = await this.roleRepository.delete(id)
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'Success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const doc = await this.roleRepository.delete(id)
+        return {
+            data: doc,
+        };
     }
+
+    async roleInfo(id: number): Promise<any> {
+        const doc = await this.roleRepository.findOne(id)
+        return {
+            data: doc,
+        };
+    }
+
+    // 修改角色信息 包括本角色的权限修改
     async roleUpdate(roleUpdateDTO: RoleUpdateDTO): Promise<any> {
-        try {
-            const id = roleUpdateDTO.id;
-            const doc = await this.roleRepository.update(id, {
-                'name': roleUpdateDTO.name,
-                'description': roleUpdateDTO.description,
-            });
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'Success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
+        const { id, authority, name, description } = roleUpdateDTO;
+        const doc = await this.roleRepository.update(id, {
+            'name': roleUpdateDTO.name,
+            'description': roleUpdateDTO.description,
+            'authority': authority,
+        });
+        return {
+            data: doc,
+        };
     }
-
-
-    async relevanceAuthority(roleAuthorityDTO: RoleAuthorityDTO): Promise<any> {
-        try {
-            const { id, authority } = roleAuthorityDTO;
-            const doc = await this.roleRepository.update(id, {
-                'authority': authority,
-            });
-            return {
-                code: 10000,
-                data: doc,
-                msg: 'Success',
-            };
-        } catch (error) {
-            return {
-                code: 9999,
-                msg: error,
-            };
-        }
-    }
-
 }
