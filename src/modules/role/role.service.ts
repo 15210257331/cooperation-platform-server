@@ -38,7 +38,7 @@ export class RoleService {
             },
             cache: true,
             order: {
-                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+                createDate: 'ASC' //ASC 按时间正序 DESC 按时间倒序
             },
             skip: (page - 1) * size,
             take: size,

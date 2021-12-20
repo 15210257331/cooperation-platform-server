@@ -19,7 +19,12 @@ export class UserService {
     // 登录
     async login(loginDTO: LoginDTO): Promise<any> {
         const { username, password } = loginDTO;
-        const doc = await this.userRepository.findOne({ username: username });
+        const doc = await this.userRepository.findOne({
+            where: {
+                username: username,
+            },
+            relations: ['roles'],
+        });
         if (doc) {
             if (doc.password === password) {
                 const payload = {
@@ -30,6 +35,7 @@ export class UserService {
                     data: {
                         // 生成token
                         token: this.jwtService.sign(payload),
+                        roles: doc.roles
                     }
                 }
             } else {
@@ -148,7 +154,8 @@ export class UserService {
     async setRole(body: any, request: any): Promise<any> {
         const { userId, roleIds } = body;
         const user = await this.userRepository.findOne(userId);
-        user.roles = await this.roleRepository.find(roleIds);
+        const roles = await this.roleRepository.findByIds(roleIds);
+        user.roles = roles;
         const doc = await this.userRepository.save(user);
         return {
             data: doc,

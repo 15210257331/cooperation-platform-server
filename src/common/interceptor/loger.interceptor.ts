@@ -17,8 +17,8 @@ export class LogerInterceptor implements NestInterceptor {
               `
               // Method:  ${req.method} \n
               // 返回数据: ${JSON.stringify(data.data)}
-        Logger.info(logFormat);
-        Logger.access(logFormat);
+        // Logger.info(logFormat);
+        // Logger.access(logFormat);
         return data;
       }),
     );
