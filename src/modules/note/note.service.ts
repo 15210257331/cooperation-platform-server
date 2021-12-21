@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Note } from '../../common/entity/note.entity';
 import { Like, Repository } from 'typeorm';
 import { NoteAddDTO } from './dto/note-add.dto';
+import { Message } from '../../common/entity/message.entity';
 
 @Injectable()
 export class NoteService {
     constructor(
         @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
     ) { }
 
     async add(noteAddDTO: NoteAddDTO, request: any): Promise<any> {
@@ -17,8 +19,16 @@ export class NoteService {
         note.title = noteAddDTO.title;
         note.content = noteAddDTO.content;
         note.overview = noteAddDTO.overview;
-        note.owner = await this.userRepository.findOne(request.user.userId);
+        const user = await this.userRepository.findOne(request.user.userId);
+        note.owner = user;
         const doc = await this.noteRepository.save(note);
+        const message = new Message();
+        message.content = `
+                            <b>${user.nickname}</b>
+                            新添加了一条笔记:
+                            <b style="color:black;">${noteAddDTO.title}</b>
+        `;
+        await this.messageRepository.save(message)
         return {
             data: doc,
         };
