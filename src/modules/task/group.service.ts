@@ -62,7 +62,11 @@ export class GroupService {
 
         });
         const message = new Message();
-        message.content = `${user.nickname}新创建了一个新分组:${name}`;
+        message.content = `
+                            <b>${user.nickname}</b>
+                            新创建了一个新分组:
+                            <b style="color:black;">${name}</b>
+        `;
         await this.messageRepository.save(message)
         return {
             data: doc,

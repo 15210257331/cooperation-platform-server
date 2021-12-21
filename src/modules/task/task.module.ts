@@ -10,10 +10,12 @@ import { GroupService } from './group.service';
 import { GroupController } from './group.controller';
 import { SubItem } from '../../common/entity/sub-item.entity'
 import { Message } from '../../common/entity/message.entity';
+import { Note } from '../../common/entity/note.entity';
+import { Picture } from '../../common/entity/picture.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task,User,Group,SubItem,Message]),
+    TypeOrmModule.forFeature([Task,User,Group,SubItem,Message, Note,Picture]),
     UserModule
   ],
   providers: [TaskService,GroupService],

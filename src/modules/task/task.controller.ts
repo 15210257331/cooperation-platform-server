@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe, Param } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
@@ -13,23 +13,28 @@ export class TaskController {
         private readonly taskService: TaskService
     ) { }
 
-    /**
-     * 新增任务
-     * @param taskAddDTO 
-     * @param request 
-     * @returns 
-     */
+    //新增任务
     @Post('/add')
     @UseGuards(AuthGuard('jwt'))
     public async taskAdd(@Body() taskAddDTO: TaskAddDTO, @Request() request: any): Promise<any> {
         return this.taskService.taskAdd(taskAddDTO, request);
     }
 
-    /**
-     * 删除任务
-     * @param id 
-     * @returns 
-     */
+    // 更新任务单一属性
+    @Post('/updateProps')
+    @UseGuards(AuthGuard('jwt'))
+    public async updateProps(@Body() body: any): Promise<any> {
+        return this.taskService.updateProps(body);
+    }
+
+    // 任务详情
+    @Get('/detail')
+    @UseGuards(AuthGuard('jwt'))
+    public async detail(@Query('taskId') taskId: number): Promise<any> {
+        return this.taskService.detail(taskId);
+    }
+
+    // 删除任务
     @Post('/delete')
     @UseGuards(AuthGuard('jwt'))
     @Transaction()
@@ -37,33 +42,18 @@ export class TaskController {
         return this.taskService.delete(body, maneger);
     }
 
-    /**
-     * 切换任务状态
-     * @param body 
-     * @returns 
-     */
-    @Post('/status')
+    // 添加子任务
+    @Post('/addChildTask')
     @UseGuards(AuthGuard('jwt'))
-    public async status(@Body() body: any): Promise<any> {
-        return this.taskService.changeStatus(body);
+    public async addChildTask(@Body() body: any): Promise<any> {
+        return this.taskService.addChildTask(body);
     }
 
-    // 更新任务
-    @Post('/update')
+    // 删除子任务
+    @Get('/deleteChildTask')
     @UseGuards(AuthGuard('jwt'))
-    public async update(@Body() body: any): Promise<any> {
-        return this.taskService.update(body);
-    }
-
-    /**
-     * 查询任务详情
-     * @param id 
-     * @returns 
-     */
-    @Get('/detail')
-    @UseGuards(AuthGuard('jwt'))
-    public async detail(@Query('taskId') taskId: number): Promise<any> {
-        return this.taskService.detail(taskId);
+    public async deleteChildTask(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
+        return this.taskService.deleteChildTask(id);
     }
 
     // 完成子任务
@@ -73,11 +63,21 @@ export class TaskController {
         return this.taskService.completeSub(body);
     }
 
-    /**
-     * 任务消息
-     * @param id 
-     * @returns 
-     */
+    // 添加图片附件
+    @Post('/addPicture')
+    @UseGuards(AuthGuard('jwt'))
+    public async addPicture(@Body() body: any): Promise<any> {
+        return this.taskService.addPicture(body);
+    }
+
+    // 关联笔记
+    @Post('/linkNote')
+    @UseGuards(AuthGuard('jwt'))
+    public async linkNote(@Body() body: any): Promise<any> {
+        return this.taskService.linkNote(body);
+    }
+
+    //任务消息
     @Get('/message')
     @UseGuards(AuthGuard('jwt'))
     public async message(): Promise<any> {
@@ -100,9 +100,9 @@ export class TaskController {
      * @param id 
      * @returns 
      */
-     @Get('/trend')
-     @UseGuards(AuthGuard('jwt'))
-     public async trend(): Promise<any> {
-         return this.taskService.trend();
-     }
+    @Get('/trend')
+    @UseGuards(AuthGuard('jwt'))
+    public async trend(): Promise<any> {
+        return this.taskService.trend();
+    }
 }

@@ -10,6 +10,8 @@ import { User } from '../../common/entity/user.entity';
 import { Task } from '../../common/entity/task.entity';
 import { Message } from '../../common/entity/message.entity';
 import * as dayjs from 'dayjs'
+import { Note } from '../../common/entity/note.entity';
+import { Picture } from '../../common/entity/picture.entity';
 
 @Injectable()
 export class TaskService {
@@ -19,7 +21,9 @@ export class TaskService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
         @InjectRepository(SubItem) private readonly subItemRepository: Repository<SubItem>,
+        @InjectRepository(Picture) private readonly pictureRepository: Repository<Picture>,
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
+        @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
     ) { }
 
     /**
@@ -29,7 +33,7 @@ export class TaskService {
      * @returns 
      */
     async taskAdd(body: TaskAddDTO, request: any): Promise<any> {
-        const { name, detail, groupId, priority, reminder, workload, startDate, endDate, pictures, subItems } = body;
+        const { name, detail, groupId, priority, reminder, workload, startDate, endDate } = body;
         const task = new Task();
         task.name = name;
         task.detail = detail;
@@ -38,20 +42,11 @@ export class TaskService {
         task.workload = workload;
         task.startDate = startDate;
         task.endDate = endDate;
-        task.pictures = pictures;
         task.group = await this.groupRepository.findOne(groupId);
-        let arr = [];
-        if (subItems) {
-            (JSON.parse(subItems) || []).map(item => {
-                const subItem = new SubItem();
-                subItem.name = item.name;
-                subItem.status = item.status
-                arr.push(subItem);
-            })
-            await this.subItemRepository.save(arr);
-        }
-        console.log(123123123123);
-        task.subItems = arr;
+        task.notes = [];
+        task.subItems = [];
+        task.pictures = [];
+        task.owner = await this.userRepository.findOne(request.user.userId);
         const doc = await this.taskRepository.save(task);
         // 消息通知相关
         const user = await this.userRepository.findOne({
@@ -62,7 +57,10 @@ export class TaskService {
 
         });
         const message = new Message();
-        message.content = `${user.nickname}在分组${task.group.name}下创建了一个新任务:${name}`
+        message.content = `<b>${user.nickname}</b>
+                             在分组【${task.group.name}】下创建了一个新任务:
+                            <b style="color:black;">${name}</b>
+                           `
         await this.messageRepository.save(message)
         return {
             data: doc,
@@ -75,7 +73,7 @@ export class TaskService {
      */
     async detail(taskId: number): Promise<any> {
         const doc = await this.taskRepository.findOne(taskId, {
-            relations: ['owner', 'group', 'subItems']
+            relations: ['owner', 'group', 'subItems', "notes", "pictures"]
         });
         return {
             data: doc,
@@ -83,53 +81,40 @@ export class TaskService {
     }
 
     /**
-     * 切换任务状态
-     * @param id 
-     * @param status 
+     * 任务更新单一属性
+     * @param body 
+     * @returns 
      */
-    async changeStatus(body: any): Promise<any> {
-        const { id, status } = body;
-        const doc = await this.taskRepository.update(id, {
-            status: status
-        });
+    async updateProps(body: any): Promise<any> {
+        const { taskId, propName, propValue } = body;
+        const task = await this.taskRepository.findOne(taskId);
+        if (propName === 'pictures') {
+            task[propName] = JSON.stringify(propValue);
+        } else {
+            task[propName] = propValue;
+        }
+        const doc = await this.taskRepository.save(task);
         return {
             data: doc,
         }
     }
 
-    // 更新任务
-    async update(body: any): Promise<any> {
-        const { id, name, detail, startDate, endDate, priority, reminder, workload, pictures, subItems } = body;
-        const doc = await this.taskRepository.update(id, {
-            name: name,
-            detail: detail,
-            startDate: startDate,
-            endDate: endDate,
-            priority: priority,
-            reminder: reminder,
-            workload: workload,
-            pictures: pictures,
-        });
+    // 添加子任务
+    async addChildTask(body: any): Promise<any> {
+        const { taskId, subItemname } = body;
+        const task = await this.taskRepository.findOne(taskId);
+        const subItem = new SubItem();
+        subItem.name = subItemname;
+        subItem.belong = task;
+        const doc = await this.subItemRepository.save(subItem);
         return {
             data: doc,
         }
     }
 
-    /**
-     * 删除任务
-     * @param id 
-     * @param status 
-     */
-    async delete(body: any, maneger: EntityManager): Promise<any> {
-        const { taskId, subItemId } = body;
-        // const task = this.taskRepository.findOne(taskId);
-        // // 删除关联的subItem
-        // await maneger.delete(SubItem, { belong: task })
-        const subItemIds = subItemId.split(',');
-        if (subItemIds.length > 0) {
-            await this.subItemRepository.delete(subItemIds);
-        }
-        const doc = await this.taskRepository.delete(taskId);
+    // 删除子任务
+    async deleteChildTask(id: number): Promise<any> {
+        const doc = await this.subItemRepository.delete(id);
         return {
             data: doc,
         }
@@ -145,6 +130,52 @@ export class TaskService {
             data: doc,
         }
     }
+
+    // 添加图片
+    async addPicture(body: any): Promise<any> {
+        const { taskId, url, name, size } = body;
+        const task = await this.taskRepository.findOne(taskId);
+        const picture = new Picture();
+        picture.name = name;
+        picture.url = url;
+        picture.size = size;
+        picture.belong = task;
+        const doc = await this.pictureRepository.save(picture);
+        return {
+            data: doc,
+        }
+    }
+
+    // 关联笔记
+    async linkNote(body: any): Promise<any> {
+        const { taskId, noteId } = body;
+        const task = await this.taskRepository.findOne(taskId);
+        const note = await this.noteRepository.findOne(noteId);
+        note.belong = task
+        const doc = await this.noteRepository.save(note);
+        return {
+            data: doc,
+        }
+    }
+
+
+    //删除任务
+    async delete(body: any, maneger: EntityManager): Promise<any> {
+        const { taskId, subItemId } = body;
+        // const task = this.taskRepository.findOne(taskId);
+        // // 删除关联的subItem
+        // await maneger.delete(SubItem, { belong: task })
+        const subItemIds = subItemId.split(',');
+        if (subItemIds.length > 0) {
+            await this.subItemRepository.delete(subItemIds);
+        }
+        const doc = await this.taskRepository.delete(taskId);
+        return {
+            data: doc,
+        }
+    }
+
+
 
     // 任务数量排行榜
     async rank(): Promise<any> {

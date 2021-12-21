@@ -45,10 +45,10 @@ export class Note {
     })
     createDate: Date;
 
-    // // 关联到哪个任务
-    // @ManyToOne(() => Task, task => task.notes)
-    // @JoinColumn()
-    // owner: Task;
+    // 关联到哪个任务
+    @ManyToOne(() => Task, task => task.notes)
+    @JoinColumn()
+    belong: Task;
 
     // 创建人
     @ManyToOne(() => User, user => user.notes)

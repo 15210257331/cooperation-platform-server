@@ -36,7 +36,7 @@ export class NoteService {
                     'overview': Like(`%${keywords}%`),
                 }
             ],
-            relations: ["owner"],
+            relations: ["owner", "belong"],
             cache: true,
             order: {
                 createDate: 'DESC'

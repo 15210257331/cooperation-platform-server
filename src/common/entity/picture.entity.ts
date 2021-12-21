@@ -1,13 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { Group } from './group.entity';
-import { User } from './user.entity';
 import { Task } from './task.entity';
 /**
- * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
- * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
+ * 任务所关联的图片附件
  */
 @Entity()
-export class SubItem {
+export class Picture {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -17,32 +14,40 @@ export class SubItem {
         unique: false,
         charset: 'utf8mb4',
         name: 'name',
-        comment: '任务子项名称',
+        comment: '图片名称',
     })
     name: string;
 
-
     @Column({
         type: 'int',
-        name: 'status',
-        default: 1,
         nullable: false,
-        comment: '任务状态 1未完成  2已完成'
+        unique: false,
+        name: 'size',
+        comment: '图片大小',
     })
-    status: number;
+    size: number;
+
+    @Column({
+        type: 'text',
+        nullable: false,
+        unique: false,
+        charset: 'utf8mb4',
+        name: 'url',
+        comment: '图片地址',
+    })
+    url: string;
 
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,
         name: 'createDate',
-        comment: '任务子项创建时间',
+        comment: '图片上传建时间',
     })
     createDate: Date;
 
 
-     @ManyToOne(() => Task, task => task.subItems)
-     @JoinColumn()
-     belong: Task;
-
+    @ManyToOne(() => Task, task => task.pictures)
+    @JoinColumn()
+    belong: Task;
 
 }

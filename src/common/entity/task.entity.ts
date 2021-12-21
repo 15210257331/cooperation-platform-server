@@ -1,7 +1,9 @@
+import { Note } from './note.entity';
 import { User } from './user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Group } from './group.entity';
 import { SubItem } from './sub-item.entity';
+import { Picture } from './picture.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -91,15 +93,6 @@ export class Task {
     })
     endDate: Date;
 
-    @Column({
-        type: 'varchar',
-        nullable: true,
-        default: 'https://c-ssl.duitang.com/uploads/item/201608/02/20160802001436_CtfiH.jpeg',
-        name: 'pictures',
-        comment: '任务截图'
-    })
-    pictures: string;
-
     /**
      * 任务和分组是多对一的关系
      * 多个任务隶属于同一个分组
@@ -121,7 +114,21 @@ export class Task {
      * 任务和任务子项是一对多的关系
      * 该任务所有的子任务
      *  */
-    @OneToMany(() => SubItem, SubItem => SubItem.belong)
+    @OneToMany(() => SubItem, subItem => subItem.belong)
     subItems: SubItem[];
+
+    /**
+    * 任务和笔记是一对多的关系
+    * 该任务所有的子任务
+    *  */
+    @OneToMany(() => Note, note => note.belong)
+    notes: Note[];
+
+    /**
+    * 任务和图片是一对多的关系
+    * 该任务所有的图片附件
+    *  */
+    @OneToMany(() => Picture, picture => picture.belong)
+    pictures: Picture[];
 
 }
