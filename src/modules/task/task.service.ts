@@ -87,15 +87,13 @@ export class TaskService {
      */
     async updateProps(body: any): Promise<any> {
         const { taskId, propName, propValue } = body;
-        const task = await this.taskRepository.findOne(taskId);
-        if (propName === 'pictures') {
-            task[propName] = JSON.stringify(propValue);
-        } else {
-            task[propName] = propValue;
-        }
+        const task = await this.taskRepository.findOne(taskId, {
+            relations: ["subItems"]
+        });
+        task[propName] = propValue;
         const doc = await this.taskRepository.save(task);
         return {
-            data: doc,
+            data: task,
         }
     }
 

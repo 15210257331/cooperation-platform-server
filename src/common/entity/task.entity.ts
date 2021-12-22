@@ -51,13 +51,13 @@ export class Task {
     priority: number;
 
     @Column({
-        type: 'varchar',
+        type: 'int',
         name: 'reminder',
-        default: false,
+        default: 1,
         nullable: false,
         comment: '设置提醒'
     })
-    reminder: string;
+    reminder: number;
 
 
     @Column({

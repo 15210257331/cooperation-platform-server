@@ -21,7 +21,7 @@ export class TaskAddDTO {
 
     @ApiProperty()
     @IsNotEmpty({ message: '任务提醒' })
-    readonly reminder: string;
+    readonly reminder: number;
 
     @ApiProperty()
     @IsNotEmpty({ message: '工作量' })
