@@ -5,6 +5,7 @@ import { Not, Repository } from 'typeorm';
 import { Task } from '../../common/entity/task.entity';
 import { EventsGateway } from '../../utils/events.gateway';
 import * as dayjs from 'dayjs'
+import { EmailService } from "../email/email.service"
 
 const randomQuoteApi = 'http://api.quotable.io/random';
 
@@ -14,7 +15,8 @@ export class CronService {
 
     constructor(
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
-        private readonly eventsGateway: EventsGateway
+        private readonly eventsGateway: EventsGateway,
+        private readonly emailService: EmailService
     ) { }
 
     /**
@@ -39,10 +41,16 @@ export class CronService {
             if (reminderTime == now) {
                 const endDate = dayjs(task.endDate).format("YYYY-MM-DD HH:mm");
                 const userId = task.owner.id;
-                const body = `任务${task.name}将于${endDate}截止！`
+                const body = `<p>任务<b style="color:black;font-weight:600">【${task.name}】</b>将于<span style="color:red;">${endDate}</span>截止!</p>`
                 this.eventsGateway.sendMessage(userId, body);
             }
         })
+    }
+
+    @Cron('5 * * * * *')
+    sendEmail() {
+        console.log('发送邮件');
+        this.emailService.sendEmail('993865015@qq.com');
     }
 
     // 计算任务提醒时间
