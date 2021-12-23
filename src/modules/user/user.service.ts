@@ -35,7 +35,8 @@ export class UserService {
                     data: {
                         // 生成token
                         token: this.jwtService.sign(payload),
-                        roles: doc.roles
+                        roles: doc.roles,
+                        userId: doc.id
                     }
                 }
             } else {

@@ -7,15 +7,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { FileModule } from './modules/file/file.module';
 import { TaskModule } from './modules/task/task.module';
-import { EventsGateway } from './utils/events.gateway';
 import { RoleModule } from './modules/role/role.module';
-
 import configuration from './config/environment.config';
 import * as Joi from '@hapi/joi';
 import { RequestModule } from './modules/request/request.module';
-import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './modules/cron/cron.module';
 import { NoteModule } from './modules/note/note.module';
+import { EmailModule } from './modules/email/email.module';
 
 
 @Module({
@@ -63,7 +61,6 @@ import { NoteModule } from './modules/note/note.module';
         };
       },
     }),
-    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     FileModule,
@@ -71,9 +68,10 @@ import { NoteModule } from './modules/note/note.module';
     RoleModule,
     RequestModule,
     NoteModule,
-    // CronModule
+    CronModule,
+    EmailModule
   ],
   controllers: [AppController],
-  providers: [AppService, EventsGateway],
+  providers: [AppService],
 })
 export class AppModule { }

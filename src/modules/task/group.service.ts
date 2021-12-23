@@ -1,7 +1,6 @@
 import { Task } from './../../common/entity/task.entity';
 import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
-import { TaskAddDTO } from './dto/task-add.dto';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
@@ -9,6 +8,7 @@ import { GroupAddDTO } from './dto/group-add.dto';
 import { SubItem } from '../../common/entity/sub-item.entity';
 import { GroupUpdateDTO } from './dto/group-update.dto';
 import { Message } from '../../common/entity/message.entity';
+import { EmailService } from "../email/email.service"
 
 @Injectable()
 export class GroupService {
@@ -18,6 +18,7 @@ export class GroupService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
+        private readonly emailService: EmailService
     ) { }
 
     /**
@@ -68,6 +69,7 @@ export class GroupService {
                             <b style="color:black;">${name}</b>
         `;
         await this.messageRepository.save(message)
+        this.emailService.sendEmail();
         return {
             data: doc,
         }
