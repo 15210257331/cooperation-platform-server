@@ -144,6 +144,14 @@ export class TaskService {
         }
     }
 
+    // 删除子任务
+    async deletePicture(id: number): Promise<any> {
+        const doc = await this.pictureRepository.delete(id);
+        return {
+            data: doc,
+        }
+    }
+
     // 关联笔记
     async linkNote(body: any): Promise<any> {
         const { taskId, noteId } = body;
@@ -156,18 +164,32 @@ export class TaskService {
         }
     }
 
+    // 删除子任务
+    async deleteNote(id: number): Promise<any> {
+        const note = await this.noteRepository.findOne(id);
+        note.belong = null;
+        const doc = await this.noteRepository.save(note);
+        return {
+            data: doc,
+        }
+    }
+
 
     //删除任务
-    async delete(body: any, maneger: EntityManager): Promise<any> {
-        const { taskId, subItemId } = body;
-        // const task = this.taskRepository.findOne(taskId);
-        // // 删除关联的subItem
-        // await maneger.delete(SubItem, { belong: task })
-        const subItemIds = subItemId.split(',');
-        if (subItemIds.length > 0) {
-            await this.subItemRepository.delete(subItemIds);
-        }
-        const doc = await this.taskRepository.delete(taskId);
+    async delete(id: number, maneger: EntityManager): Promise<any> {
+        const task = await this.taskRepository.findOne(id, {
+            relations: ['subItems', "notes", "pictures"]
+        });
+        // 解除关联的笔记
+        task.notes = [];
+        await this.taskRepository.save(task);
+        // 删除该任务下的子任务
+        const subItemIds = task.subItems.map(item => item.id);
+        await this.subItemRepository.delete(subItemIds);
+        // 删除该任务下的图片
+        const pictureIds = task.pictures.map(item => item.id);
+        await this.pictureRepository.delete(pictureIds);
+        const doc = await this.taskRepository.delete(id);
         return {
             data: doc,
         }

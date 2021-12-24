@@ -3,7 +3,7 @@ import { Cron, Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { Task } from '../../common/entity/task.entity';
-import { EventsGateway } from '../../utils/events.gateway';
+import { EventsGateway } from '../socket/events.gateway';
 import * as dayjs from 'dayjs'
 import { EmailService } from "../email/email.service"
 
@@ -20,8 +20,8 @@ export class CronService {
     ) { }
 
     /**
-     * Cron 装饰器装饰的方法会自动调用
-     * 每分钟执行一次 遍历设置提醒的任务 在截止时间之前推送消息 
+     * Cron或者Interval 装饰器装饰的方法会自动调用
+     * 每10秒执行一次 遍历设置提醒的任务 在截止时间之前推送消息 
      * */
     // @Cron('5 * * * * *')
     @Interval(10000)

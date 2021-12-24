@@ -6,7 +6,7 @@ import { Cron } from '@nestjs/schedule';
 export interface WebSocketUser {
   [key: string]: any;
 }
-@WebSocketGateway(4300, {
+@WebSocketGateway({
   cors: true,
   origins: '*'
 })

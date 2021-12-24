@@ -35,11 +35,11 @@ export class TaskController {
     }
 
     // 删除任务
-    @Post('/delete')
+    @Get('/delete/:id')
     @UseGuards(AuthGuard('jwt'))
     @Transaction()
-    public async delete(@Body() body: any, @TransactionManager() maneger: EntityManager): Promise<any> {
-        return this.taskService.delete(body, maneger);
+    public async delete(@Param('id', new ParseIntPipe()) id: number, @TransactionManager() maneger: EntityManager): Promise<any> {
+        return this.taskService.delete(id, maneger);
     }
 
     // 添加子任务
@@ -50,7 +50,7 @@ export class TaskController {
     }
 
     // 删除子任务
-    @Get('/deleteChildTask')
+    @Get('/deleteChildTask/:id')
     @UseGuards(AuthGuard('jwt'))
     public async deleteChildTask(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
         return this.taskService.deleteChildTask(id);
@@ -70,11 +70,27 @@ export class TaskController {
         return this.taskService.addPicture(body);
     }
 
+    // 删除图片
+    @Get('/deletePicture/:id')
+    @UseGuards(AuthGuard('jwt'))
+    public async deletePicture(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
+        console.log(123);
+        return this.taskService.deletePicture(id);
+    }
+
     // 关联笔记
     @Post('/linkNote')
     @UseGuards(AuthGuard('jwt'))
     public async linkNote(@Body() body: any): Promise<any> {
         return this.taskService.linkNote(body);
+    }
+
+    // 删除笔记
+    @Get('/deleteNote/:id')
+    @UseGuards(AuthGuard('jwt'))
+    public async deleteNote(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
+        console.log(123);
+        return this.taskService.deleteNote(id);
     }
 
     //任务消息
