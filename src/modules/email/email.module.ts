@@ -14,7 +14,7 @@ import { resolve } from "path";
                     port: "465",
                     auth: {
                         user: "15210257331@163.com",
-                        pass: "FFADPKUQOWZFLDMC"
+                        pass: "xxxxxxxx"
                     }
                 },
                 defaults: {

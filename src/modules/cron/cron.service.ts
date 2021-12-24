@@ -47,11 +47,11 @@ export class CronService {
         })
     }
 
-    @Cron('5 * * * * *')
-    sendEmail() {
-        console.log('发送邮件');
-        this.emailService.sendEmail('993865015@qq.com');
-    }
+    // @Cron('5 * * * * *')
+    // sendEmail() {
+    //     console.log('发送邮件');
+    //     this.emailService.sendEmail('993865015@qq.com');
+    // }
 
     // 计算任务提醒时间
     calculateReminderTime(task: any) {
