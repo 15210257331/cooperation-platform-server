@@ -176,4 +176,36 @@ export class UserService {
             data: doc,
         };
     }
+
+
+    /**
+     * top10
+     */
+    async top10(): Promise<any> {
+        const users = await this.userRepository.find({
+            relations: ["tasks"],
+        });
+        let doc = users.map(item => {
+            let total = item.tasks.length;
+            let complete = item.tasks.filter(sonItem => sonItem.status === 3).length;
+            let percent = total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0
+            return Object.assign({}, {
+                avatar: item.avatar,
+                nickname: item.nickname,
+                email: item.email,
+                total: total,
+                complete: complete,
+                percent: percent
+            })
+        })
+        doc.sort((a, b) => {
+            return b.total - a.total;
+        })
+        doc = doc.slice(0, 10)
+        return {
+            data: doc,
+        };
+    }
+
+
 }

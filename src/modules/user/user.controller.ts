@@ -75,4 +75,12 @@ export class UserController {
     public async getRole(@Query('id', new ParseIntPipe()) id: number): Promise<any> {
         return this.userService.getRole(id);
     }
+
+
+    // 查询用户关联的角色
+    @Get('/top10')
+    @UseGuards(AuthGuard('jwt'))
+    public async top10(): Promise<any> {
+        return this.userService.top10();
+    }
 }
