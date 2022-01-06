@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Flow } from './flow.entity';
 import { Group } from './group.entity';
 import { Note } from './note.entity';
 import { Role } from './role.entity';
@@ -103,6 +104,12 @@ export class User {
      *  */
     @OneToMany(() => Group, group => group.creator)
     groups: Group[];
+
+    /**
+     * 用户和分组是一对多的关系
+     *  */
+    @OneToMany(() => Flow, flow => flow.belong)
+    flows: Flow[];
 
     /**
     * 用户和笔记是一对多的关系

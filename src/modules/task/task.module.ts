@@ -12,13 +12,16 @@ import { SubItem } from '../../common/entity/sub-item.entity'
 import { Message } from '../../common/entity/message.entity';
 import { Note } from '../../common/entity/note.entity';
 import { Picture } from '../../common/entity/picture.entity';
+import { FlowService } from './flow.service';
+import { FlowController } from './flow.controller';
+import { Flow } from '../../common/entity/flow.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task,User,Group,SubItem,Message, Note,Picture]),
+    TypeOrmModule.forFeature([Task, User, Group, SubItem, Message, Note, Picture, Flow]),
     UserModule,
   ],
-  providers: [TaskService,GroupService],
-  controllers: [TaskController,GroupController]
+  providers: [TaskService, GroupService, FlowService],
+  controllers: [TaskController, GroupController, FlowController]
 })
 export class TaskModule { }

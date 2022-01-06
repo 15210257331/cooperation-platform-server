@@ -45,7 +45,7 @@ export class Group {
     * 分组和任务是一对多的关系
     * 一个分组可以包含多个任务
     *  */
-    @OneToMany(() => Task, task => task.group)
-    tasks: Task[];
+    // @OneToMany(() => Task, task => task.group)
+    // tasks: Task[];
 
 }

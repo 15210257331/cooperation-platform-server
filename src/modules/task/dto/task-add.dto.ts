@@ -13,7 +13,7 @@ export class TaskAddDTO {
 
     @IsNotEmpty({ message: '分组ID不能为空' })
     @IsNumber()
-    readonly groupId: number;
+    readonly flowId: number;
 
     @ApiProperty()
     @IsNotEmpty({ message: '任务优先级' })

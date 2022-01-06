@@ -12,6 +12,7 @@ import { Message } from '../../common/entity/message.entity';
 import * as dayjs from 'dayjs'
 import { Note } from '../../common/entity/note.entity';
 import { Picture } from '../../common/entity/picture.entity';
+import { Flow } from '../../common/entity/flow.entity';
 
 @Injectable()
 export class TaskService {
@@ -19,7 +20,7 @@ export class TaskService {
     constructor(
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
+        @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
         @InjectRepository(SubItem) private readonly subItemRepository: Repository<SubItem>,
         @InjectRepository(Picture) private readonly pictureRepository: Repository<Picture>,
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
@@ -32,8 +33,8 @@ export class TaskService {
      * @param request 
      * @returns 
      */
-    async taskAdd(body: TaskAddDTO, request: any): Promise<any> {
-        const { name, detail, groupId, priority, reminder, workload, startDate, endDate } = body;
+    async taskAdd(taskAddDTO: TaskAddDTO, request: any): Promise<any> {
+        const { name, detail, flowId, priority, reminder, workload, startDate, endDate } = taskAddDTO;
         const task = new Task();
         task.name = name;
         task.detail = detail;
@@ -42,7 +43,7 @@ export class TaskService {
         task.workload = workload;
         task.startDate = startDate;
         task.endDate = endDate;
-        task.group = await this.groupRepository.findOne(groupId);
+        task.flow = await this.flowRepository.findOne(flowId);
         task.notes = [];
         task.subItems = [];
         task.pictures = [];
@@ -58,7 +59,7 @@ export class TaskService {
         });
         const message = new Message();
         message.content = `<b>${user.nickname}</b>
-                             在分组【${task.group.name}】下创建了一个新任务:
+                             在分组【${task.flow.name}】下创建了一个新任务:
                             <b style="color:black;">${name}</b>
                            `
         await this.messageRepository.save(message)
@@ -73,7 +74,7 @@ export class TaskService {
      */
     async detail(taskId: number): Promise<any> {
         const doc = await this.taskRepository.findOne(taskId, {
-            relations: ['owner', 'group', 'subItems', "notes", "pictures"]
+            relations: ['owner', 'flow', 'subItems', "notes", "pictures"]
         });
         return {
             data: doc,
@@ -205,9 +206,9 @@ export class TaskService {
         });
         const data = doc.map(item => {
             let taskNum = 0;
-            item.groups.map(item => {
-                taskNum += item.tasks.length;
-            })
+            // item.groups.map(item => {
+            //     taskNum += item.tasks.length;
+            // })
             return {
                 nickname: item.nickname,
                 groupNum: item.groups.length,

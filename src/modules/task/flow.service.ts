@@ -7,22 +7,25 @@ import { User } from '../../common/entity/user.entity';
 import { GroupAddDTO } from './dto/group-add.dto';
 import { GroupUpdateDTO } from './dto/group-update.dto';
 import { Message } from '../../common/entity/message.entity';
+import { Flow } from '../../common/entity/flow.entity';
+import { FlowAddDTO } from './dto/flow-add.dto';
+import { FlowUpdateDTO } from './dto/flow-update.dto';
 @Injectable()
-export class GroupService {
+export class FlowService {
 
     constructor(
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
+        @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
     ) { }
 
     /**
-     * 查询当前登录用户的分组列表
+     * 查询当前登录用户的流程列表
      * @param id 
      */
-    async list(groupName: string, request: any): Promise<any> {
-        const doc = await this.groupRepository.createQueryBuilder("group")
+    async list(request: any): Promise<any> {
+        const flows = await this.flowRepository.createQueryBuilder("flow")
             .where(qb => {
                 const subQuery = qb
                     .subQuery()
@@ -30,26 +33,34 @@ export class GroupService {
                     .from(User, "user")
                     .where("user.id = :id")
                     .getQuery();
-                return "group.creator= " + subQuery;
+                return "flow.belong= " + subQuery;
             })
-            .andWhere('group.name like "%' + groupName + '%"')
             .setParameter("id", request.user.userId)
-            .leftJoinAndSelect('group.tasks', 'tasks')
+            .leftJoinAndSelect('flow.tasks', 'tasks')
             .leftJoinAndSelect('tasks.subItems', 'subItems')
+            .leftJoinAndSelect('tasks.pictures', 'pictures')
+            .leftJoinAndSelect('tasks.notes', 'notes')
             .getMany();
+        const doc = flows.map(item => {
+            return Object.assign(item, {
+                total: item.tasks.length
+            })
+        })
         return {
             data: doc,
         };
     }
 
-    // 添加分组
-    async add(groupAddDTO: GroupAddDTO, request: any): Promise<any> {
-        const { name } = groupAddDTO;
-        const group = new Group();
-        group.name = name;
-        group.creator = await this.userRepository.findOne(request.user.userId);
-        // group.tasks = [];
-        const doc = await this.groupRepository.save(group);
+    // 添加节点
+    async add(flowAddDTO: FlowAddDTO, request: any): Promise<any> {
+        const { name, sort, range } = flowAddDTO;
+        const flow = new Flow();
+        flow.name = name;
+        flow.sort = sort;
+        flow.range = range;
+        flow.belong = await this.userRepository.findOne(request.user.userId);
+        flow.tasks = [];
+        const doc = await this.flowRepository.save(flow);
         // 消息通知相关
         const user = await this.userRepository.findOne({
             where: {
@@ -61,7 +72,7 @@ export class GroupService {
         const message = new Message();
         message.content = `
                             <b>${user.nickname}</b>
-                            新创建了一个新分组:
+                            新创建了一个新流程:
                             <b style="color:black;">${name}</b>
         `;
         await this.messageRepository.save(message)
@@ -70,32 +81,37 @@ export class GroupService {
         }
     }
 
-    // 更新分组
-    async update(groupUpdateDTO: GroupUpdateDTO): Promise<any> {
-        const { groupId, name } = groupUpdateDTO;
-        await this.groupRepository.update(groupId, {
-            name: name
+    // 更新节点
+    async update(flowUpdateDTO: FlowUpdateDTO): Promise<any> {
+        const { id, name, sort, range, canNew } = flowUpdateDTO;
+        await this.flowRepository.update(id, {
+            name: name,
+            range: range,
+            canNew: canNew,
+            sort: sort,
         });
-        const doc = await this.groupRepository.findOne(groupId);
+        const doc = await this.flowRepository.findOne(id, {
+            relations: ["tasks", "tasks.subItems", "tasks.notes", "tasks.pictures"]
+        });
         return {
             data: doc
         }
     }
 
-    // 删除分组
-    async delete(id: number | string, maneger: EntityManager): Promise<any> {
-        const group = await this.groupRepository.findOne(id);
+    // 删除节点
+    async delete(id: number, maneger: EntityManager): Promise<any> {
+        const flow = await this.flowRepository.findOne(id);
         // 如果该分组下的任务不为空则不允许删除
-        // const tasks = await maneger.find(Task, { group: group });
-        // if (tasks.length > 0) {
-        //     return {
-        //         code: 9999,
-        //         data: '该分组下存在任务，请先删除该分组下的任务',
-        //         message: '该分组任务不为空，无法删除'
-        //     }
-        // }
+        const tasks = await maneger.find(Task, { flow: flow });
+        if (tasks.length > 0) {
+            return {
+                code: 9999,
+                data: '该分组下存在任务，请先删除该分组下的任务',
+                message: '该分组任务不为空，无法删除'
+            }
+        }
         // 删除分组数据
-        const doc = await maneger.delete(Group, id);
+        const doc = await maneger.delete(Flow, id);
         return {
             data: doc,
         };
@@ -116,7 +132,7 @@ export class GroupService {
         // `)
         // .getMany()
 
-        const doc = await this.groupRepository.findOne(groupId, {
+        const doc = await this.flowRepository.findOne(groupId, {
             relations: ["creator", "tasks"]
         })
         return {

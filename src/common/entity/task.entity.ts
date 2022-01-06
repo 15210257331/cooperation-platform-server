@@ -4,6 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, J
 import { Group } from './group.entity';
 import { SubItem } from './sub-item.entity';
 import { Picture } from './picture.entity';
+import { Flow } from './flow.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -40,6 +41,15 @@ export class Task {
         comment: '任务状态 1未开始  2进行中  3已完成'
     })
     status: number;
+
+    @Column({
+        type: 'bool',
+        name: 'complete',
+        default: false,
+        nullable: false,
+        comment: '标记任务是否已经完成'
+    })
+    complete: boolean;
 
     @Column({
         type: 'int',
@@ -97,9 +107,13 @@ export class Task {
      * 任务和分组是多对一的关系
      * 多个任务隶属于同一个分组
      */
-    @ManyToOne(() => Group, group => group.tasks)
+    // @ManyToOne(() => Group, group => group.tasks)
+    // @JoinColumn()
+    // group: Group;
+
+    @ManyToOne(() => Flow, flow => flow.tasks)
     @JoinColumn()
-    group: Group;
+    flow: Flow;
 
     /**
      * 任务和用户是多对一的关系
