@@ -1,7 +1,6 @@
 import { Note } from './note.entity';
 import { User } from './user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { Group } from './group.entity';
 import { SubItem } from './sub-item.entity';
 import { Picture } from './picture.entity';
 import { Flow } from './flow.entity';
@@ -35,28 +34,10 @@ export class Task {
 
     @Column({
         type: 'int',
-        name: 'status',
-        default: 1,
-        nullable: false,
-        comment: '任务状态 1未开始  2进行中  3已完成'
-    })
-    status: number;
-
-    @Column({
-        type: 'bool',
-        name: 'complete',
-        default: false,
-        nullable: false,
-        comment: '标记任务是否已经完成'
-    })
-    complete: boolean;
-
-    @Column({
-        type: 'int',
         name: 'priority',
         default: 1,
         nullable: false,
-        comment: '任务优先级 1 L1  2L2  3L3 4L4 5L5 6L6  依次升高'
+        comment: '任务优先级 1L1  2L2  3L3 4L4 5L5 6L6  依次升高'
     })
     priority: number;
 
@@ -68,16 +49,6 @@ export class Task {
         comment: '设置提醒'
     })
     reminder: number;
-
-
-    @Column({
-        type: 'int',
-        name: 'workload',
-        default: 1,
-        nullable: false,
-        comment: '工作量 1低  2中  3高'
-    })
-    workload: number;
 
     @CreateDateColumn({
         type: 'timestamp',
@@ -102,14 +73,6 @@ export class Task {
         comment: '任务结束时间',
     })
     endDate: Date;
-
-    /**
-     * 任务和分组是多对一的关系
-     * 多个任务隶属于同一个分组
-     */
-    // @ManyToOne(() => Group, group => group.tasks)
-    // @JoinColumn()
-    // group: Group;
 
     @ManyToOne(() => Flow, flow => flow.tasks)
     @JoinColumn()

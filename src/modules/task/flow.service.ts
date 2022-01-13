@@ -1,11 +1,8 @@
 import { Task } from './../../common/entity/task.entity';
-import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
-import { GroupAddDTO } from './dto/group-add.dto';
-import { GroupUpdateDTO } from './dto/group-update.dto';
 import { Message } from '../../common/entity/message.entity';
 import { Flow } from '../../common/entity/flow.entity';
 import { FlowAddDTO } from './dto/flow-add.dto';
@@ -24,7 +21,7 @@ export class FlowService {
      * 查询当前登录用户的流程列表
      * @param id 
      */
-    async list(request: any): Promise<any> {
+    async list(keywords: string, request: any): Promise<any> {
         const flows = await this.flowRepository.createQueryBuilder("flow")
             .where(qb => {
                 const subQuery = qb
@@ -42,8 +39,14 @@ export class FlowService {
             .leftJoinAndSelect('tasks.notes', 'notes')
             .getMany();
         const doc = flows.map(item => {
+            let tasks = item.tasks;
+            if (keywords) {
+                tasks = item.tasks.filter(item => item.name.includes(keywords));
+                console.log(tasks);
+            }
             return Object.assign(item, {
-                total: item.tasks.length
+                total: item.tasks.length,
+                tasks: tasks
             })
         })
         return {
@@ -53,11 +56,12 @@ export class FlowService {
 
     // 添加节点
     async add(flowAddDTO: FlowAddDTO, request: any): Promise<any> {
-        const { name, sort, range } = flowAddDTO;
+        const { name, sort, range, complete } = flowAddDTO;
         const flow = new Flow();
         flow.name = name;
         flow.sort = sort;
         flow.range = range;
+        flow.complete = complete;
         flow.belong = await this.userRepository.findOne(request.user.userId);
         flow.tasks = [];
         const doc = await this.flowRepository.save(flow);
@@ -83,12 +87,13 @@ export class FlowService {
 
     // 更新节点
     async update(flowUpdateDTO: FlowUpdateDTO): Promise<any> {
-        const { id, name, sort, range, canNew } = flowUpdateDTO;
+        const { id, name, sort, range, canNew, complete } = flowUpdateDTO;
         await this.flowRepository.update(id, {
             name: name,
             range: range,
             canNew: canNew,
             sort: sort,
+            complete: complete,
         });
         const doc = await this.flowRepository.findOne(id, {
             relations: ["tasks", "tasks.subItems", "tasks.notes", "tasks.pictures"]

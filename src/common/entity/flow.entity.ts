@@ -35,11 +35,20 @@ export class Flow {
     })
     canNew: boolean;
 
+    @Column({
+        type: 'bool',
+        name: 'complete',
+        nullable: false,
+        default: false,
+        comment: '该节点是否标记为任务已完成'
+    })
+    complete: boolean;
+
     // 有一种称为simple-array的特殊列类型，它可以将原始数组值存储在单个字符串列中
     @Column({
         type: 'simple-array',
         charset: 'utf8mb4',
-        comment: '任务流转',
+        comment: '任务流转范围',
         name: 'range',
     })
     range: string[];

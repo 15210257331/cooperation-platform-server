@@ -18,7 +18,6 @@ export class NoteService {
         const note = new Note();
         note.title = noteAddDTO.title;
         note.content = noteAddDTO.content;
-        note.overview = noteAddDTO.overview;
         const user = await this.userRepository.findOne(request.user.userId);
         note.owner = user;
         const doc = await this.noteRepository.save(note);

@@ -12,6 +12,11 @@ export class FlowAddDTO {
     readonly sort: number;
 
     @ApiProperty()
+    @IsNotEmpty({ message: 'complete参数不能为空' })
+    @IsBoolean()
+    readonly complete: boolean;
+
+    @ApiProperty()
     @IsNotEmpty({ message: '节点流转返回不能为空' })
     readonly range: string[];
 }

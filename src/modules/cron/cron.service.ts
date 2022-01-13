@@ -29,22 +29,26 @@ export class CronService {
         // 筛选进行中并且设置了提醒的任务全部任务
         const remindTasks = await this.taskRepository.find({
             where: {
-                status: 2,
-                reminder: Not(99)
+                // status: 2,
+                reminder: Not(0)
             },
             select: ['name', "endDate", "reminder"],
             relations: ["owner"]
         });
+        
         const now = dayjs().format("YYYY-MM-DD HH:mm");
-        remindTasks.map(task => {
-            const reminderTime = this.calculateReminderTime(task);
-            if (reminderTime == now) {
-                const endDate = dayjs(task.endDate).format("YYYY-MM-DD HH:mm");
-                const userId = task.owner.id;
-                const body = `<p>任务<b style="color:black;font-weight:600">【${task.name}】</b>将于<span style="color:red;">${endDate}</span>截止!</p>`
-                this.eventsGateway.sendMessage(userId, body);
-            }
-        })
+        if (remindTasks) {
+            remindTasks.map(task => {
+                const reminderTime = this.calculateReminderTime(task);
+                console.log(reminderTime);
+                if (reminderTime == now) {
+                    const endDate = dayjs(task.endDate).format("YYYY-MM-DD HH:mm");
+                    const userId = task.owner.id;
+                    const body = `<p>任务<b style="color:black;font-weight:600">【${task.name}】</b>将于<span style="color:red;">${endDate}</span>截止!</p>`
+                    this.eventsGateway.sendMessage(userId, body);
+                }
+            })
+        }
     }
 
     // @Cron('5 * * * * *')
@@ -62,10 +66,10 @@ export class CronService {
         } else if (task.reminder === 2) {
             // 截止前一小时
             reminderTime = dayjs(task.endDate).subtract(1, 'hour');
-        } else if (task.reminder === 2) {
+        } else if (task.reminder === 3) {
             // 截止前两小时
             reminderTime = dayjs(task.endDate).subtract(2, 'hour');
-        } else if (task.reminder === 2) {
+        } else if (task.reminder === 4) {
             // 截止前一天
             reminderTime = dayjs(task.endDate).subtract(1, 'day');
         }

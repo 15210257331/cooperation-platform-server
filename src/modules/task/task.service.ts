@@ -40,7 +40,6 @@ export class TaskService {
         task.detail = detail;
         task.priority = priority;
         task.reminder = reminder;
-        task.workload = workload;
         task.startDate = startDate;
         task.endDate = endDate;
         task.flow = await this.flowRepository.findOne(flowId);
@@ -89,12 +88,17 @@ export class TaskService {
     async updateProps(body: any): Promise<any> {
         const { taskId, propName, propValue } = body;
         const task = await this.taskRepository.findOne(taskId, {
-            relations: ["subItems"]
+            relations: ["subItems", "pictures", "notes"],
         });
-        task[propName] = propValue;
+        if (propName === 'flow') {
+            const flow = await this.flowRepository.findOne(propValue);
+            task.flow = flow;
+        } else {
+            task[propName] = propValue;
+        }
         const doc = await this.taskRepository.save(task);
         return {
-            data: task,
+            data: doc,
         }
     }
 
@@ -165,7 +169,7 @@ export class TaskService {
         }
     }
 
-    // 删除子任务
+    // 删除笔记
     async deleteNote(id: number): Promise<any> {
         const note = await this.noteRepository.findOne(id);
         note.belong = null;
@@ -186,10 +190,14 @@ export class TaskService {
         await this.taskRepository.save(task);
         // 删除该任务下的子任务
         const subItemIds = task.subItems.map(item => item.id);
-        await this.subItemRepository.delete(subItemIds);
+        if (subItemIds.length > 0) {
+            await this.subItemRepository.delete(subItemIds);
+        }
         // 删除该任务下的图片
         const pictureIds = task.pictures.map(item => item.id);
-        await this.pictureRepository.delete(pictureIds);
+        if (pictureIds.length > 0) {
+            await this.pictureRepository.delete(pictureIds);
+        }
         const doc = await this.taskRepository.delete(id);
         return {
             data: doc,
@@ -263,9 +271,9 @@ export class TaskService {
     async deleteList(body: any): Promise<any> {
         const { name, page, size } = body;
         const [doc, count] = await this.taskRepository.findAndCount({
-            where: {
-                'status': 5,
-            },
+            // where: {
+            //     'status': 5,
+            // },
             relations: ['principal'],
             cache: true,
             order: {

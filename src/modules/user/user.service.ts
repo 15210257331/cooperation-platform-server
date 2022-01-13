@@ -127,17 +127,30 @@ export class UserService {
     // 分页查询用户列表
     async userList(body: any): Promise<any> {
         const { name, page, size } = body;
-        const [doc, count] = await this.userRepository.findAndCount({
+        const [users, count] = await this.userRepository.findAndCount({
             where: {
                 'nickname': Like(`%${name}%`),
             },
-            relations: ['roles'],
+            relations: ['roles', "tasks"],
             cache: true,
             order: {
-                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
+                createDate: 'ASC' //ASC 按时间正序 DESC 按时间倒序
             },
             skip: (page - 1) * size,
             take: size,
+        })
+        const doc = users.map(item => {
+            let total = item.tasks.length;
+            let complete = item.tasks.filter(sonItem => sonItem).length;
+            let percent = total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0
+            return Object.assign({},item, {
+                avatar: item.avatar,
+                nickname: item.nickname,
+                email: item.email,
+                total: total,
+                complete: complete,
+                percent: percent
+            })
         })
         return {
             data: {
@@ -187,7 +200,7 @@ export class UserService {
         });
         let doc = users.map(item => {
             let total = item.tasks.length;
-            let complete = item.tasks.filter(sonItem => sonItem.status === 3).length;
+            let complete = item.tasks.filter(sonItem => sonItem).length;
             let percent = total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0
             return Object.assign({}, {
                 avatar: item.avatar,

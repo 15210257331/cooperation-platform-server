@@ -32,8 +32,8 @@ export class FlowController {
 
     @Get('/list')
     @UseGuards(AuthGuard('jwt'))
-    public async list(@Request() request: any): Promise<any> {
-        return this.flowService.list(request);
+    public async list(@Query('keywords') keywords: string, @Request() request: any): Promise<any> {
+        return this.flowService.list(keywords,request);
     }
 
     // 删除分组

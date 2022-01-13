@@ -23,7 +23,7 @@ export class Note {
     @Column({
         comment: '概览',
         type: 'text',
-        nullable: false,
+        nullable: true,
         charset: 'utf8mb4',
         name: 'overview',
     })
