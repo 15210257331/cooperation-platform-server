@@ -3,7 +3,6 @@ import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe, U
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { GroupService } from './group.service';
 import { GroupAddDTO } from './dto/group-add.dto';
 import { EntityManager, Transaction, TransactionManager } from 'typeorm';
 import { GroupUpdateDTO } from './dto/group-update.dto';

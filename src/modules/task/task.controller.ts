@@ -13,6 +13,13 @@ export class TaskController {
         private readonly taskService: TaskService
     ) { }
 
+    //所有任务list
+    @Get('/list')
+    @UseGuards(AuthGuard('jwt'))
+    public async list(@Query() keywords: string, @Request() request: any): Promise<any> {
+        return this.taskService.list(keywords, request);
+    }
+
     //新增任务
     @Post('/add')
     @UseGuards(AuthGuard('jwt'))
@@ -98,17 +105,6 @@ export class TaskController {
     @UseGuards(AuthGuard('jwt'))
     public async message(): Promise<any> {
         return this.taskService.message();
-    }
-
-    /**
-     * 任务数量排行榜
-     * @param id 
-     * @returns 
-     */
-    @Get('/rank')
-    @UseGuards(AuthGuard('jwt'))
-    public async rank(): Promise<any> {
-        return this.taskService.rank();
     }
 
     /**

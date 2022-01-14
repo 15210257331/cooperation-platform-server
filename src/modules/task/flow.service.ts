@@ -42,7 +42,6 @@ export class FlowService {
             let tasks = item.tasks;
             if (keywords) {
                 tasks = item.tasks.filter(item => item.name.includes(keywords));
-                console.log(tasks);
             }
             return Object.assign(item, {
                 total: item.tasks.length,

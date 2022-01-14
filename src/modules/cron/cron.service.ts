@@ -40,7 +40,7 @@ export class CronService {
         if (remindTasks) {
             remindTasks.map(task => {
                 const reminderTime = this.calculateReminderTime(task);
-                console.log(reminderTime);
+                // console.log(reminderTime);
                 if (reminderTime == now) {
                     const endDate = dayjs(task.endDate).format("YYYY-MM-DD HH:mm");
                     const userId = task.owner.id;

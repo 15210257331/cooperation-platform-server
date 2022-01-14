@@ -1,6 +1,5 @@
 import { map } from 'rxjs/operators';
 import { SubItem } from './../../common/entity/sub-item.entity';
-import { Group } from '../../common/entity/group.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { EntityManager, Like, Repository } from 'typeorm';
@@ -26,6 +25,31 @@ export class TaskService {
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
         @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
     ) { }
+
+
+    // 查询当前用户的所有任务
+    async list(keywords: string = '', request: any): Promise<any> {
+        const doc = await this.taskRepository.createQueryBuilder("task")
+            .where(qb => {
+                const subQuery = qb
+                    .subQuery()
+                    .select("user.id")
+                    .from(User, "user")
+                    .where("user.id = :id")
+                    .getQuery();
+                return "task.owner= " + subQuery;
+            })
+            // .andWhere('task.name like "%' + keywords + '%"')
+            .setParameter("id", request.user.userId)
+            .leftJoinAndSelect('task.flow', 'flow')
+            .leftJoinAndSelect('task.subItems', 'subItems')
+            .leftJoinAndSelect('task.pictures', 'pictures')
+            .leftJoinAndSelect('task.notes', 'notes')
+            .getMany();
+        return {
+            data: doc,
+        };
+    }
 
     /**
      * 添加任务
@@ -205,28 +229,6 @@ export class TaskService {
     }
 
 
-
-    // 任务数量排行榜
-    async rank(): Promise<any> {
-        const doc = await this.userRepository.find({
-            relations: ["groups", "groups.tasks"],
-            take: 7
-        });
-        const data = doc.map(item => {
-            let taskNum = 0;
-            // item.groups.map(item => {
-            //     taskNum += item.tasks.length;
-            // })
-            return {
-                nickname: item.nickname,
-                groupNum: item.groups.length,
-                taskNum: taskNum
-            }
-        })
-        return {
-            data: data,
-        }
-    }
 
     // 近14天任务完成情况
     async trend(): Promise<any> {

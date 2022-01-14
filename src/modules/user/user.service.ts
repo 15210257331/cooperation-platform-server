@@ -16,6 +16,8 @@ export class UserService {
         private readonly jwtService: JwtService,
     ) { }
 
+    salt = 'todo'; // 制作密码盐
+
     // 登录
     async login(loginDTO: LoginDTO): Promise<any> {
         const { username, password } = loginDTO;
@@ -26,6 +28,7 @@ export class UserService {
             relations: ['roles'],
         });
         if (doc) {
+            const hashPwd = encryptPassword(password, this.salt); // 加密后的密码
             if (doc.password === password) {
                 const payload = {
                     username: username,
@@ -68,8 +71,7 @@ export class UserService {
                 message: '用户已存在'
             }
         }
-        const salt = makeSalt(); // 制作密码盐
-        const hashPwd = encryptPassword(registerDTO.password, salt); // 加密后的密码
+        const hashPwd = encryptPassword(registerDTO.password, this.salt); // 加密后的密码
         const data = new User();
         data.username = registerDTO.username;
         // data.password = registerDTO.password;
@@ -143,7 +145,7 @@ export class UserService {
             let total = item.tasks.length;
             let complete = item.tasks.filter(sonItem => sonItem).length;
             let percent = total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0
-            return Object.assign({},item, {
+            return Object.assign({}, item, {
                 avatar: item.avatar,
                 nickname: item.nickname,
                 email: item.email,
