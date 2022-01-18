@@ -10,7 +10,6 @@ export class Flow {
         type: 'varchar',
         nullable: false,
         charset: 'utf8mb4',
-        unique: true,
         length: 10,
         name: 'name',
         comment: '流程节点名称',

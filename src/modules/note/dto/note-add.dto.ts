@@ -5,5 +5,7 @@ export class NoteAddDTO {
     readonly title: string;
     @IsNotEmpty({ message: 'content不能为空' })
     readonly content: string;
+    readonly cover: string;
+    readonly overview: string;
 }
 

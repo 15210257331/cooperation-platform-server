@@ -58,7 +58,7 @@ export class TaskService {
      * @returns 
      */
     async taskAdd(taskAddDTO: TaskAddDTO, request: any): Promise<any> {
-        const { name, detail, flowId, priority, reminder, workload, startDate, endDate } = taskAddDTO;
+        const { name, detail, flowId, priority, reminder, startDate, endDate } = taskAddDTO;
         const task = new Task();
         task.name = name;
         task.detail = detail;
@@ -77,12 +77,13 @@ export class TaskService {
             where: {
                 id: request.user.userId
             },
-            select: ["nickname",]
+            select: ["nickname", "avatar"]
 
         });
         const message = new Message();
-        message.content = `<b>${user.nickname}</b>
-                             在分组【${task.flow.name}】下创建了一个新任务:
+        message.title = '新建任务';
+        message.avatar = user.avatar;
+        message.content = `<b>${user.nickname}</b>在流程【${task.flow.name}】下创建了一个新任务:
                             <b style="color:black;">${name}</b>
                            `
         await this.messageRepository.save(message)
@@ -97,7 +98,7 @@ export class TaskService {
      */
     async detail(taskId: number): Promise<any> {
         const doc = await this.taskRepository.findOne(taskId, {
-            relations: ['owner', 'flow', 'subItems', "notes", "pictures"]
+            relations: ['owner', 'subItems', "notes", "pictures"]
         });
         return {
             data: doc,
@@ -150,9 +151,9 @@ export class TaskService {
     // 完成子任务
     async completeSub(body: any): Promise<any> {
         const { subId } = body;
-        const doc = await this.subItemRepository.update(subId, {
-            status: 2
-        });
+        let subItem = await this.subItemRepository.findOne(subId);
+        subItem.complete = true;
+        const doc = await this.subItemRepository.save(subItem);
         return {
             data: doc,
         }

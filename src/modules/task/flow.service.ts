@@ -44,7 +44,7 @@ export class FlowService {
                 tasks = item.tasks.filter(item => item.name.includes(keywords));
             }
             return Object.assign(item, {
-                total: item.tasks.length,
+                total: tasks.length,
                 tasks: tasks
             })
         })
@@ -69,12 +69,13 @@ export class FlowService {
             where: {
                 id: request.user.userId
             },
-            select: ["nickname",]
+            select: ["nickname", "avatar"],
 
         });
         const message = new Message();
-        message.content = `
-                            <b>${user.nickname}</b>
+        message.title = '新建流程';
+        message.avatar = user.avatar;
+        message.content = `<b>${user.nickname}</b>
                             新创建了一个新流程:
                             <b style="color:black;">${name}</b>
         `;

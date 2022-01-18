@@ -17,16 +17,19 @@ export class NoteService {
     async add(noteAddDTO: NoteAddDTO, request: any): Promise<any> {
         const note = new Note();
         note.title = noteAddDTO.title;
+        note.cover = noteAddDTO.cover;
+        note.overview = noteAddDTO.overview;
         note.content = noteAddDTO.content;
         const user = await this.userRepository.findOne(request.user.userId);
         note.owner = user;
         const doc = await this.noteRepository.save(note);
+
         const message = new Message();
-        message.content = `
-                            <b>${user.nickname}</b>
+        message.title = '新建笔记';
+        message.avatar = user.avatar;
+        message.content = `<b>${user.nickname}</b>
                             新添加了一条笔记:
-                            <b style="color:black;">${noteAddDTO.title}</b>
-        `;
+                            <b style="color:black;">${noteAddDTO.title}</b>`;
         await this.messageRepository.save(message)
         return {
             data: doc,

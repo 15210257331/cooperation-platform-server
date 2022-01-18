@@ -1,9 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class Message {
     @PrimaryGeneratedColumn()
     id: string;
+
+    @Column({
+        comment: '标题',
+        type: 'varchar',
+        name: 'title',
+        charset: 'utf8mb4',
+    })
+    title: string;
+
+    @Column({
+        comment: '头像',
+        type: 'varchar',
+        name: 'avatar',
+    })
+    avatar: string;
 
     @Column({
         comment: '内容',
@@ -13,14 +29,6 @@ export class Message {
     })
     content: string;
 
-    @Column({
-        type: 'int',
-        name: 'type',
-        default: () => 1,
-        comment: '消息类型 1 新建任务 2 完成任务 3 删除任务 4 新建分组 5 删除分组',
-    })
-    type: number;
-
     @CreateDateColumn({
         type: 'timestamp',
         nullable: true,
@@ -28,4 +36,5 @@ export class Message {
         comment: '创建时间',
     })
     createDate: Date;
+
 }

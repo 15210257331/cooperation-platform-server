@@ -30,6 +30,14 @@ export class Note {
     overview: string;
 
     @Column({
+        comment: '封面',
+        type: 'varchar',
+        nullable: true,
+        name: 'cover',
+    })
+    cover: string;
+
+    @Column({
         comment: '内容',
         type: 'text',
         name: 'content',

@@ -20,15 +20,14 @@ export class SubItem {
     })
     name: string;
 
-
     @Column({
-        type: 'int',
-        name: 'status',
-        default: 1,
+        type: 'bool',
+        name: 'complete',
         nullable: false,
-        comment: '任务状态 1未完成  2已完成'
+        default: false,
+        comment: '子任务是否已完成'
     })
-    status: number;
+    complete: boolean;
 
     @CreateDateColumn({
         type: 'timestamp',
@@ -39,9 +38,9 @@ export class SubItem {
     createDate: Date;
 
 
-     @ManyToOne(() => Task, task => task.subItems)
-     @JoinColumn()
-     belong: Task;
+    @ManyToOne(() => Task, task => task.subItems)
+    @JoinColumn()
+    belong: Task;
 
 
 }
