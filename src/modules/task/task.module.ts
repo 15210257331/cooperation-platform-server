@@ -12,13 +12,14 @@ import { Picture } from '../../common/entity/picture.entity';
 import { FlowService } from './flow.service';
 import { FlowController } from './flow.controller';
 import { Flow } from '../../common/entity/flow.entity';
+import { EventsGateway } from '../socket/events.gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task, User, SubItem, Message, Note, Picture, Flow]),
     UserModule,
   ],
-  providers: [TaskService, FlowService],
+  providers: [TaskService, FlowService, EventsGateway],
   controllers: [TaskController, FlowController]
 })
 export class TaskModule { }

@@ -2,6 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WsResponse, WebSocketServer } from 
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Cron } from '@nestjs/schedule';
+import { Server, Socket } from 'socket.io';
 
 export interface WebSocketUser {
   [key: string]: any;
@@ -15,11 +16,17 @@ export class EventsGateway {
   // 保存已经连接上websocket服务的用户集合 key是用户ID，value是socketclent实例
   socketMap: WebSocketUser = {};
 
-  @WebSocketServer() server;
+  // server 为 io 实例 server中包含多个socket实例
+  @WebSocketServer() io: Server;
 
-  // 新用户连接至websocket
+  // 广播消息
+  broadcastMessage(body: any) {
+    this.io.emit('notification', body);
+  }
+
+  // 新用户连接至websocket client为每个🔗成功的socket实例
   @SubscribeMessage('new user')
-  newUser(client: any, userId: number): Observable<WsResponse<any>> | any {
+  newUser(client: Socket, userId: number): Observable<WsResponse<any>> | any {
     console.log(`新用户已登录用户ID为${userId}`);
     const keys = Object.keys(this.socketMap);
     if (userId) {

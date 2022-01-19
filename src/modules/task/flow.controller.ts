@@ -35,6 +35,12 @@ export class FlowController {
         return this.flowService.list(keywords,request);
     }
 
+    @Get('/all')
+    @UseGuards(AuthGuard('jwt'))
+    public async all(@Request() request: any): Promise<any> {
+        return this.flowService.all(request);
+    }
+
     // 删除分组
     @Get('/delete/:id')
     @UseGuards(AuthGuard('jwt'))

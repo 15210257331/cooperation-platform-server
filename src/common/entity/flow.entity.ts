@@ -43,7 +43,7 @@ export class Flow {
     })
     complete: boolean;
 
-    // 有一种称为simple-array的特殊列类型，它可以将原始数组值存储在单个字符串列中
+    // 有一种称为simple-array的特殊列类型，保存可流转流程节点的ID
     @Column({
         type: 'simple-array',
         charset: 'utf8mb4',

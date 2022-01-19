@@ -7,6 +7,7 @@ import { Message } from '../../common/entity/message.entity';
 import { Flow } from '../../common/entity/flow.entity';
 import { FlowAddDTO } from './dto/flow-add.dto';
 import { FlowUpdateDTO } from './dto/flow-update.dto';
+import { EventsGateway } from '../socket/events.gateway';
 @Injectable()
 export class FlowService {
 
@@ -15,6 +16,7 @@ export class FlowService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
+        private readonly eventsGateway: EventsGateway,
     ) { }
 
     /**
@@ -44,10 +46,27 @@ export class FlowService {
                 tasks = item.tasks.filter(item => item.name.includes(keywords));
             }
             return Object.assign(item, {
-                total: tasks.length,
                 tasks: tasks
             })
         })
+        return {
+            data: doc,
+        };
+    }
+
+    async all(request: any): Promise<any> {
+        const doc = await this.flowRepository.createQueryBuilder("flow")
+            .where(qb => {
+                const subQuery = qb
+                    .subQuery()
+                    .select("user.id")
+                    .from(User, "user")
+                    .where("user.id = :id")
+                    .getQuery();
+                return "flow.belong= " + subQuery;
+            })
+            .setParameter("id", request.user.userId)
+            .getMany();
         return {
             data: doc,
         };
@@ -79,7 +98,8 @@ export class FlowService {
                             新创建了一个新流程:
                             <b style="color:black;">${name}</b>
         `;
-        await this.messageRepository.save(message)
+        const body = await this.messageRepository.save(message);
+        this.eventsGateway.broadcastMessage(body);
         return {
             data: doc,
         }
