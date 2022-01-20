@@ -3,6 +3,7 @@ import { Flow } from './flow.entity';
 import { Note } from './note.entity';
 import { Role } from './role.entity';
 import { Task } from './task.entity';
+import { Message } from './message.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -116,8 +117,11 @@ export class User {
     tasks: Task[];
 
     /**
-     * 用户和用户是多对多的关系
+     * 用户和角色是多对多的关系
      */
     @ManyToMany(() => Role, role => role.users,)
     roles: Role[];
+
+    @OneToMany(() => Message, message => message.belong)
+    messages: Message[];
 }

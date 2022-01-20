@@ -14,6 +14,8 @@ import { RequestModule } from './modules/request/request.module';
 import { CronModule } from './modules/cron/cron.module';
 import { NoteModule } from './modules/note/note.module';
 import { EmailModule } from './modules/email/email.module';
+import { MessageModule } from './modules/message/message.module';
+import { SocketModule } from './modules/socket/socket.module';
 
 
 @Module({
@@ -69,7 +71,9 @@ import { EmailModule } from './modules/email/email.module';
     RequestModule,
     NoteModule,
     CronModule,
-    EmailModule
+    SocketModule,
+    EmailModule,
+    MessageModule
   ],
   controllers: [AppController],
   providers: [AppService],

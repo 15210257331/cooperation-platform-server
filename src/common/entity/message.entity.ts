@@ -1,5 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import { MessageDetail } from './message-detail.entity';
 import { User } from './user.entity';
+
+// 用户消息表 储存用户的消息
 
 @Entity()
 export class Message {
@@ -7,34 +10,26 @@ export class Message {
     id: string;
 
     @Column({
-        comment: '标题',
-        type: 'varchar',
-        name: 'title',
-        charset: 'utf8mb4',
+        comment: '是否已读',
+        type: 'bool',
+        name: 'read',
     })
-    title: string;
-
-    @Column({
-        comment: '头像',
-        type: 'varchar',
-        name: 'avatar',
-    })
-    avatar: string;
-
-    @Column({
-        comment: '内容',
-        type: 'text',
-        name: 'content',
-        charset: 'utf8mb4',
-    })
-    content: string;
+    read: boolean;
 
     @CreateDateColumn({
         type: 'timestamp',
         nullable: true,
-        name: 'createDate',
-        comment: '创建时间',
+        name: 'sendDate',
+        comment: '发送时间',
     })
-    createDate: Date;
+    sendDate: Date;
+
+    @ManyToOne(() => MessageDetail)
+    @JoinColumn()
+    detail: MessageDetail;
+
+    @ManyToOne(() => User, user => user.messages)
+    @JoinColumn()
+    belong: User;
 
 }

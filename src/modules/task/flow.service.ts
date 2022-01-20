@@ -3,11 +3,12 @@ import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
-import { Message } from '../../common/entity/message.entity';
+import { MessageDetail } from '../../common/entity/message-detail.entity';
 import { Flow } from '../../common/entity/flow.entity';
 import { FlowAddDTO } from './dto/flow-add.dto';
 import { FlowUpdateDTO } from './dto/flow-update.dto';
-import { EventsGateway } from '../socket/events.gateway';
+import { Message } from '../../common/entity/message.entity';
+import { MessageService } from '../message/message.service';
 @Injectable()
 export class FlowService {
 
@@ -16,7 +17,8 @@ export class FlowService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
-        private readonly eventsGateway: EventsGateway,
+        @InjectRepository(MessageDetail) private readonly messageDetailRepository: Repository<MessageDetail>,
+        private readonly messageService: MessageService,
     ) { }
 
     /**
@@ -83,23 +85,8 @@ export class FlowService {
         flow.belong = await this.userRepository.findOne(request.user.userId);
         flow.tasks = [];
         const doc = await this.flowRepository.save(flow);
-        // 消息通知相关
-        const user = await this.userRepository.findOne({
-            where: {
-                id: request.user.userId
-            },
-            select: ["nickname", "avatar"],
-
-        });
-        const message = new Message();
-        message.title = '新建流程';
-        message.avatar = user.avatar;
-        message.content = `<b>${user.nickname}</b>
-                            新创建了一个新流程:
-                            <b style="color:black;">${name}</b>
-        `;
-        const body = await this.messageRepository.save(message);
-        this.eventsGateway.broadcastMessage(body);
+        // 消息通知
+        this.messageService.addMessage(request.user.userId, '新建流程', name);
         return {
             data: doc,
         }

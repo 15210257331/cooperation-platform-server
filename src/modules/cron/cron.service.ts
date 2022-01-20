@@ -7,9 +7,6 @@ import { EventsGateway } from '../socket/events.gateway';
 import * as dayjs from 'dayjs'
 import { EmailService } from "../email/email.service"
 
-const randomQuoteApi = 'http://api.quotable.io/random';
-
-
 @Injectable()
 export class CronService {
 

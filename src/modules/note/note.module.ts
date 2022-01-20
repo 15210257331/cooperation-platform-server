@@ -4,11 +4,11 @@ import { User } from '../../common/entity/user.entity';
 import { Note } from '../../common/entity/note.entity';
 import { NoteController } from './note.controller';
 import { NoteService } from './note.service';
-import { Message } from '../../common/entity/message.entity';
+import { MessageDetail } from '../../common/entity/message-detail.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Note,User,Message]),
+    TypeOrmModule.forFeature([Note,User,MessageDetail]),
   ],
   providers: [NoteService],
   controllers: [NoteController],

@@ -100,13 +100,6 @@ export class TaskController {
         return this.taskService.deleteNote(id);
     }
 
-    //任务消息
-    @Get('/message')
-    @UseGuards(AuthGuard('jwt'))
-    public async message(): Promise<any> {
-        return this.taskService.message();
-    }
-
     /**
      * 任务数量排行榜
      * @param id 

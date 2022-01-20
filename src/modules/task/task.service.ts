@@ -7,7 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { generate8Code } from '../../utils/utils';
 import { User } from '../../common/entity/user.entity';
 import { Task } from '../../common/entity/task.entity';
-import { Message } from '../../common/entity/message.entity';
+import { MessageDetail } from '../../common/entity/message-detail.entity';
+import { Message } from '../../common/entity/message.entity'
 import * as dayjs from 'dayjs'
 import { Note } from '../../common/entity/note.entity';
 import { Picture } from '../../common/entity/picture.entity';
@@ -22,7 +23,8 @@ export class TaskService {
         @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
         @InjectRepository(SubItem) private readonly subItemRepository: Repository<SubItem>,
         @InjectRepository(Picture) private readonly pictureRepository: Repository<Picture>,
-        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
+        @InjectRepository(MessageDetail) private readonly MessageDetailRepository: Repository<MessageDetail>,
+        @InjectRepository(Message) private readonly MessageRepository: Repository<Message>,
         @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
     ) { }
 
@@ -80,13 +82,13 @@ export class TaskService {
             select: ["nickname", "avatar"]
 
         });
-        const message = new Message();
+        const message = new MessageDetail();
         message.title = '新建任务';
         message.avatar = user.avatar;
         message.content = `<b>${user.nickname}</b>在流程【${task.flow.name}】下创建了一个新任务:
                             <b style="color:black;">${name}</b>
                            `
-        await this.messageRepository.save(message)
+        await this.MessageDetailRepository.save(message)
         return {
             data: doc,
         }
@@ -248,24 +250,13 @@ export class TaskService {
         }
     }
 
-    // 消息
-    async message(): Promise<any> {
-        const doc = await this.messageRepository.find({
-            order: {
-                createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
-            },
-            take: 10
-        })
-        return {
-            data: doc
-        }
-    }
+    
 
-    async addMessage(content: string): Promise<any> {
-        const message = new Message();
-        message.content = content;
-        await this.messageRepository.save(message)
-    }
+    // async addMessage(content: string): Promise<any> {
+    //     const message = new Message();
+    //     message.content = content;
+    //     await this.messageRepository.save(message)
+    // }
 
     /**
      * 分页查询已删除的任务
