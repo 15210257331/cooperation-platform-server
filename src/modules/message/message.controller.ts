@@ -22,7 +22,6 @@ export class MessageController {
     @Post('/read')
     @UseGuards(AuthGuard('jwt'))
     public async read(@Body() body: { ids: number[], }): Promise<any> {
-        console.log(body);
         return this.messageService.read(body);
     }
 }

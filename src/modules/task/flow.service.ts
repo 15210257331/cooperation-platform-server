@@ -86,7 +86,8 @@ export class FlowService {
         flow.tasks = [];
         const doc = await this.flowRepository.save(flow);
         // 消息通知
-        this.messageService.addMessage(request.user.userId, '新建流程', name);
+        const content = `新创建了一个流程: <b style="color:black;">${name}</b>`
+        this.messageService.addMessage(request.user.userId, '新建流程', content);
         return {
             data: doc,
         }

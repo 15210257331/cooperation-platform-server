@@ -46,7 +46,7 @@ export class MessageService {
         const messageDetail = new MessageDetail();
         messageDetail.title = title;
         messageDetail.avatar = user.avatar;
-        messageDetail.content = `<b>${user.nickname}</b>新创建了一个新流程:<b style="color:black;">${content}</b>`;
+        messageDetail.content = '用户【'+user.nickname+'】' + content;;
         const messageDetailDoc = await this.messageDetailRepository.save(messageDetail);
         const messages = users.map(user => {
             const message = new Message();

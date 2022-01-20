@@ -13,7 +13,7 @@ import * as dayjs from 'dayjs'
 import { Note } from '../../common/entity/note.entity';
 import { Picture } from '../../common/entity/picture.entity';
 import { Flow } from '../../common/entity/flow.entity';
-
+import { MessageService } from '../message/message.service';
 @Injectable()
 export class TaskService {
 
@@ -26,6 +26,7 @@ export class TaskService {
         @InjectRepository(MessageDetail) private readonly MessageDetailRepository: Repository<MessageDetail>,
         @InjectRepository(Message) private readonly MessageRepository: Repository<Message>,
         @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
+        private readonly messageService: MessageService,
     ) { }
 
 
@@ -74,21 +75,8 @@ export class TaskService {
         task.pictures = [];
         task.owner = await this.userRepository.findOne(request.user.userId);
         const doc = await this.taskRepository.save(task);
-        // 消息通知相关
-        const user = await this.userRepository.findOne({
-            where: {
-                id: request.user.userId
-            },
-            select: ["nickname", "avatar"]
-
-        });
-        const message = new MessageDetail();
-        message.title = '新建任务';
-        message.avatar = user.avatar;
-        message.content = `<b>${user.nickname}</b>在流程【${task.flow.name}】下创建了一个新任务:
-                            <b style="color:black;">${name}</b>
-                           `
-        await this.MessageDetailRepository.save(message)
+        const content =  `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`
+        this.messageService.addMessage(request.user.userId, '新建任务', content);
         return {
             data: doc,
         }
@@ -249,14 +237,6 @@ export class TaskService {
             data: data,
         }
     }
-
-    
-
-    // async addMessage(content: string): Promise<any> {
-    //     const message = new Message();
-    //     message.content = content;
-    //     await this.messageRepository.save(message)
-    // }
 
     /**
      * 分页查询已删除的任务
