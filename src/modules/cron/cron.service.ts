@@ -23,16 +23,15 @@ export class CronService {
     // @Cron('5 * * * * *')
     @Interval(10000)
     async handleCron() {
-        // 筛选进行中并且设置了提醒的任务全部任务
+        // 筛选设置了提醒的任务全部任务
         const remindTasks = await this.taskRepository.find({
             where: {
-                // status: 2,
                 reminder: Not(0)
             },
             select: ['name', "endDate", "reminder"],
             relations: ["owner"]
         });
-        
+
         const now = dayjs().format("YYYY-MM-DD HH:mm");
         if (remindTasks) {
             remindTasks.map(task => {

@@ -19,19 +19,9 @@ export class EventsGateway {
   // server 为 io 实例 server中包含多个socket实例
   @WebSocketServer() io: Server;
 
-  // 广播消息
+  // 广播通知消息 针对所有用户
   broadcastMessage(body: any) {
     this.io.emit('notification', body);
-  }
-
-  // 新用户连接至websocket client为每个🔗成功的socket实例
-  @SubscribeMessage('new user')
-  newUser(client: Socket, userId: number): Observable<WsResponse<any>> | any {
-    console.log(`新用户已登录用户ID为${userId}`);
-    const keys = Object.keys(this.socketMap);
-    if (userId) {
-      this.socketMap[userId] = client;
-    }
   }
 
   // 发送任务截止提醒消息
@@ -45,6 +35,16 @@ export class EventsGateway {
       return;
     }
     this.socketMap[userId].emit('reminder', body);
+  }
+
+  // 新用户连接至websocket client为每个🔗成功的socket实例
+  @SubscribeMessage('new user')
+  newUser(client: Socket, userId: number): Observable<WsResponse<any>> | any {
+    console.log(`新用户已登录用户ID为${userId}`);
+    const keys = Object.keys(this.socketMap);
+    if (userId) {
+      this.socketMap[userId] = client;
+    }
   }
 
   @SubscribeMessage('private message')
