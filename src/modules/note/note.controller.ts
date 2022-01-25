@@ -4,6 +4,7 @@ import { ValidationPipe } from '../../common/pipe/validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { NoteAddDTO } from './dto/note-add.dto';
+import { NoteUpdateDTO } from './dto/note-update.dto';
 
 @ApiTags('笔记相关接口')
 @Controller('/note')
@@ -18,6 +19,14 @@ export class NoteController {
     @UseGuards(AuthGuard('jwt'))
     public async add(@Body() roleAddDTO: NoteAddDTO, @Request() request: any): Promise<any> {
         return this.noteService.add(roleAddDTO, request);
+    }
+
+    // 编辑笔记
+    @Post('/update')
+    @UsePipes(new ValidationPipe())
+    @UseGuards(AuthGuard('jwt'))
+    public async update(@Body() noteUpdateDTO: NoteUpdateDTO, @Request() request: any): Promise<any> {
+        return this.noteService.update(noteUpdateDTO, request);
     }
 
     // 笔记详情

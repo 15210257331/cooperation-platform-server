@@ -38,6 +38,15 @@ export class Note {
     cover: string;
 
     @Column({
+        comment: '发布状态',
+        type: 'bool',
+        nullable: true,
+        default: () => true,
+        name: 'publish',
+    })
+    publish: boolean;
+
+    @Column({
         comment: '内容',
         type: 'text',
         name: 'content',

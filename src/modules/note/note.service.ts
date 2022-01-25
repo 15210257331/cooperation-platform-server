@@ -5,6 +5,7 @@ import { Note } from '../../common/entity/note.entity';
 import { Like, Repository } from 'typeorm';
 import { NoteAddDTO } from './dto/note-add.dto';
 import { MessageService } from '../message/message.service';
+import { NoteUpdateDTO } from './dto/note-update.dto';
 @Injectable()
 export class NoteService {
     constructor(
@@ -25,6 +26,20 @@ export class NoteService {
 
         const content = `新添加了一条笔记: <b style="color:black;">${noteAddDTO.title}</b>`
         this.messageService.addMessage(request.user.userId, '新建笔记', content);
+        return {
+            data: doc,
+        };
+    }
+
+    async update(noteUpdateDTO: NoteUpdateDTO, request: any): Promise<any> {
+        const { id, title, cover, overview, content, publish } = noteUpdateDTO;
+        const doc = await this.noteRepository.update(id, {
+            title: title,
+            cover: cover,
+            overview: overview,
+            content: content,
+            publish: publish
+        });
         return {
             data: doc,
         };
