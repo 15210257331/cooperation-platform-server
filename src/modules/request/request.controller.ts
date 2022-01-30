@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestService } from './request.service';
 
@@ -13,6 +13,16 @@ export class RequestController {
     @Get('random')
     async getRandomQuote() {
         return this.requestService.getRandomQuote();
+    }
+
+    @Get('weather')
+    async weatherData(@Query('location') location: any) {
+        return this.requestService.weatherData(location);
+    }
+
+    @Get('cityInfo')
+    async cityInfo(@Query('location') location: any) {
+        return this.requestService.cityInfo(location);
     }
 }
 
