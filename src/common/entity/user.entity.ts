@@ -56,7 +56,7 @@ export class User {
     @Column({
         type: 'varchar',
         nullable: false,
-        default: 'https://c-ssl.duitang.com/uploads/item/201608/02/20160802001436_CtfiH.jpeg',
+        default: 'http://sallery.cn:4000/public/1639992965.webp',
         name: 'avatar',
         comment: '头像'
     })

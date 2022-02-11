@@ -28,13 +28,12 @@ export class Role {
     description: string;
 
     @Column({
-        type: 'int',
+        type: 'bool',
         name: 'valid',
         nullable: true,
-        default: () => 1,
-        comment: '有效性 1有效 2无效'
+        comment: '有效性'
     })
-    valid: number;
+    valid: boolean;
 
     @CreateDateColumn({
         type: 'timestamp',

@@ -13,17 +13,13 @@ export class RoleService {
     ) { }
 
     async roleAdd(roleAddDTO: RoleAddDTO): Promise<any> {
-        const data = new Role();
-        data.name = roleAddDTO.name;
-        data.description = roleAddDTO.description;
-        data.valid = 1;
-        data.authority = [];
-        const doc = await this.roleRepository.insert(data);
-        return {
-            code: 10000,
-            data: doc,
-            msg: 'Success',
-        };
+        const role = new Role();
+        role.name = roleAddDTO.name;
+        role.description = roleAddDTO.description;
+        role.valid = roleAddDTO.valid;
+        role.authority = roleAddDTO.authority;
+        const data = await this.roleRepository.insert(role);
+        return { data };
     }
 
     /**
@@ -56,15 +52,13 @@ export class RoleService {
      * @param body 
      */
     async roleAll(): Promise<any> {
-        const doc = await this.roleRepository.find({
+        const data = await this.roleRepository.find({
             cache: true,
             order: {
                 createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
             },
         });
-        return {
-            data: doc,
-        };
+        return { data };
     }
 
     async roleDelete(id: number | string): Promise<any> {

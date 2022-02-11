@@ -5,5 +5,7 @@ export class RoleAddDTO {
     readonly name: string;
     @IsNotEmpty({ message: '角色描述不能为空' })
     readonly description: string;
+    readonly valid: boolean;
+    readonly authority: string[];
 }
 

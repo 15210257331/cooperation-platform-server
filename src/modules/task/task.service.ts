@@ -223,19 +223,17 @@ export class TaskService {
 
     // 近14天任务完成情况
     async trend(): Promise<any> {
-        const doc = await this.userRepository.find({
-            relations: ["groups", "groups.tasks"],
-            take: 7
-        });
+        // const doc = await this.userRepository.find({
+        //     relations: ["groups", "groups.tasks"],
+        //     take: 7
+        // });
         const data = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14].reverse().map((item) => {
             return {
                 date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
                 total: Math.floor(Math.random() * 101)
             }
         })
-        return {
-            data: data,
-        }
+        return {data}
     }
 
     /**

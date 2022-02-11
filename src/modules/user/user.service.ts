@@ -21,26 +21,27 @@ export class UserService {
     // 登录
     async login(loginDTO: LoginDTO): Promise<any> {
         const { username, password } = loginDTO;
-        const doc = await this.userRepository.findOne({
+        const user = await this.userRepository.findOne({
             where: {
                 username: username,
             },
             relations: ['roles'],
         });
-        if (doc) {
+        if (user) {
             const hashPwd = encryptPassword(password, this.salt); // 加密后的密码
-            if (doc.password === password) {
+            if (user.password === hashPwd) {
                 const payload = {
                     username: username,
-                    userId: doc.id
+                    userId: user.id
                 }
                 return {
                     data: {
                         // 生成token
                         token: this.jwtService.sign(payload),
-                        roles: doc.roles,
-                        userId: doc.id
-                    }
+                        roles: user.roles,
+                        userId: user.id
+                    },
+                    message: '登录成功！'
                 }
             } else {
                 return {
@@ -72,19 +73,19 @@ export class UserService {
             }
         }
         const hashPwd = encryptPassword(registerDTO.password, this.salt); // 加密后的密码
-        const data = new User();
-        data.username = registerDTO.username;
-        // data.password = registerDTO.password;
-        data.password = hashPwd;
-        data.nickname = registerDTO.nickname;
-        data.email = registerDTO.email;
-        data.phone = registerDTO.phone;
-        data.sex = 1;
-        data.introduction = registerDTO.introduction;
-        data.roles = []
-        await this.userRepository.insert(data);
+        const user = new User();
+        user.username = registerDTO.username;
+        user.password = hashPwd;
+        user.nickname = registerDTO.nickname;
+        user.email = registerDTO.email;
+        user.phone = registerDTO.phone;
+        user.sex = 1;
+        user.introduction = registerDTO.introduction;
+        user.roles = []
+        await this.userRepository.insert(user);
         return {
-            data: data
+            data: '注册成功！',
+            message: '注册成功！'
         };
     }
 
@@ -95,12 +96,10 @@ export class UserService {
      */
     async getUserInfo(request: any): Promise<any> {
         const id = request.user.userId;
-        const doc = await this.userRepository.findOne(id, {
+        const data = await this.userRepository.findOne(id, {
             relations: ['roles'],
         });
-        return {
-            data: doc,
-        }
+        return { data }
     }
 
     // 删除用户
