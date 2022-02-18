@@ -14,8 +14,6 @@ export class RegisterDTO {
     @IsNotEmpty({ message: '手机号不能为空' })
     @IsString()
     readonly phone: string;
-
-    @IsNotEmpty({ message: '邮箱不能为空' })
     readonly email: string;
 
     readonly introduction: string;

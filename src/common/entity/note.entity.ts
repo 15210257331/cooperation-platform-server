@@ -62,6 +62,14 @@ export class Note {
     })
     createDate: Date;
 
+    @CreateDateColumn({
+        type: 'timestamp',
+        nullable: true,
+        name: 'publishDate',
+        comment: '发布时间',
+    })
+    publishDate: Date;
+
     // 关联到哪个任务
     @ManyToOne(() => Task, task => task.notes)
     @JoinColumn()
