@@ -31,6 +31,13 @@ export class UserController {
         return this.userService.register(data);
     }
 
+    // 获取验证码
+    @Post('/code')
+    @UsePipes(new ValidationPipe())
+    public async code(@Body() data: any): Promise<any> {
+        return this.userService.code(data);
+    }
+
     // 获取用户信息
     @Get('/info')
     @UseGuards(AuthGuard('jwt'))

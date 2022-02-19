@@ -8,6 +8,14 @@ export function makeSalt(): string {
 }
 
 /**
+ * 生成四位验证码
+ * @returns 
+ */
+export function createCode(): string {
+  return '1234'.split('').map(() => Math.floor(Math.random() * 10)).join('');
+}
+
+/**
  * Encrypt password
  * @param password 原始密码
  * @param salt 密码盐

@@ -16,6 +16,7 @@ import { NoteModule } from './modules/note/note.module';
 import { EmailModule } from './modules/email/email.module';
 import { MessageModule } from './modules/message/message.module';
 import { SocketModule } from './modules/socket/socket.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
 
 
 @Module({
@@ -73,7 +74,8 @@ import { SocketModule } from './modules/socket/socket.module';
     CronModule,
     SocketModule,
     EmailModule,
-    MessageModule
+    MessageModule,
+    StatisticsModule
   ],
   controllers: [AppController],
   providers: [AppService],
