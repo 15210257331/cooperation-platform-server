@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../common/entity/user.entity';
 import { Repository, Like, Any } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { makeSalt, encryptPassword } from '../../utils/utils';
+import { makeSalt, encryptPassword, tengxunyunApiDecode } from '../../utils/utils';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { Role } from '../../common/entity/role.entity';
@@ -128,8 +128,8 @@ export class UserService {
                  * 这里采用的是从环境变量读取的方式，需要在环境变量中先设置这两个值。
                  * 你也可以直接在代码中写死密钥对，但是小心不要将代码复制、上传或者分享给他人，
                  * 以免泄露密钥对危及你的财产安全。 */
-                secretId: this.configService.get('secretId'),
-                secretKey: this.configService.get('secretKey'),
+                secretId: tengxunyunApiDecode(this.configService.get('secretId')),
+                secretKey: tengxunyunApiDecode(this.configService.get('secretKey')),
             },
             /* 必填：地域信息，可以直接填写字符串ap-guangzhou，支持的地域列表参考 https://cloud.tencent.com/document/api/382/52071#.E5.9C.B0.E5.9F.9F.E5.88.97.E8.A1.A8 */
             region: "ap-guangzhou",
