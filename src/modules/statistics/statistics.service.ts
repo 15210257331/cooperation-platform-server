@@ -35,10 +35,8 @@ export class StatisticsService {
         const doc = await this.statisticsRepository.find();
         let todayDoc = doc.filter(item => item.visitDate === dayjs().format('YYYY-MM-DD'));
         const today = todayDoc.length > 0 ? todayDoc[0].count : 0;
-
         let yestodayDoc = doc.filter(item => item.visitDate === dayjs().subtract(1, 'day').format('YYYY-MM-DD'));
-        const yestoday = yestodayDoc.length > 0 ? todayDoc[0].count : 0;
-        console.log(yestoday);
+        const yestoday = yestodayDoc.length > 0 ? yestodayDoc[0].count : 0;
         let total = 0;
         doc.map(item => {
             total += item.count;
