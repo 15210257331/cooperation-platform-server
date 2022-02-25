@@ -51,4 +51,21 @@ export class StatisticsService {
         return { data };
     }
 
+    async userRank(): Promise<any> {
+        const user = await this.userRepository.find({
+            take: 5
+        });
+        const data = user.map((item, index) => {
+            return {
+                nickname: item.nickname,
+                total: 67,
+                complete: 36,
+                percent: 45,
+                rank: index + 1,
+
+            }
+        })
+        return { data }
+    }
+
 }

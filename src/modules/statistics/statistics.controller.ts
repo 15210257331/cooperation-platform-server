@@ -21,4 +21,10 @@ export class StatisticsController {
     public async data(): Promise<any> {
         return this.statisticsService.data();
     }
+    
+    // 统计数据
+    @Get('/userRank')
+    public async userRank(): Promise<any> {
+        return this.statisticsService.userRank();
+    }
 }
