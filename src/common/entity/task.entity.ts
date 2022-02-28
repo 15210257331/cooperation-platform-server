@@ -50,6 +50,15 @@ export class Task {
     })
     reminder: number;
 
+    @Column({
+        type: 'bool',
+        name: 'complete',
+        nullable: false,
+        default: false,
+        comment: '任务是否已完成'
+    })
+    complete: boolean;
+
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,

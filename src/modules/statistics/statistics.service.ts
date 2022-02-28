@@ -31,7 +31,7 @@ export class StatisticsService {
 
     }
 
-    async data(): Promise<any> {
+    async visitCount(): Promise<any> {
         const doc = await this.statisticsRepository.find();
         let todayDoc = doc.filter(item => item.visitDate === dayjs().format('YYYY-MM-DD'));
         const today = todayDoc.length > 0 ? todayDoc[0].count : 0;
@@ -51,21 +51,63 @@ export class StatisticsService {
         return { data };
     }
 
-    async userRank(): Promise<any> {
-        const user = await this.userRepository.find({
-            take: 5
+    async userRank(type: number): Promise<any> {
+        let users = await this.userRepository.find({
+            relations: ['tasks']
         });
-        const data = user.map((item, index) => {
+        let data = users.map((user, index) => {
+            const total = user.tasks.length;
+            const complete = user.tasks.filter(task => task.complete === true).length;
+            const percent = total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0;
             return {
-                nickname: item.nickname,
-                total: 67,
-                complete: 36,
-                percent: 45,
-                rank: index + 1,
-
+                nickname: user.nickname,
+                total: total,
+                complete: complete,
+                percent: percent,
             }
         })
+        if (type === 1) {
+            data.sort((a, b) => b.total - a.total)
+        } else {
+            data.sort((a, b) => b.percent - a.percent)
+        }
+        if (users.length > 5) {
+            data = data.slice(0, 5)
+        }
         return { data }
+    }
+
+    // 近14天任务完成情况
+    async taskTrend(type: number): Promise<any> {
+        let data = [];
+        if (type === 1) {
+            data = [1, 2, 3, 4, 5, 6, 7];
+            const doc = data.reverse().map((item) => {
+                return {
+                    date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
+                    total: Math.floor(Math.random() * 101)
+                }
+            })
+            return { data: doc }
+        } else if (type === 2) {
+            data = [1, 3, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
+            const doc = data.reverse().map((item) => {
+                return {
+                    date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
+                    total: Math.floor(Math.random() * 101)
+                }
+            })
+            return { data: doc }
+        } else {
+            data = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12];
+            const doc = data.reverse().map((item) => {
+                return {
+                    date: dayjs().subtract(item, 'month').format('YY-MM') + '月',
+                    total: Math.floor(Math.random() * 101)
+                }
+            })
+            return { data: doc }
+        }
     }
 
 }

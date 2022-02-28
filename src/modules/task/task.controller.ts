@@ -99,15 +99,4 @@ export class TaskController {
         console.log(123);
         return this.taskService.deleteNote(id);
     }
-
-    /**
-     * 任务数量排行榜
-     * @param id 
-     * @returns 
-     */
-    @Get('/trend')
-    @UseGuards(AuthGuard('jwt'))
-    public async trend(): Promise<any> {
-        return this.taskService.trend();
-    }
 }
