@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../common/entity/user.entity';
+import { User } from '../../entity/user.entity';
 import { Repository } from 'typeorm';
 // JwtService 不是全局服务 只有引入JwtModule 的模块才可以使用JwtService
 import { JwtService } from '@nestjs/jwt';

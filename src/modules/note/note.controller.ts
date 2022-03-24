@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
 import { NoteService } from './note.service';
-import { ValidationPipe } from '../../common/pipe/validation.pipe';
+import { ValidationPipe } from '../../pipe/validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { NoteAddDTO } from './dto/note-add.dto';

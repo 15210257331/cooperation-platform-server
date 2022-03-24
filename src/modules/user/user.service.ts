@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../common/entity/user.entity';
+import { User } from '../../entity/user.entity';
 import { Repository, Like, Any } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { makeSalt, encryptPassword, tengxunyunApiDecode } from '../../utils/utils';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
-import { Role } from '../../common/entity/role.entity';
+import { Role } from '../../entity/role.entity';
 import { createCode } from "../../utils/utils"
 import { ConfigService } from '@nestjs/config';
 const tencentcloud = require("tencentcloud-sdk-nodejs");
@@ -41,28 +41,18 @@ export class UserService {
                     username: username,
                     userId: user.id
                 }
+                // 生成token
+                const token = this.jwtService.sign(payload);
                 return {
-                    data: {
-                        // 生成token
-                        token: this.jwtService.sign(payload),
-                        roles: user.roles,
-                        userId: user.id
-                    },
-                    message: '登录成功！'
+                    token: token,
+                    roles: user.roles,
+                    userId: user.id
                 }
             } else {
-                return {
-                    code: 9999,
-                    message: '您输入的密码错误',
-                    data: "您输入的密码错误!"
-                }
+                throw new HttpException('您输入的密码错误!', 200);
             }
         } else {
-            return {
-                code: 9999,
-                message: '该用户名不存在',
-                data: '该用户名不存在!'
-            }
+            throw new HttpException('该用户名不存在!', 200);
         }
     }
 
@@ -75,18 +65,12 @@ export class UserService {
         const { nickname, phone, verificationCode, password } = registerDTO;
         const doc = await this.userRepository.findOne({ username: phone });
         if (doc) {
-            return {
-                code: 9999,
-                message: '用户已存在'
-            }
+            throw new HttpException('用户已存在', 200)
         }
         if (verificationCode === this.phoneCodeList[phone]) {
             this.phoneCodeList = [];
         } else {
-            return {
-                code: 9999,
-                message: '验证码输入错误！'
-            }
+            throw new HttpException('验证码输入错误！', 200)
         }
         const hashPwd = encryptPassword(password, this.salt); // 加密后的密码
         const user = new User();
@@ -99,9 +83,7 @@ export class UserService {
         user.introduction = '';
         user.roles = []
         await this.userRepository.insert(user);
-        return {
-            data: '注册成功！',
-        };
+        return "注册成功！"
     }
 
     /**
@@ -113,11 +95,7 @@ export class UserService {
         const { phone } = body;
         const doc = await this.userRepository.findOne({ username: phone });
         if (doc) {
-            // return {
-            //     code: 9999,
-            //     message: '该手机号已被注册',
-            //     data: '该手机号已被注册!'
-            // }
+            // throw new HttpException('该手机号已被注册!', 200)
         }
         // 验证码
         const code = createCode();
@@ -179,9 +157,7 @@ export class UserService {
         const result = await client.SendSms(params);
         this.phoneCodeList[phone] = code;
         if (result?.SendStatusSet[0].Code === 'Ok') {
-            return {
-                data: '验证码发送成功'
-            }
+            return '验证码发送成功'
         }
     }
 
@@ -195,15 +171,13 @@ export class UserService {
         const data = await this.userRepository.findOne(id, {
             relations: ['roles'],
         });
-        return { data }
+        return data
     }
 
     // 删除用户
     async deleteUser(id: number | string): Promise<any> {
         const doc = await this.userRepository.delete(id)
-        return {
-            data: doc,
-        };
+        return doc;
     }
 
     // 更新用户信息
@@ -216,9 +190,7 @@ export class UserService {
             avatar: avatar,
             introduction: introduction
         });
-        return {
-            data: doc,
-        }
+        return doc;
     }
 
     // 分页查询用户列表
@@ -250,10 +222,8 @@ export class UserService {
             })
         })
         return {
-            data: {
-                list: doc,
-                total: count
-            },
+            list: doc,
+            total: count
         };
     }
 
@@ -268,9 +238,7 @@ export class UserService {
         const roles = await this.roleRepository.findByIds(roleIds);
         user.roles = roles;
         const doc = await this.userRepository.save(user);
-        return {
-            data: doc,
-        };
+        return doc;
     }
 
     /**
@@ -282,9 +250,7 @@ export class UserService {
         const doc = await this.userRepository.findOne(id, {
             relations: ['roles'],
         });
-        return {
-            data: doc,
-        };
+        return doc;
     }
 
 
@@ -312,10 +278,6 @@ export class UserService {
             return b.total - a.total;
         })
         doc = doc.slice(0, 10)
-        return {
-            data: doc,
-        };
+        return doc;
     }
-
-
 }

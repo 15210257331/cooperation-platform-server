@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { ValidationPipe } from '../../common/pipe/validation.pipe';
+import { ValidationPipe } from '../../pipe/validation.pipe';
 import { RoleAddDTO } from './dto/role-add.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleUpdateDTO } from './dto/role-update.dto';

@@ -3,7 +3,7 @@ import { Controller, Get, Body, UseGuards, Post, UsePipes, Delete, Param, Reques
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
-import { ValidationPipe } from '../../common/pipe/validation.pipe';
+import { ValidationPipe } from '../../pipe/validation.pipe';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';

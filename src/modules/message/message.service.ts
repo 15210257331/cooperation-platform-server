@@ -1,11 +1,10 @@
 import { Injectable, Module } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Message } from '../../common/entity/message.entity';
-import { MessageDetail } from '../../common/entity/message-detail.entity';
+import { Message } from '../../entity/message.entity';
+import { MessageDetail } from '../../entity/message-detail.entity';
 import { EventsGateway } from '../socket/events.gateway';
-import { User } from '../../common/entity/user.entity';
+import { User } from '../../entity/user.entity';
 
 @Injectable()
 export class MessageService {
@@ -19,7 +18,7 @@ export class MessageService {
 
     // 消息
     async list(request: any): Promise<any> {
-        const doc = await this.messageRepository.createQueryBuilder("message")
+        return await this.messageRepository.createQueryBuilder("message")
             .where(qb => {
                 const subQuery = qb
                     .subQuery()
@@ -34,9 +33,9 @@ export class MessageService {
             .take(30)
             .orderBy('message.sendDate', 'DESC')
             .getMany();
-        return {
-            data: doc,
-        };
+        // return {
+        //     data: doc,
+        // };
     }
 
     // 添加消息通知

@@ -2,7 +2,7 @@ import { Injectable, Module } from '@nestjs/common';
 import { Cron, Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { Task } from '../../common/entity/task.entity';
+import { Task } from '../../entity/task.entity';
 import { EventsGateway } from '../socket/events.gateway';
 import * as dayjs from 'dayjs'
 import { EmailService } from "../email/email.service"

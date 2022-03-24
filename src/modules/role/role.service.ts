@@ -4,7 +4,7 @@ import { Like, Repository } from 'typeorm';
 import { RoleAddDTO } from './dto/role-add.dto';
 import { RoleAuthorityDTO } from './dto/role-authority';
 import { RoleUpdateDTO } from './dto/role-update.dto';
-import { Role } from '../../common/entity/role.entity';
+import { Role } from '../../entity/role.entity';
 
 @Injectable()
 export class RoleService {

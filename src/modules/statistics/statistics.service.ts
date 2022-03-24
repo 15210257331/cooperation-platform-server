@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Statistics } from '../../common/entity/statistics.entity';
+import { Statistics } from '../../entity/statistics.entity';
 import { Like, Repository } from 'typeorm';
-import { User } from '../../common/entity/user.entity';
+import { User } from '../../entity/user.entity';
 import * as dayjs from 'dayjs';
 
 @Injectable()

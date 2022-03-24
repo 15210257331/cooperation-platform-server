@@ -1,18 +1,18 @@
 import { map } from 'rxjs/operators';
-import { SubItem } from './../../common/entity/sub-item.entity';
+import { SubItem } from '../../entity/sub-item.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generate8Code } from '../../utils/utils';
-import { User } from '../../common/entity/user.entity';
-import { Task } from '../../common/entity/task.entity';
-import { MessageDetail } from '../../common/entity/message-detail.entity';
-import { Message } from '../../common/entity/message.entity'
+import { User } from '../../entity/user.entity';
+import { Task } from '../../entity/task.entity';
+import { MessageDetail } from '../../entity/message-detail.entity';
+import { Message } from '../../entity/message.entity'
 import * as dayjs from 'dayjs'
-import { Note } from '../../common/entity/note.entity';
-import { Picture } from '../../common/entity/picture.entity';
-import { Flow } from '../../common/entity/flow.entity';
+import { Note } from '../../entity/note.entity';
+import { Picture } from '../../entity/picture.entity';
+import { Flow } from '../../entity/flow.entity';
 import { MessageService } from '../message/message.service';
 @Injectable()
 export class TaskService {

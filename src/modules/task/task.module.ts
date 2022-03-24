@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
-import { User } from '../../common/entity/user.entity';
+import { User } from '../../entity/user.entity';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
-import { Task } from '../../common/entity/task.entity';
-import { SubItem } from '../../common/entity/sub-item.entity'
-import { MessageDetail } from '../../common/entity/message-detail.entity';
-import { Note } from '../../common/entity/note.entity';
-import { Picture } from '../../common/entity/picture.entity';
+import { Task } from '../../entity/task.entity';
+import { SubItem } from '../../entity/sub-item.entity'
+import { MessageDetail } from '../../entity/message-detail.entity';
+import { Note } from '../../entity/note.entity';
+import { Picture } from '../../entity/picture.entity';
 import { FlowService } from './flow.service';
 import { FlowController } from './flow.controller';
-import { Flow } from '../../common/entity/flow.entity';
-import { Message } from '../../common/entity/message.entity';
+import { Flow } from '../../entity/flow.entity';
+import { Message } from '../../entity/message.entity';
 import { MessageModule } from '../message/message.module';
 
 @Module({
