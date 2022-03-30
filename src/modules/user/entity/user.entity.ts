@@ -1,11 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany, BeforeInsert } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Flow } from './flow.entity';
-import { Note } from './note.entity';
-import { Role } from './role.entity';
-import { Task } from './task.entity';
-import { Message } from './message.entity';
-import { encryptPassword } from '../utils/utils';
+import { Flow } from '../../task/entity/flow.entity';
+import { Note } from '../../note/entity/note.entity';
+import { Role } from '../../role/entity/role.entity';
+import { Task } from '../../task/entity/task.entity';
+import { Message } from '../../message/entity/message.entity';
+import { encryptPassword } from '../../../utils'
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型

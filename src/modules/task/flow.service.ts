@@ -1,13 +1,13 @@
-import { Task } from '../../entity/task.entity';
+import { Task } from './entity/task.entity';
 import { HttpException, Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user.entity';
-import { MessageDetail } from '../../entity/message-detail.entity';
-import { Flow } from '../../entity/flow.entity';
+import { User } from '../user/entity/user.entity';
+import { MessageDetail } from '../message/entity/message-detail.entity';
+import { Flow } from './entity/flow.entity';
 import { FlowAddDTO } from './dto/flow-add.dto';
 import { FlowUpdateDTO } from './dto/flow-update.dto';
-import { Message } from '../../entity/message.entity';
+import { Message } from '../message/entity/message.entity';
 import { MessageService } from '../message/message.service';
 @Injectable()
 export class FlowService {

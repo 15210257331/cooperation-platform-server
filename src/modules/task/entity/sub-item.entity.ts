@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../../user/entity/user.entity';
 import { Task } from './task.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型

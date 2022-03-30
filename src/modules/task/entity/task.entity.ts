@@ -1,5 +1,5 @@
-import { Note } from './note.entity';
-import { User } from './user.entity';
+import { Note } from '../../note/entity/note.entity';
+import { User } from '../../user/entity/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { SubItem } from './sub-item.entity';
 import { Picture } from './picture.entity';

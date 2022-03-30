@@ -1,7 +1,7 @@
-import { User } from '../../entity/user.entity';
+import { User } from '../user/entity/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Note } from '../../entity/note.entity';
+import { Note } from './entity/note.entity';
 import { Like, Repository } from 'typeorm';
 import { NoteAddDTO } from './dto/note-add.dto';
 import { MessageService } from '../message/message.service';

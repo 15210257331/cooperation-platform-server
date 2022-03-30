@@ -4,17 +4,19 @@ import { Module } from '@nestjs/common';
 import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
 import { resolve } from "path";
+import { ConfigService } from '@nestjs/config';
 
 @Module({
     imports: [
         MailerModule.forRootAsync({
-            useFactory: () => ({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
                 transport: {
                     host: "smtp.163.com",
                     port: "465",
                     auth: {
                         user: "15210257331@163.com",
-                        pass: "xxxxxxxx"
+                        pass: configService.get('EMAIL_PASS')
                     }
                 },
                 defaults: {

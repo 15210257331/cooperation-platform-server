@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { User } from '../../entity/user.entity';
+import { User } from './entity/user.entity';
 import { AuthModule } from '../auth/auth.module';
-import { Role } from '../../entity/role.entity';
+import { Role } from '../role/entity/role.entity';
 import { StatisticsModule } from '../statistics/statistics.module';
-import { Statistics } from '../../entity/statistics.entity';
+import { Statistics } from '../statistics/entity/statistics.entity';
 import { SmsService } from './sms.service';
 import { HttpModule } from '@nestjs/axios';
 

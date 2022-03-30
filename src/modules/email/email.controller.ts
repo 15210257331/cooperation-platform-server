@@ -10,7 +10,7 @@ export class EmailController {
 
     @Get()
     sendEmail() {
-        this.emailService.sendEmail('');
+        this.emailService.sendEmail('993865015@qq.com');
         return 'ok';
     }
 }

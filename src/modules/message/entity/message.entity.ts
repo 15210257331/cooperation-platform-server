@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { MessageDetail } from './message-detail.entity';
-import { User } from './user.entity';
+import { User } from '../../user/entity/user.entity';
 
 // 用户消息表 储存用户的消息
 

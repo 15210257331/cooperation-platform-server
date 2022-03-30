@@ -21,5 +21,6 @@ export default () => {
         },
         secretId: process.env.secretId,
         secretKey: process.env.secretKey,
+        emailPass: process.env.EMAIL_PASS,
     }
 }

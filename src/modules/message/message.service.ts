@@ -1,10 +1,10 @@
 import { Injectable, Module } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Message } from '../../entity/message.entity';
-import { MessageDetail } from '../../entity/message-detail.entity';
+import { Message } from './entity/message.entity';
+import { MessageDetail } from './entity/message-detail.entity';
 import { EventsGateway } from '../socket/events.gateway';
-import { User } from '../../entity/user.entity';
+import { User } from '../user/entity/user.entity';
 
 @Injectable()
 export class MessageService {

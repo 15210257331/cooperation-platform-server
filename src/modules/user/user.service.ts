@@ -1,13 +1,12 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user.entity';
+import { User } from './entity/user.entity';
 import { Repository, Like, Any } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { encryptPassword } from '../../utils/utils';
+import { encryptPassword,createCode } from '../../utils'
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
-import { Role } from '../../entity/role.entity';
-import { createCode } from "../../utils/utils"
+import { Role } from '../role/entity/role.entity';
 import { SmsService } from './sms.service';
 import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';

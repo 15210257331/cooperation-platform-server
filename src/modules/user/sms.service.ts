@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { tengxunyunApiDecode } from '../../utils/utils';
+import { tengxunyunApiDecode } from '../../utils'
 import { ConfigService } from '@nestjs/config';
 const tencentcloud = require("tencentcloud-sdk-nodejs");
 const smsClient = tencentcloud.sms.v20210111.Client;

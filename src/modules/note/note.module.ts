@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../../entity/user.entity';
-import { Note } from '../../entity/note.entity';
+import { User } from '../user/entity/user.entity';
+import { Note } from './entity/note.entity';
 import { NoteController } from './note.controller';
 import { NoteService } from './note.service';
-import { MessageDetail } from '../../entity/message-detail.entity';
+import { MessageDetail } from '../message/entity/message-detail.entity';
 import { MessageModule } from '../message/message.module';
 @Module({
   imports: [

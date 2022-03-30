@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Task } from './task.entity';
-import { User } from './user.entity';
+import { User } from '../../user/entity/user.entity';
 @Entity()
 export class Flow {
     @PrimaryGeneratedColumn()
