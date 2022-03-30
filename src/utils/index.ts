@@ -45,10 +45,3 @@ export const flatten = (arr: any[]): any[] => {
   }
   return arr;
 }
-
-// 解密腾讯云的api 秘钥   7 9 
-export const tengxunyunApiDecode = (value: string) => {
-  let result = value.split('');
-  result.splice(6, 2);
-  return result.join('');
-}

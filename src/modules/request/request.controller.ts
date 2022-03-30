@@ -28,7 +28,7 @@ export class RequestController {
 
     @Get('picture')
     async picture() {
-        return this.requestService.picture();
+        return this.requestService.getPicture();
     }
 }
 
