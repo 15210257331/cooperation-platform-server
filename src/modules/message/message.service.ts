@@ -33,9 +33,6 @@ export class MessageService {
             .take(30)
             .orderBy('message.sendDate', 'DESC')
             .getMany();
-        // return {
-        //     data: doc,
-        // };
     }
 
     // 添加消息通知
@@ -45,7 +42,7 @@ export class MessageService {
         const messageDetail = new MessageDetail();
         messageDetail.title = title;
         messageDetail.avatar = user.avatar;
-        messageDetail.content = '用户【'+user.nickname+'】' + content;;
+        messageDetail.content = '用户【' + user.nickname + '】' + content;;
         const messageDetailDoc = await this.messageDetailRepository.save(messageDetail);
         const messages = users.map(user => {
             const message = new Message();
@@ -56,21 +53,14 @@ export class MessageService {
         })
         const messageDoc = await this.messageRepository.save(messages);
         this.eventsGateway.broadcastMessage('您有一条新的消息通知！');
-        return {
-            data: messageDoc,
-        }
+        return messageDoc;
     }
 
     // 消息标记已读
     async read(body: { ids: number[] },): Promise<any> {
         const { ids } = body;
-        const doc = await this.messageRepository.update(ids, {
+        return await this.messageRepository.update(ids, {
             read: true,
         })
-        return {
-            data: doc
-        }
     }
-
-
 }

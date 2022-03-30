@@ -24,21 +24,10 @@ export class TaskAddDTO {
     readonly reminder: number;
 
     @ApiProperty()
-    @IsNotEmpty({ message: '工作量' })
-    readonly workload: number;
-
-    @ApiProperty()
     @IsNotEmpty({ message: '开始时间不能为空' })
     readonly startDate: Date;
 
     @ApiProperty()
     @IsNotEmpty({ message: '截止时间不能为空' })
     readonly endDate: Date;
-
-    @ApiProperty()
-    readonly subItems: string;
-
-    @IsString()
-    readonly pictures: string;
-
 }

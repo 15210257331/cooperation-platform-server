@@ -7,14 +7,17 @@ import { AuthModule } from '../auth/auth.module';
 import { Role } from '../../entity/role.entity';
 import { StatisticsModule } from '../statistics/statistics.module';
 import { Statistics } from '../../entity/statistics.entity';
+import { SmsService } from './sms.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User,Role]),
         AuthModule, // AuthModule 导出了 JwtModule JwtService依赖于JwtModule 否则userModule 无法使用JwtService
-        StatisticsModule
+        StatisticsModule,
+        HttpModule
     ],
-    providers: [UserService],
+    providers: [UserService,SmsService],
     controllers: [UserController],
     exports: [UserService]
 })

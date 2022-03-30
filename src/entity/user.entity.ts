@@ -1,9 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToMany, BeforeInsert } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Flow } from './flow.entity';
 import { Note } from './note.entity';
 import { Role } from './role.entity';
 import { Task } from './task.entity';
 import { Message } from './message.entity';
+import { encryptPassword } from '../utils/utils';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -23,10 +25,12 @@ export class User {
     })
     username: string;
 
+    @Exclude()
     @Column({
-        length: 500,
+        length: 100,
         type: 'varchar',
         nullable: false,
+        name: 'password',
         comment: '密码',
     })
     password: string;
@@ -34,6 +38,7 @@ export class User {
     @Column({
         type: 'varchar',
         length: 50,
+        nullable: true,
         charset: 'utf8mb4',
         comment: '姓名/昵称'
     })
@@ -49,7 +54,7 @@ export class User {
     @Column({
         type: 'varchar',
         length: 11,
-        comment: '电话'
+        comment: '手机号'
     })
     phone: string;
 
@@ -61,24 +66,6 @@ export class User {
         comment: '头像'
     })
     avatar: string;
-
-    @Column({
-        type: 'text',
-        comment: '个人介绍',
-        nullable: true,
-        name: 'introduction',
-        charset: 'utf8mb4',
-    })
-    introduction: string;
-
-    @Column({
-        type: 'int',
-        name: 'sex',
-        nullable: false,
-        default: () => 1,
-        comment: '性别 1表示男 2表示女'
-    })
-    sex: number;
 
     @Column({
         type: 'int',
@@ -124,4 +111,11 @@ export class User {
 
     @OneToMany(() => Message, message => message.belong)
     messages: Message[];
+
+
+    // 在数据插入数据库的时候 会执行encryptPassword方法
+    @BeforeInsert()
+    async encryptPassword() {
+        this.password = encryptPassword(this.password);
+    }
 }

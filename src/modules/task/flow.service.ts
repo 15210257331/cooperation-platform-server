@@ -1,5 +1,5 @@
 import { Task } from '../../entity/task.entity';
-import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
+import { HttpException, Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
@@ -23,7 +23,6 @@ export class FlowService {
 
     /**
      * 查询当前登录用户的流程列表
-     * @param id 
      */
     async list(keywords: string, request: any): Promise<any> {
         const flows = await this.flowRepository.createQueryBuilder("flow")
@@ -42,7 +41,7 @@ export class FlowService {
             .leftJoinAndSelect('tasks.pictures', 'pictures')
             .leftJoinAndSelect('tasks.notes', 'notes')
             .getMany();
-        const doc = flows.map(item => {
+        return flows.map(item => {
             let tasks = item.tasks;
             if (keywords) {
                 tasks = item.tasks.filter(item => item.name.includes(keywords));
@@ -51,13 +50,10 @@ export class FlowService {
                 tasks: tasks
             })
         })
-        return {
-            data: doc,
-        };
     }
 
     async all(request: any): Promise<any> {
-        const doc = await this.flowRepository.createQueryBuilder("flow")
+        return await this.flowRepository.createQueryBuilder("flow")
             .where(qb => {
                 const subQuery = qb
                     .subQuery()
@@ -69,9 +65,6 @@ export class FlowService {
             })
             .setParameter("id", request.user.userId)
             .getMany();
-        return {
-            data: doc,
-        };
     }
 
     // 添加节点
@@ -88,9 +81,7 @@ export class FlowService {
         // 消息通知
         const content = `新创建了一个流程: <b style="color:black;">${name}</b>`
         this.messageService.addMessage(request.user.userId, '新建流程', content);
-        return {
-            data: doc,
-        }
+        return doc
     }
 
     // 更新节点
@@ -106,9 +97,7 @@ export class FlowService {
         const doc = await this.flowRepository.findOne(id, {
             relations: ["tasks", "tasks.subItems", "tasks.notes", "tasks.pictures"]
         });
-        return {
-            data: doc
-        }
+        return doc;
     }
 
     // 删除节点
@@ -117,17 +106,10 @@ export class FlowService {
         // 如果该分组下的任务不为空则不允许删除
         const tasks = await maneger.find(Task, { flow: flow });
         if (tasks.length > 0) {
-            return {
-                code: 9999,
-                data: '该分组下存在任务，请先删除该分组下的任务',
-                message: '该分组任务不为空，无法删除'
-            }
+            throw new HttpException('该分组任务不为空，无法删除', 200)
         }
         // 删除分组数据
-        const doc = await maneger.delete(Flow, id);
-        return {
-            data: doc,
-        };
+        return await maneger.delete(Flow, id);
     }
 
 
@@ -145,14 +127,8 @@ export class FlowService {
         // `)
         // .getMany()
 
-        const doc = await this.flowRepository.findOne(groupId, {
+        return await this.flowRepository.findOne(groupId, {
             relations: ["creator", "tasks"]
         })
-        return {
-            data: doc,
-        };
     }
-
-
-
 }

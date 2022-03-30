@@ -18,8 +18,7 @@ export class RoleService {
         role.description = roleAddDTO.description;
         role.valid = roleAddDTO.valid;
         role.authority = roleAddDTO.authority;
-        const data = await this.roleRepository.insert(role);
-        return { data };
+        return await this.roleRepository.insert(role);
     }
 
     /**
@@ -40,11 +39,9 @@ export class RoleService {
             take: size,
         });
         return {
-            data: {
-                list: doc,
-                total: count
-            },
-        };
+            list: doc,
+            total: count
+        }
     }
 
     /**
@@ -52,39 +49,29 @@ export class RoleService {
      * @param body 
      */
     async roleAll(): Promise<any> {
-        const data = await this.roleRepository.find({
+        return await this.roleRepository.find({
             cache: true,
             order: {
                 createDate: 'DESC' //ASC 按时间正序 DESC 按时间倒序
             },
         });
-        return { data };
     }
 
     async roleDelete(id: number | string): Promise<any> {
-        const doc = await this.roleRepository.delete(id)
-        return {
-            data: doc,
-        };
+        return await this.roleRepository.delete(id)
     }
 
     async roleInfo(id: number): Promise<any> {
-        const doc = await this.roleRepository.findOne(id)
-        return {
-            data: doc,
-        };
+        return await this.roleRepository.findOne(id)
     }
 
     // 修改角色信息 包括本角色的权限修改
     async roleUpdate(roleUpdateDTO: RoleUpdateDTO): Promise<any> {
         const { id, authority, name, description } = roleUpdateDTO;
-        const doc = await this.roleRepository.update(id, {
+        return await this.roleRepository.update(id, {
             'name': roleUpdateDTO.name,
             'description': roleUpdateDTO.description,
             'authority': authority,
         });
-        return {
-            data: doc,
-        };
     }
 }

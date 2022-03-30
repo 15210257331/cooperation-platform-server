@@ -54,7 +54,8 @@
     "stacktrace-js": "^2.0.2",
     "swagger-ui-express": "^4.1.6",
     "tencentcloud-sdk-nodejs": "^4.0.291",
-    "typeorm": "0.2.25"
+    "typeorm": "0.2.25",
+    "urlencode": "^1.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

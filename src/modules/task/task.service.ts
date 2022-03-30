@@ -1,10 +1,8 @@
-import { map } from 'rxjs/operators';
 import { SubItem } from '../../entity/sub-item.entity';
 import { Injectable, Request, UnauthorizedException, } from '@nestjs/common';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { generate8Code } from '../../utils/utils';
 import { User } from '../../entity/user.entity';
 import { Task } from '../../entity/task.entity';
 import { MessageDetail } from '../../entity/message-detail.entity';
@@ -49,9 +47,7 @@ export class TaskService {
             .leftJoinAndSelect('task.pictures', 'pictures')
             .leftJoinAndSelect('task.notes', 'notes')
             .getMany();
-        return {
-            data: doc,
-        };
+        return doc;
     }
 
     /**
@@ -75,11 +71,9 @@ export class TaskService {
         task.pictures = [];
         task.owner = await this.userRepository.findOne(request.user.userId);
         const doc = await this.taskRepository.save(task);
-        const content =  `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`
+        const content = `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`
         this.messageService.addMessage(request.user.userId, '新建任务', content);
-        return {
-            data: doc,
-        }
+        return doc;
     }
 
     /**
@@ -87,12 +81,9 @@ export class TaskService {
      * @param id 
      */
     async detail(taskId: number): Promise<any> {
-        const doc = await this.taskRepository.findOne(taskId, {
+        return await this.taskRepository.findOne(taskId, {
             relations: ['owner', 'subItems', "notes", "pictures"]
         });
-        return {
-            data: doc,
-        }
     }
 
     /**
@@ -111,10 +102,7 @@ export class TaskService {
         } else {
             task[propName] = propValue;
         }
-        const doc = await this.taskRepository.save(task);
-        return {
-            data: doc,
-        }
+        return await this.taskRepository.save(task);
     }
 
     // 添加子任务
@@ -124,18 +112,12 @@ export class TaskService {
         const subItem = new SubItem();
         subItem.name = subItemname;
         subItem.belong = task;
-        const doc = await this.subItemRepository.save(subItem);
-        return {
-            data: doc,
-        }
+        return await this.subItemRepository.save(subItem);
     }
 
     // 删除子任务
     async deleteChildTask(id: number): Promise<any> {
-        const doc = await this.subItemRepository.delete(id);
-        return {
-            data: doc,
-        }
+        return await this.subItemRepository.delete(id);
     }
 
     // 完成子任务
@@ -143,10 +125,7 @@ export class TaskService {
         const { subId } = body;
         let subItem = await this.subItemRepository.findOne(subId);
         subItem.complete = true;
-        const doc = await this.subItemRepository.save(subItem);
-        return {
-            data: doc,
-        }
+        return await this.subItemRepository.save(subItem);
     }
 
     // 添加图片
@@ -158,18 +137,12 @@ export class TaskService {
         picture.url = url;
         picture.size = size;
         picture.belong = task;
-        const doc = await this.pictureRepository.save(picture);
-        return {
-            data: doc,
-        }
+        return await this.pictureRepository.save(picture);
     }
 
     // 删除子任务
     async deletePicture(id: number): Promise<any> {
-        const doc = await this.pictureRepository.delete(id);
-        return {
-            data: doc,
-        }
+        return await this.pictureRepository.delete(id);
     }
 
     // 关联笔记
@@ -178,20 +151,14 @@ export class TaskService {
         const task = await this.taskRepository.findOne(taskId);
         const note = await this.noteRepository.findOne(noteId);
         note.belong = task
-        const doc = await this.noteRepository.save(note);
-        return {
-            data: doc,
-        }
+        return await this.noteRepository.save(note);
     }
 
     // 删除笔记
     async deleteNote(id: number): Promise<any> {
         const note = await this.noteRepository.findOne(id);
         note.belong = null;
-        const doc = await this.noteRepository.save(note);
-        return {
-            data: doc,
-        }
+        return await this.noteRepository.save(note);
     }
 
 
@@ -213,37 +180,6 @@ export class TaskService {
         if (pictureIds.length > 0) {
             await this.pictureRepository.delete(pictureIds);
         }
-        const doc = await this.taskRepository.delete(id);
-        return {
-            data: doc,
-        }
+        return await this.taskRepository.delete(id);
     }
-
-    /**
-     * 分页查询已删除的任务
-     * @param id 
-     */
-    async deleteList(body: any): Promise<any> {
-        const { name, page, size } = body;
-        const [doc, count] = await this.taskRepository.findAndCount({
-            // where: {
-            //     'status': 5,
-            // },
-            relations: ['principal'],
-            cache: true,
-            order: {
-                createDate: 'DESC'
-            },
-            skip: (page - 1) * size,
-            take: size,
-        });
-        return {
-            data: {
-                list: doc,
-                total: count
-            },
-        };
-    }
-
-
 }

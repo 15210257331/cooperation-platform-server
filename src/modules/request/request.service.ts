@@ -21,9 +21,7 @@ export class RequestService {
         const response$ = this.httpService.get(weatherApi);
         const response = await lastValueFrom(response$);
         if (response.status === 200 && response.data.code === '200') {
-            return {
-                data: response.data.now
-            }
+            return response.data.now
         }
     }
     async cityInfo(location: any) {
@@ -32,9 +30,7 @@ export class RequestService {
         const response$ = this.httpService.get(api);
         const response = await lastValueFrom(response$);
         if (response.status === 200 && response.data.code === '200') {
-            return {
-                data: response.data.location
-            }
+            return response.data.location;
         }
     }
 

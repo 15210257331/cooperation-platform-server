@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Controller, Get, Body, UseGuards, Post, UsePipes, Delete, Param, Request, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Body, UseGuards, Post, UsePipes, Delete, Param, Request, Query, ParseIntPipe, ClassSerializerInterceptor, UseInterceptors, Res, Headers } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
@@ -7,13 +6,16 @@ import { ValidationPipe } from '../../pipe/validation.pipe';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as urlencode from 'urlencode';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('用户相关')
 @Controller('/user')
 export class UserController {
     constructor(
         private readonly authService: AuthService,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private configService: ConfigService,
     ) { }
 
     // 登录
@@ -24,6 +26,23 @@ export class UserController {
         return this.userService.login(loginDTO);
     }
 
+    // 跳转微信扫码页面
+    @Get('/wechatLogin')
+    public async wechatLogin(@Headers() header, @Res() res): Promise<any> {
+        const APPID = this.configService.get('secretId');
+        const host = this.configService.get('HOST');
+        const redirectUri = urlencode(host);
+        res.redirect(
+            `https://open.weixin.qq.com/connect/qrconnect?appid=${APPID}&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`,
+        );
+    }
+
+    // 微信登录
+    @Post('wechat')
+    async loginWithWechat(@Body('code') code: string) {
+        return this.userService.loginWithWechat(code);
+    }
+
     // 注册
     @Post('/register')
     @UsePipes(new ValidationPipe())
@@ -31,17 +50,19 @@ export class UserController {
         return this.userService.register(data);
     }
 
-    // 获取验证码
+    // 向手机发送验证码
     @Post('/code')
     @UsePipes(new ValidationPipe())
     public async code(@Body() data: any): Promise<any> {
-        return this.userService.code(data);
+        return this.userService.sendVerificationCode(data);
     }
 
     // 获取用户信息
     @Get('/info')
     @UseGuards(AuthGuard('jwt'))
     @UsePipes(ValidationPipe)
+    // 使用此拦截器结合entity中的Exclude装饰器可以查询数据时隐藏相应的字段
+    @UseInterceptors(ClassSerializerInterceptor)
     public async getUserInfo(@Request() request: any): Promise<any> {
         return this.userService.getUserInfo(request);
     }
@@ -81,13 +102,5 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'))
     public async getRole(@Query('id', new ParseIntPipe()) id: number): Promise<any> {
         return this.userService.getRole(id);
-    }
-
-
-    // 查询用户关联的角色
-    @Get('/top10')
-    @UseGuards(AuthGuard('jwt'))
-    public async top10(): Promise<any> {
-        return this.userService.top10();
     }
 }

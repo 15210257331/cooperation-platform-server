@@ -45,7 +45,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LogerInterceptor());
 
   // 全局应用验证管道，这是一个内置的管道
-  // app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
 
   // 配置 Swagger
   const options = new DocumentBuilder()

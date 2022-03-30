@@ -26,23 +26,18 @@ export class NoteService {
 
         const content = `新添加了一条笔记: <b style="color:black;">${noteAddDTO.title}</b>`
         this.messageService.addMessage(request.user.userId, '新建笔记', content);
-        return {
-            data: doc,
-        };
+        return doc;
     }
 
     async update(noteUpdateDTO: NoteUpdateDTO, request: any): Promise<any> {
         const { id, title, cover, overview, content, publish } = noteUpdateDTO;
-        const doc = await this.noteRepository.update(id, {
+        return await this.noteRepository.update(id, {
             title: title,
             cover: cover,
             overview: overview,
             content: content,
             publish: publish
         });
-        return {
-            data: doc,
-        };
     }
 
     async list(body: any): Promise<any> {
@@ -66,18 +61,13 @@ export class NoteService {
             take: size,
         });
         return {
-            data: {
-                list: doc,
-                total: total
-            },
-        };
+            list: doc,
+            total: total
+        }
     }
 
     async delete(id: number | string): Promise<any> {
-        const doc = await this.noteRepository.delete(id)
-        return {
-            data: doc,
-        };
+        return await this.noteRepository.delete(id)
     }
 
     // 笔记详情
@@ -91,12 +81,9 @@ export class NoteService {
         // `)
         // .getMany()
 
-        const doc = await this.noteRepository.findOne(noteId, {
+        return await this.noteRepository.findOne(noteId, {
             relations: ["owner",]
         })
-        return {
-            data: doc,
-        };
     }
 
 }

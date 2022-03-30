@@ -1,29 +1,69 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
 import { Repository, Like, Any } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { makeSalt, encryptPassword, tengxunyunApiDecode } from '../../utils/utils';
+import { encryptPassword } from '../../utils/utils';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { Role } from '../../entity/role.entity';
 import { createCode } from "../../utils/utils"
+import { SmsService } from './sms.service';
 import { ConfigService } from '@nestjs/config';
-const tencentcloud = require("tencentcloud-sdk-nodejs");
-const smsClient = tencentcloud.sms.v20210111.Client;
+import { AxiosResponse } from 'axios';
+import { lastValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+
+export interface AccessTokenInfo {
+    accessToken: string;
+    expiresIn: number;
+    getTime: number;
+    openid: string;
+}
+
+export interface WechatError {
+    errcode: number;
+    errmsg: string;
+}
+
+export interface WechatUserInfo {
+    openid: string;
+    nickname: string;
+    sex: number;
+    language: string;
+    city: string;
+    province: string;
+    country: string;
+    headimgurl: string;
+    privilege: string[];
+    unionid: string;
+}
+
+export interface AccessConfig {
+    access_token: string;
+    refresh_token: string;
+    openid: string;
+    scope: string;
+    unionid?: string;
+    expires_in: number;
+}
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+        private smsService: SmsService,
         private configService: ConfigService,
+        private httpService: HttpService,
         private readonly jwtService: JwtService,
     ) { }
 
-    salt = 'todo'; // 制作密码盐
-
-    phoneCodeList = [];
+    // 手机号---验证码 map
+    private verificationCodeMap: Map<string, string> = new Map<string, string>();
+    // 微信accessToken信息
+    private accessTokenInfo: AccessTokenInfo;
+    public apiServer = 'https://api.weixin.qq.com';
 
     // 登录
     async login(loginDTO: LoginDTO): Promise<any> {
@@ -35,7 +75,9 @@ export class UserService {
             relations: ['roles'],
         });
         if (user) {
-            const hashPwd = encryptPassword(password, this.salt); // 加密后的密码
+            // 加密后的密码
+            const hashPwd = encryptPassword(password);
+            console.log(hashPwd);
             if (user.password === hashPwd) {
                 const payload = {
                     username: username,
@@ -57,7 +99,80 @@ export class UserService {
     }
 
     /**
-     * 注册
+     * 微信登录 通过code appId 换取AccessToken 通过AccessToken 请求微信接口 拉去微信用户信息
+     */
+    async loginWithWechat(code) {
+        if (!code) {
+            throw new BadRequestException('请输入微信授权码');
+        }
+        const APPID = this.configService.get('APPID');
+        const APPSECRET = this.configService.get('APPSECRET');
+        if (!APPSECRET) {
+            throw new BadRequestException('[getAccessToken]必须有appSecret');
+        }
+        if (
+            !this.accessTokenInfo ||
+            (this.accessTokenInfo && this.isExpires(this.accessTokenInfo))
+        ) {
+            // 请求accessToken数据
+            const res: AxiosResponse<WechatError & AccessConfig, any> =
+                await lastValueFrom(
+                    this.httpService.get(
+                        `${this.apiServer}/sns/oauth2/access_token?appid=${APPID}&secret=${APPSECRET}&code=${code}&grant_type=authorization_code`,
+                    ),
+                );
+
+            if (res.data.errcode) {
+                throw new BadRequestException(
+                    `[getAccessToken] errcode:${res.data.errcode}, errmsg:${res.data.errmsg}`,
+                );
+            }
+            this.accessTokenInfo = {
+                accessToken: res.data.access_token,
+                expiresIn: res.data.expires_in,
+                getTime: Date.now(),
+                openid: res.data.openid,
+            };
+        }
+        const userDoc = await this.userRepository.findOne(this.accessTokenInfo.openid);
+        if (!userDoc) {
+            // 获取微信用户信息，注册新用户
+            const userInfo: WechatUserInfo = await this.getWechatUserInfo();
+            const user = new User();
+            user.username = userInfo.nickname;
+            user.password = userInfo.nickname;
+            user.nickname = userInfo.nickname;
+            user.email = userInfo.nickname;
+            user.phone = userInfo.nickname;
+            user.roles = []
+            await this.userRepository.save(user);
+        }
+        return this.login(userDoc);
+    }
+
+    isExpires(access) {
+        return Date.now() - access.getTime > access.expiresIn * 1000;
+    }
+
+    async getWechatUserInfo() {
+        const result: AxiosResponse<WechatError & WechatUserInfo> =
+            await lastValueFrom(
+                this.httpService.get(
+                    `${this.apiServer}/sns/userinfo?access_token=${this.accessTokenInfo.accessToken}&openid=${this.accessTokenInfo.openid}`,
+                ),
+            );
+        if (result.data.errcode) {
+            throw new BadRequestException(
+                `[getUserInfo] errcode:${result.data.errcode}, errmsg:${result.data.errmsg}`,
+            );
+        }
+        console.log('result', result.data);
+        return result.data;
+    }
+
+
+    /**
+     * 用户注册(只有手机号注册一种方式)手机号作为用户名
      * @param registerDTO 
      * @returns 
      */
@@ -65,99 +180,38 @@ export class UserService {
         const { nickname, phone, verificationCode, password } = registerDTO;
         const doc = await this.userRepository.findOne({ username: phone });
         if (doc) {
-            throw new HttpException('用户已存在', 200)
+            throw new HttpException('用户已存在', 200);
         }
-        if (verificationCode === this.phoneCodeList[phone]) {
-            this.phoneCodeList = [];
+        if (verificationCode === this.verificationCodeMap[phone]) {
+            this.verificationCodeMap.delete(phone);
         } else {
             throw new HttpException('验证码输入错误！', 200)
         }
-        const hashPwd = encryptPassword(password, this.salt); // 加密后的密码
         const user = new User();
         user.username = phone;
-        user.password = hashPwd;
+        user.password = password;
         user.nickname = nickname;
         user.email = `${phone}@163.com`;
         user.phone = phone;
-        user.sex = 1;
-        user.introduction = '';
         user.roles = []
-        await this.userRepository.insert(user);
-        return "注册成功！"
+        return await this.userRepository.save(user);
     }
 
-    /**
-     * 
-     * @param request 
-     * 获取验证码
-     */
-    async code(body: any): Promise<any> {
+    // 获取验证码给前端
+    async sendVerificationCode(body: any): Promise<any> {
+        // 手机号
         const { phone } = body;
+        // 验证码
+        const verificationCode = createCode();
         const doc = await this.userRepository.findOne({ username: phone });
         if (doc) {
-            // throw new HttpException('该手机号已被注册!', 200)
+            throw new HttpException('该手机号已被注册!', 200)
         }
-        // 验证码
-        const code = createCode();
-        /* 实例化要请求产品(以sms为例)的client对象 */
-        const client = new smsClient({
-            credential: {
-                /* 必填：腾讯云账户密钥对secretId，secretKey。
-                 * 这里采用的是从环境变量读取的方式，需要在环境变量中先设置这两个值。
-                 * 你也可以直接在代码中写死密钥对，但是小心不要将代码复制、上传或者分享给他人，
-                 * 以免泄露密钥对危及你的财产安全。 */
-                secretId: tengxunyunApiDecode(this.configService.get('secretId')),
-                secretKey: tengxunyunApiDecode(this.configService.get('secretKey')),
-            },
-            /* 必填：地域信息，可以直接填写字符串ap-guangzhou，支持的地域列表参考 https://cloud.tencent.com/document/api/382/52071#.E5.9C.B0.E5.9F.9F.E5.88.97.E8.A1.A8 */
-            region: "ap-guangzhou",
-            /* 非必填:
-             * 客户端配置对象，可以指定超时时间等配置 */
-            profile: {
-                /* SDK默认用TC3-HMAC-SHA256进行签名，非必要请不要修改这个字段 */
-                signMethod: "HmacSHA256",
-                httpProfile: {
-                    /* SDK默认使用POST方法。
-                     * 如果你一定要使用GET方法，可以在这里设置。GET方法无法处理一些较大的请求 */
-                    reqMethod: "POST",
-                    /* SDK有默认的超时时间，非必要请不要进行调整
-                     * 如有需要请在代码中查阅以获取最新的默认值 */
-                    reqTimeout: 30,
-                    /**
-                     * SDK会自动指定域名。通常是不需要特地指定域名的，但是如果你访问的是金融区的服务
-                     * 则必须手动指定域名，例如sms的上海金融区域名： sms.ap-shanghai-fsi.tencentcloudapi.com
-                     */
-                    endpoint: "sms.tencentcloudapi.com"
-                },
-            },
-        })
-
-        /* 请求参数，根据调用的接口和实际情况，可以进一步设置请求参数
-         * 属性可能是基本类型，也可能引用了另一个数据结构
-         * 推荐使用IDE进行开发，可以方便的跳转查阅各个接口和数据结构的文档说明 */
-        const params = {
-            /* 短信应用ID: 短信SmsSdkAppId在 [短信控制台] 添加应用后生成的实际SmsSdkAppId，示例如1400006666 */
-            SmsSdkAppId: "1400633837",
-            /* 短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名，签名信息可登录 [短信控制台] 查看 */
-            SignName: "陈晓飞学些Linux",
-            /* 短信码号扩展号: 默认未开通，如需开通请联系 [sms helper] */
-            ExtendCode: "",
-            /* 国际/港澳台短信 senderid: 国内短信填空，默认未开通，如需开通请联系 [sms helper] */
-            SenderId: "",
-            /* 用户的 session 内容: 可以携带用户侧 ID 等上下文信息，server 会原样返回 */
-            SessionContext: "",
-            /* 下发手机号码，采用 e.164 标准，+[国家或地区码][手机号]
-             * 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号*/
-            PhoneNumberSet: [`+86${phone}`],
-            /* 模板 ID: 必须填写已审核通过的模板 ID。模板ID可登录 [短信控制台] 查看 */
-            TemplateId: "1305190",
-            /* 模板参数: 若无模板参数，则设置为空*/
-            TemplateParamSet: [code, '5'],
-        }
-        const result = await client.SendSms(params);
-        this.phoneCodeList[phone] = code;
-        if (result?.SendStatusSet[0].Code === 'Ok') {
-            return '验证码发送成功'
+        const result = this.smsService.sendVerificationCode(phone, verificationCode);
+        if (result) {
+            this.verificationCodeMap[phone] = verificationCode;
+        } else {
+            throw new HttpException('验证码发送失败!', 200)
         }
     }
 
@@ -168,29 +222,25 @@ export class UserService {
      */
     async getUserInfo(request: any): Promise<any> {
         const id = request.user.userId;
-        const data = await this.userRepository.findOne(id, {
+        return await this.userRepository.findOne(id, {
             relations: ['roles'],
         });
-        return data
     }
 
     // 删除用户
     async deleteUser(id: number | string): Promise<any> {
-        const doc = await this.userRepository.delete(id)
-        return doc;
+        return await this.userRepository.delete(id)
     }
 
     // 更新用户信息
     async updateUserInfo(body: any, request: any): Promise<any> {
-        const { nickname, username, email, avatar, introduction } = body;
-        const doc = await this.userRepository.update(request.user.userId, {
+        const { nickname, username, email, avatar } = body;
+        return await this.userRepository.update(request.user.userId, {
             nickname: nickname,
             username: username,
             email: email,
             avatar: avatar,
-            introduction: introduction
         });
-        return doc;
     }
 
     // 分页查询用户列表
@@ -237,8 +287,7 @@ export class UserService {
         const user = await this.userRepository.findOne(userId);
         const roles = await this.roleRepository.findByIds(roleIds);
         user.roles = roles;
-        const doc = await this.userRepository.save(user);
-        return doc;
+        return await this.userRepository.save(user);
     }
 
     /**
@@ -247,37 +296,8 @@ export class UserService {
      * @returns 
      */
     async getRole(id: number): Promise<any> {
-        const doc = await this.userRepository.findOne(id, {
+        return await this.userRepository.findOne(id, {
             relations: ['roles'],
         });
-        return doc;
-    }
-
-
-    /**
-     * top10
-     */
-    async top10(): Promise<any> {
-        const users = await this.userRepository.find({
-            relations: ["tasks"],
-        });
-        let doc = users.map(item => {
-            let total = item.tasks.length;
-            let complete = item.tasks.filter(sonItem => sonItem).length;
-            let percent = total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0
-            return Object.assign({}, {
-                avatar: item.avatar,
-                nickname: item.nickname,
-                email: item.email,
-                total: total,
-                complete: complete,
-                percent: percent
-            })
-        })
-        doc.sort((a, b) => {
-            return b.total - a.total;
-        })
-        doc = doc.slice(0, 10)
-        return doc;
     }
 }

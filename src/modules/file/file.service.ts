@@ -15,10 +15,8 @@ export class FileService {
         const host = this.configService.get('host');
         const port = this.configService.get('port');
         return {
-            data: {
-                name: file.filename,
-                url: `http://${host}:${port}/public/${file.filename}`
-            },
+            name: file.filename,
+            url: `http://${host}:${port}/public/${file.filename}`
         }
     }
 

@@ -25,8 +25,7 @@ export class StatisticsService {
             const statistics = new Statistics();
             statistics.count = count;
             statistics.visitDate = visitDate;
-            const data = await this.statisticsRepository.save(statistics);
-            return { data };
+            return await this.statisticsRepository.save(statistics);
         }
 
     }
@@ -42,13 +41,12 @@ export class StatisticsService {
             total += item.count;
         })
         const totalUser = await this.userRepository.count();
-        const data = {
+        return {
             today: today,
             yestoday: yestoday,
             total: total,
             register: totalUser
         }
-        return { data };
     }
 
     async userRank(type: number): Promise<any> {
@@ -74,7 +72,7 @@ export class StatisticsService {
         if (users.length > 5) {
             data = data.slice(0, 5)
         }
-        return { data }
+        return data
     }
 
     // 近14天任务完成情况
@@ -82,31 +80,28 @@ export class StatisticsService {
         let data = [];
         if (type === 1) {
             data = [1, 2, 3, 4, 5, 6, 7];
-            const doc = data.reverse().map((item) => {
+            return data.reverse().map((item) => {
                 return {
                     date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
                     total: Math.floor(Math.random() * 101)
                 }
             })
-            return { data: doc }
         } else if (type === 2) {
             data = [1, 3, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
-            const doc = data.reverse().map((item) => {
+            return data.reverse().map((item) => {
                 return {
                     date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
                     total: Math.floor(Math.random() * 101)
                 }
             })
-            return { data: doc }
         } else {
             data = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12];
-            const doc = data.reverse().map((item) => {
+            return data.reverse().map((item) => {
                 return {
                     date: dayjs().subtract(item, 'month').format('YY-MM') + '月',
                     total: Math.floor(Math.random() * 101)
                 }
             })
-            return { data: doc }
         }
     }
 

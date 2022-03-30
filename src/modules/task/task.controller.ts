@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe, Param } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Request, Get, Query, ParseIntPipe, Param, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
@@ -23,6 +23,7 @@ export class TaskController {
     //新增任务
     @Post('/add')
     @UseGuards(AuthGuard('jwt'))
+    @UsePipes(new ValidationPipe())
     public async taskAdd(@Body() taskAddDTO: TaskAddDTO, @Request() request: any): Promise<any> {
         return this.taskService.taskAdd(taskAddDTO, request);
     }

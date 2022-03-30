@@ -10,7 +10,4 @@ export class RegisterDTO {
     @IsNotEmpty({ message: '头像不能为空' })
     readonly avatar: string;
 
-    @ApiProperty()
-    readonly introduction: string;
-
 }
