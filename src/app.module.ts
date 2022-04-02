@@ -7,14 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { FileModule } from './modules/file/file.module';
 import { TaskModule } from './modules/task/task.module';
-import { RoleModule } from './modules/role/role.module';
 import configuration from './config/environment.config';
 import * as Joi from '@hapi/joi';
 import { RequestModule } from './modules/request/request.module';
 import { CronModule } from './modules/cron/cron.module';
-import { NoteModule } from './modules/note/note.module';
 import { EmailModule } from './modules/email/email.module';
-import { MessageModule } from './modules/message/message.module';
+import { NotificationModule } from './modules/notification/notification.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 
@@ -68,13 +66,11 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
     AuthModule,
     FileModule,
     TaskModule,
-    RoleModule,
     RequestModule,
-    NoteModule,
     CronModule,
     SocketModule,
     EmailModule,
-    MessageModule,
+    NotificationModule,
     StatisticsModule
   ],
   controllers: [AppController],

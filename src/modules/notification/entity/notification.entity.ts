@@ -1,11 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
-import { MessageDetail } from './message-detail.entity';
+import { NotificationDetail } from './notification-detail.entity';
 import { User } from '../../user/entity/user.entity';
 
 // 用户消息表 储存用户的消息
 
 @Entity()
-export class Message {
+export class Notification {
     @PrimaryGeneratedColumn()
     id: string;
 
@@ -24,9 +24,9 @@ export class Message {
     })
     sendDate: Date;
 
-    @ManyToOne(() => MessageDetail)
+    @ManyToOne(() => NotificationDetail)
     @JoinColumn()
-    detail: MessageDetail;
+    detail: NotificationDetail;
 
     @ManyToOne(() => User, user => user.messages)
     @JoinColumn()

@@ -1,17 +1,17 @@
 import { Injectable, Module } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Message } from './entity/message.entity';
-import { MessageDetail } from './entity/message-detail.entity';
+import { Notification } from './entity/notification.entity';
+import { NotificationDetail } from './entity/notification-detail.entity';
 import { EventsGateway } from '../socket/events.gateway';
 import { User } from '../user/entity/user.entity';
 
 @Injectable()
-export class MessageService {
+export class NotificationService {
 
     constructor(
-        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
-        @InjectRepository(MessageDetail) private readonly messageDetailRepository: Repository<MessageDetail>,
+        @InjectRepository(Notification) private readonly messageRepository: Repository<Notification>,
+        @InjectRepository(NotificationDetail) private readonly messageDetailRepository: Repository<NotificationDetail>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         private readonly eventsGateway: EventsGateway,
     ) { }
@@ -39,13 +39,13 @@ export class MessageService {
     async addMessage(id: number, title: string, content: string) {
         const users = await this.userRepository.find();
         const user = users.find(item => item.id === id);
-        const messageDetail = new MessageDetail();
+        const messageDetail = new NotificationDetail();
         messageDetail.title = title;
         messageDetail.avatar = user.avatar;
         messageDetail.content = '用户【' + user.nickname + '】' + content;;
         const messageDetailDoc = await this.messageDetailRepository.save(messageDetail);
         const messages = users.map(user => {
-            const message = new Message();
+            const message = new Notification();
             message.read = false;
             message.detail = messageDetailDoc;
             message.belong = user;

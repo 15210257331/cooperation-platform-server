@@ -5,13 +5,9 @@ import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
 import { Task } from './entity/task.entity';
-import { MessageDetail } from '../message/entity/message-detail.entity';
-import { Message } from '../message/entity/message.entity'
-import * as dayjs from 'dayjs'
-import { Note } from '../note/entity/note.entity';
 import { Picture } from './entity/picture.entity';
 import { Flow } from './entity/flow.entity';
-import { MessageService } from '../message/message.service';
+import { NotificationService } from '../notification/notification.service';
 @Injectable()
 export class TaskService {
 
@@ -21,10 +17,7 @@ export class TaskService {
         @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
         @InjectRepository(SubItem) private readonly subItemRepository: Repository<SubItem>,
         @InjectRepository(Picture) private readonly pictureRepository: Repository<Picture>,
-        @InjectRepository(MessageDetail) private readonly MessageDetailRepository: Repository<MessageDetail>,
-        @InjectRepository(Message) private readonly MessageRepository: Repository<Message>,
-        @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
-        private readonly messageService: MessageService,
+        private readonly notificationService: NotificationService,
     ) { }
 
 
@@ -66,13 +59,12 @@ export class TaskService {
         task.startDate = startDate;
         task.endDate = endDate;
         task.flow = await this.flowRepository.findOne(flowId);
-        task.notes = [];
         task.subItems = [];
         task.pictures = [];
         task.owner = await this.userRepository.findOne(request.user.userId);
         const doc = await this.taskRepository.save(task);
         const content = `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`
-        this.messageService.addMessage(request.user.userId, '新建任务', content);
+        this.notificationService.addMessage(request.user.userId, '新建任务', content);
         return doc;
     }
 
@@ -145,30 +137,12 @@ export class TaskService {
         return await this.pictureRepository.delete(id);
     }
 
-    // 关联笔记
-    async linkNote(body: any): Promise<any> {
-        const { taskId, noteId } = body;
-        const task = await this.taskRepository.findOne(taskId);
-        const note = await this.noteRepository.findOne(noteId);
-        note.belong = task
-        return await this.noteRepository.save(note);
-    }
-
-    // 删除笔记
-    async deleteNote(id: number): Promise<any> {
-        const note = await this.noteRepository.findOne(id);
-        note.belong = null;
-        return await this.noteRepository.save(note);
-    }
-
 
     //删除任务
     async delete(id: number, maneger: EntityManager): Promise<any> {
         const task = await this.taskRepository.findOne(id, {
             relations: ['subItems', "notes", "pictures"]
         });
-        // 解除关联的笔记
-        task.notes = [];
         await this.taskRepository.save(task);
         // 删除该任务下的子任务
         const subItemIds = task.subItems.map(item => item.id);

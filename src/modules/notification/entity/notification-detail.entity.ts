@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, Jo
 import { User } from '../../user/entity/user.entity';
 
 @Entity()
-export class MessageDetail {
+export class NotificationDetail {
     @PrimaryGeneratedColumn()
     id: string;
 

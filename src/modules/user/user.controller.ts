@@ -8,6 +8,7 @@ import { LoginDTO } from './dto/login.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as urlencode from 'urlencode';
 import { ConfigService } from '@nestjs/config';
+import { UpdateDTO } from './dto/update.dto';
 
 @ApiTags('用户相关')
 @Controller('/user')
@@ -22,6 +23,7 @@ export class UserController {
     @Post('/login')
     // @UseGuards(AuthGuard('local'))
     @UsePipes(new ValidationPipe())
+    @UseInterceptors(ClassSerializerInterceptor)
     public async login(@Body() loginDTO: LoginDTO,): Promise<any> {
         return this.userService.login(loginDTO);
     }
@@ -79,8 +81,16 @@ export class UserController {
     @Post('/update')
     @UseGuards(AuthGuard('jwt'))
     @UsePipes(new ValidationPipe())
-    public async updateUserInfo(@Body() data: any, @Request() request: any): Promise<any> {
+    public async updateUserInfo(@Body() data: UpdateDTO, @Request() request: any): Promise<any> {
         return this.userService.updateUserInfo(data, request);
+    }
+
+    // 更新指定用户角色
+    @Post('/setRole')
+    @UseGuards(AuthGuard('jwt'))
+    @UsePipes(new ValidationPipe())
+    public async setRole(@Body() data: any): Promise<any> {
+        return this.userService.setRole(data);
     }
 
     // 分页查询用户列表
@@ -88,19 +98,5 @@ export class UserController {
     @Post('/list')
     public async list(@Body() body: any): Promise<any> {
         return this.userService.userList(body);
-    }
-
-    // 为用户关联角色
-    @Post('/setRole')
-    @UseGuards(AuthGuard('jwt'))
-    public async setRole(@Body() body: any, @Request() request: any): Promise<any> {
-        return this.userService.setRole(body, request);
-    }
-
-    // 查询用户关联的角色
-    @Get('/getRole')
-    @UseGuards(AuthGuard('jwt'))
-    public async getRole(@Query('id', new ParseIntPipe()) id: number): Promise<any> {
-        return this.userService.getRole(id);
     }
 }

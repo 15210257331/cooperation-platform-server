@@ -6,20 +6,19 @@ import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { Task } from './entity/task.entity';
 import { SubItem } from './entity/sub-item.entity'
-import { MessageDetail } from '../message/entity/message-detail.entity';
-import { Note } from '../note/entity/note.entity';
+import { NotificationDetail } from '../notification/entity/notification-detail.entity';
 import { Picture } from './entity/picture.entity';
 import { FlowService } from './flow.service';
 import { FlowController } from './flow.controller';
 import { Flow } from './entity/flow.entity';
-import { Message } from '../message/entity/message.entity';
-import { MessageModule } from '../message/message.module';
+import { Notification } from '../notification/entity/notification.entity';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task, User, SubItem, Message,MessageDetail, Note, Picture, Flow]),
+    TypeOrmModule.forFeature([Task, User, SubItem, Notification,NotificationDetail, Picture, Flow]),
     UserModule,
-    MessageModule
+    NotificationModule
   ],
   providers: [TaskService, FlowService],
   controllers: [TaskController, FlowController]

@@ -85,19 +85,4 @@ export class TaskController {
         console.log(123);
         return this.taskService.deletePicture(id);
     }
-
-    // 关联笔记
-    @Post('/linkNote')
-    @UseGuards(AuthGuard('jwt'))
-    public async linkNote(@Body() body: any): Promise<any> {
-        return this.taskService.linkNote(body);
-    }
-
-    // 删除笔记
-    @Get('/deleteNote/:id')
-    @UseGuards(AuthGuard('jwt'))
-    public async deleteNote(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
-        console.log(123);
-        return this.taskService.deleteNote(id);
-    }
 }

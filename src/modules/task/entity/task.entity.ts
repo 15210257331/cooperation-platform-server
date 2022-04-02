@@ -1,4 +1,3 @@
-import { Note } from '../../note/entity/note.entity';
 import { User } from '../../user/entity/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { SubItem } from './sub-item.entity';
@@ -102,13 +101,6 @@ export class Task {
      *  */
     @OneToMany(() => SubItem, subItem => subItem.belong)
     subItems: SubItem[];
-
-    /**
-    * 任务和笔记是一对多的关系
-    * 该任务所有的子任务
-    *  */
-    @OneToMany(() => Note, note => note.belong)
-    notes: Note[];
 
     /**
     * 任务和图片是一对多的关系
