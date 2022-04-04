@@ -67,7 +67,7 @@ export class User {
 
   @Column({
     type: 'int',
-    name: 'status',
+    name: 'role',
     default: () => 1,
     nullable: false,
     comment: '用户角色 1 管理员 2 普通用户',

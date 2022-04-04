@@ -187,6 +187,7 @@ export class UserService {
     user.password = password;
     user.nickname = nickname;
     user.phone = phone;
+    user.intro = `我是${phone}`;
     return await this.userRepository.save(user);
   }
 
@@ -200,12 +201,13 @@ export class UserService {
     if (doc) {
       throw new HttpException('该手机号已被注册!', 200);
     }
-    const result = this.smsService.sendVerificationCode(
+    const result = await this.smsService.sendVerificationCode(
       phone,
       verificationCode,
     );
     if (result) {
       this.verificationCodeMap[phone] = verificationCode;
+      return '验证码发送成功！';
     } else {
       throw new HttpException('验证码发送失败!', 200);
     }

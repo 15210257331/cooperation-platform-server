@@ -11,6 +11,6 @@ WORKDIR /home/project
 #     ; npm config set registry "https://registry.npm.taobao.org/" \
 #     && npm install
 # 容器创建完成后执行的命令
-CMD npm run start:prod
+CMD npm run prod
 # 向外提供4000端口  和node程序启动的端口相一致
 EXPOSE 4000  

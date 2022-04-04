@@ -38,7 +38,6 @@ export class TaskService {
             .leftJoinAndSelect('task.flow', 'flow')
             .leftJoinAndSelect('task.subItems', 'subItems')
             .leftJoinAndSelect('task.pictures', 'pictures')
-            .leftJoinAndSelect('task.notes', 'notes')
             .getMany();
         return doc;
     }
@@ -74,7 +73,7 @@ export class TaskService {
      */
     async detail(taskId: number): Promise<any> {
         return await this.taskRepository.findOne(taskId, {
-            relations: ['owner', 'subItems', "notes", "pictures"]
+            relations: ['owner', 'subItems', "pictures"]
         });
     }
 
@@ -86,7 +85,7 @@ export class TaskService {
     async updateProps(body: any): Promise<any> {
         const { taskId, propName, propValue } = body;
         const task = await this.taskRepository.findOne(taskId, {
-            relations: ["subItems", "pictures", "notes"],
+            relations: ["subItems", "pictures"],
         });
         if (propName === 'flow') {
             const flow = await this.flowRepository.findOne(propValue);
@@ -141,7 +140,7 @@ export class TaskService {
     //删除任务
     async delete(id: number, maneger: EntityManager): Promise<any> {
         const task = await this.taskRepository.findOne(id, {
-            relations: ['subItems', "notes", "pictures"]
+            relations: ['subItems', "pictures"]
         });
         await this.taskRepository.save(task);
         // 删除该任务下的子任务

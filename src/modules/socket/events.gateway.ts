@@ -37,7 +37,7 @@ export class EventsGateway {
     this.socketMap[userId].emit('reminder', body);
   }
 
-  // 新用户连接至websocket client为每个🔗成功的socket实例
+  // 新用户连接至websocket client为每个成功的socket实例
   @SubscribeMessage('new user')
   newUser(client: Socket, userId: number): Observable<WsResponse<any>> | any {
     console.log(`新用户已登录用户ID为${userId}`);
