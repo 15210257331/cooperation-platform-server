@@ -11,7 +11,6 @@ import configuration from './config/environment.config';
 import * as Joi from '@hapi/joi';
 import { RequestModule } from './modules/request/request.module';
 import { CronModule } from './modules/cron/cron.module';
-import { EmailModule } from './modules/email/email.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
@@ -69,7 +68,6 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
     RequestModule,
     CronModule,
     SocketModule,
-    EmailModule,
     NotificationModule,
     StatisticsModule
   ],

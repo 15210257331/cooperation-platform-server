@@ -12,40 +12,12 @@ import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { UpdateDTO } from './dto/update.dto';
-
-export interface AccessTokenInfo {
-  accessToken: string;
-  expiresIn: number;
-  getTime: number;
-  openid: string;
-}
-
-export interface WechatError {
-  errcode: number;
-  errmsg: string;
-}
-
-export interface WechatUserInfo {
-  openid: string;
-  nickname: string;
-  sex: number;
-  language: string;
-  city: string;
-  province: string;
-  country: string;
-  headimgurl: string;
-  privilege: string[];
-  unionid: string;
-}
-
-export interface AccessConfig {
-  access_token: string;
-  refresh_token: string;
-  openid: string;
-  scope: string;
-  unionid?: string;
-  expires_in: number;
-}
+import {
+  AccessTokenInfo,
+  WechatError,
+  WechatUserInfo,
+  AccessConfig,
+} from '../../interface/wechat.interface';
 
 @Injectable()
 export class UserService {
@@ -250,7 +222,6 @@ export class UserService {
       where: {
         nickname: Like(`%${name}%`),
       },
-      relations: ['tasks'],
       cache: true,
       order: {
         createDate: 'ASC', //ASC 按时间正序 DESC 按时间倒序
@@ -258,21 +229,8 @@ export class UserService {
       skip: (page - 1) * size,
       take: size,
     });
-    const doc = users.map((item) => {
-      let total = item.tasks.length;
-      let complete = item.tasks.filter((sonItem) => sonItem).length;
-      let percent =
-        total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0;
-      return Object.assign({}, item, {
-        avatar: item.avatar,
-        nickname: item.nickname,
-        total: total,
-        complete: complete,
-        percent: percent,
-      });
-    });
     return {
-      list: doc,
+      list: users,
       total: count,
     };
   }

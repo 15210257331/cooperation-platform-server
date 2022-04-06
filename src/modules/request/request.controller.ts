@@ -5,14 +5,13 @@ import { RequestService } from './request.service';
 
 
 
-@ApiTags('爬虫')
+@ApiTags('request')
 @Controller('request')
 export class RequestController {
     constructor(private requestService: RequestService) { }
 
     @Get('random')
     async getRandomQuote() {
-        // throw new HttpException('文章已存在', 200);
         return this.requestService.getRandomQuote();
     }
 

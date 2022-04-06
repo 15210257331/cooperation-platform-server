@@ -5,7 +5,6 @@ import { Not, Repository } from 'typeorm';
 import { Task } from '../task/entity/task.entity';
 import { EventsGateway } from '../socket/events.gateway';
 import * as dayjs from 'dayjs'
-import { EmailService } from "../email/email.service"
 
 @Injectable()
 export class CronService {
@@ -13,7 +12,6 @@ export class CronService {
     constructor(
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
         private readonly eventsGateway: EventsGateway,
-        private readonly emailService: EmailService
     ) { }
 
     /**
