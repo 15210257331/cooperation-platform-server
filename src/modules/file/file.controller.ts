@@ -23,6 +23,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
+  // 先执行FileInterceptor拦截器，对文件进行相关操作并上传到指定文件夹 然后在执行上传腾讯COS的操作
   @Post('upload')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file'))
