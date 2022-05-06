@@ -11,7 +11,7 @@ import * as Log4js from 'log4js';
 import * as Util from 'util';
 import * as dayjs from 'dayjs';
 import * as StackTrace from 'stacktrace-js';
-import Chalk from 'chalk';
+// import Chalk from 'chalk';
 const baseLogPath = Path.resolve(__dirname, '../../logs');
 
 export const log4jsConfig = {
@@ -130,26 +130,26 @@ Log4js.addLayout('Awesome-nest', (logConfig: any) => {
 
         switch (logEvent.level.toString()) {
             case LoggerLevel.DEBUG:
-                levelOutput = Chalk.green(levelOutput);
+                // levelOutput = Chalk.green(levelOutput);
                 break;
             case LoggerLevel.INFO:
-                levelOutput = Chalk.cyan(levelOutput);
+                // levelOutput = Chalk.cyan(levelOutput);
                 break;
             case LoggerLevel.WARN:
-                levelOutput = Chalk.yellow(levelOutput);
+                // levelOutput = Chalk.yellow(levelOutput);
                 break;
             case LoggerLevel.ERROR:
-                levelOutput = Chalk.red(levelOutput);
+                // levelOutput = Chalk.red(levelOutput);
                 break;
             case LoggerLevel.FATAL:
-                levelOutput = Chalk.hex('#DD4C35')(levelOutput);
+                // levelOutput = Chalk.hex('#DD4C35')(levelOutput);
                 break;
             default:
-                levelOutput = Chalk.grey(levelOutput);
+                // levelOutput = Chalk.grey(levelOutput);
                 break;
         }
-
-        return `${Chalk.green(typeOutput)}${dateOutput}  ${Chalk.yellow(moduleOutput)}${levelOutput}${positionOutput}`;
+        return ''
+        // return `${Chalk.green(typeOutput)}${dateOutput}  ${Chalk.yellow(moduleOutput)}${levelOutput}${positionOutput}`;
     };
 });
 

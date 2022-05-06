@@ -1,4 +1,9 @@
-import { SubscribeMessage, WebSocketGateway, WsResponse, WebSocketServer } from '@nestjs/websockets';
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WsResponse,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Cron } from '@nestjs/schedule';
@@ -9,19 +14,18 @@ export interface WebSocketUser {
 }
 @WebSocketGateway({
   cors: true,
-  origins: '*'
+  origins: '*',
 })
 export class EventsGateway {
-
   // 保存已经连接上websocket服务的用户集合 key是用户ID，value是socketclent实例
   socketMap: WebSocketUser = {};
 
-  // server 为 io 实例 server中包含多个socket实例
-  @WebSocketServer() io: Server;
+  // server为socket.io实例， server中包含多个socket实例
+  @WebSocketServer() server: Server;
 
   // 广播通知消息 针对所有用户
   broadcastMessage(body: any) {
-    this.io.emit('notification', body);
+    this.server.emit('notification', body);
   }
 
   // 发送任务截止提醒消息
@@ -47,6 +51,15 @@ export class EventsGateway {
     }
   }
 
+  // 新用户连接至websocket client为每个成功的socket实例
+  @SubscribeMessage('start deploy')
+  startDeploy(
+    client: Socket,
+    projectId: number,
+  ): Observable<WsResponse<any>> | any {
+    console.log(`接收到id为${projectId}的项目的部署通知，开始进行项目部署`);
+  }
+
   @SubscribeMessage('private message')
   handleEvent(client: any, payload: any): Observable<WsResponse<any>> | any {
     // 消息接收人ID
@@ -64,5 +77,4 @@ export class EventsGateway {
       // await Message.create(msg);
     }
   }
-
 }
