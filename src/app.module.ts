@@ -14,6 +14,7 @@ import { CronModule } from './modules/cron/cron.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
+import { ProjectModule } from './modules/project/project.module';
 
 
 @Module({
@@ -69,7 +70,8 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
     CronModule,
     SocketModule,
     NotificationModule,
-    StatisticsModule
+    StatisticsModule,
+    ProjectModule
   ],
   controllers: [AppController],
   providers: [AppService],
