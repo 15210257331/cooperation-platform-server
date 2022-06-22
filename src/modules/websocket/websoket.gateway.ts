@@ -16,7 +16,7 @@ export interface WebSocketUser {
   cors: true,
   origins: '*',
 })
-export class EventsGateway {
+export class WebsocketGateway {
   // 保存已经连接上websocket服务的用户集合 key是用户ID，value是socketclent实例
   socketMap: WebSocketUser = {};
 

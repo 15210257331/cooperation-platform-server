@@ -3,14 +3,14 @@ import { Cron, Interval,CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { Task } from '../task/entity/task.entity';
-import { EventsGateway } from '../socket/events.gateway';
 import * as dayjs from 'dayjs';
+import { WebsocketGateway } from '../websocket/websoket.gateway';
 
 @Injectable()
 export class CronService {
   constructor(
     @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
-    private readonly eventsGateway: EventsGateway,
+    private readonly websocketGateway: WebsocketGateway,
   ) {}
 
   /**
@@ -38,7 +38,7 @@ export class CronService {
           const endDate = dayjs(task.endDate).format('YYYY-MM-DD HH:mm');
           const userId = task.owner.id;
           const body = `<p>任务<b style="color:black;font-weight:600">【${task.name}】</b>将于<span style="color:red;">${endDate}</span>截止!</p>`;
-          this.eventsGateway.sendMessage(userId, body);
+          this.websocketGateway.sendMessage(userId, body);
         }
       });
     }

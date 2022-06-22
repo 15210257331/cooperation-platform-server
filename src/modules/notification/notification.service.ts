@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entity/notification.entity';
 import { NotificationDetail } from './entity/notification-detail.entity';
-import { EventsGateway } from '../socket/events.gateway';
 import { User } from '../user/entity/user.entity';
+import { WebsocketGateway } from '../websocket/websoket.gateway';
 
 @Injectable()
 export class NotificationService {
@@ -13,7 +13,7 @@ export class NotificationService {
         @InjectRepository(Notification) private readonly messageRepository: Repository<Notification>,
         @InjectRepository(NotificationDetail) private readonly messageDetailRepository: Repository<NotificationDetail>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        private readonly eventsGateway: EventsGateway,
+        private readonly websocketGateway: WebsocketGateway,
     ) { }
 
     // 消息
@@ -52,7 +52,7 @@ export class NotificationService {
             return message;
         })
         const messageDoc = await this.messageRepository.save(messages);
-        this.eventsGateway.broadcastMessage('您有一条新的消息通知！');
+        this.websocketGateway.broadcastMessage('您有一条新的消息通知！');
         return messageDoc;
     }
 

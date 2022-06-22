@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from '../task/entity/task.entity';
+import { WebsocketModule } from '../websocket/websocket.module';
 import { CronService } from './cron.service';
-import { SocketModule } from '../socket/socket.module';
 
 @Module({
     providers: [CronService,],
     imports: [
         TypeOrmModule.forFeature([Task]),
         ScheduleModule.forRoot(),
-        SocketModule
+        WebsocketModule
     ],
     controllers: [],
 })
