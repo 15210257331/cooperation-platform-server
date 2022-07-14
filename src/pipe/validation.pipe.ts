@@ -10,7 +10,7 @@ import { Logger } from '../config/log.config';
  * 转换：管道将输入数据转换为所需的数据输出
  * 验证：对输入数据进行验证，如果验证成功继续传递; 验证失败则抛出异常;
  * 配置好这个管道在controller中使用 就会自动关联dto进行验证
- * ValidationPipe 是内置的管道 可以不用自己实现 直接从@nestjs/common包中导入使用
+ * nestjs 内置了ValidationPipe这个管道 可以不用自己实现 直接从@nestjs/common包中导入使用
  */
 @Injectable()
 export class ValidationPipe implements PipeTransform {

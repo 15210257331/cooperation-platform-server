@@ -12,6 +12,7 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
 import { EnvironmentModule } from './modules/environment/environment.module';
 import { TypeormModule } from './modules/typeorm/typeorm.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
+import { FlowModule } from './modules/flow/flow.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { WebsocketModule } from './modules/websocket/websocket.module';
     UserModule,
     AuthModule,
     FileModule,
+    FlowModule,
     TaskModule,
     RequestModule,
     CronModule,

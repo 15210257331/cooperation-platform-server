@@ -1,4 +1,10 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Logger } from '../config/log.config';
 
@@ -10,27 +16,36 @@ import { Logger } from '../config/log.config';
  */
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    catch(exception: HttpException, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
-        // 获取异常状态码
-        const status =
-            exception instanceof HttpException
-                ? exception.getStatus()
-                : HttpStatus.INTERNAL_SERVER_ERROR;
-        // 设置错误信息
-        const message = exception.message
-            ? exception.message
-            : `${status >= 500 ? 'Service Error' : 'Client Error'}`;
-        Logger.log('错误提示', message);
-        const errorResponse = {
-            data: {},
-            message,
-            code: 9999, // 自定义code
-        };
-        // 设置返回的状态码、请求头、发送错误信息
-        response.status(status);
-        response.header('Content-Type', 'application/json; charset=utf-8');
-        response.send(errorResponse);
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    // 获取异常状态码
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+    // 获取错误信息
+    const exceptionResponse = exception.getResponse();
+    console.log(exceptionResponse);
+    let message;
+    if (exceptionResponse) {
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else {
+        message = (exceptionResponse as any).message;
+      }
+    } else {
+      message = status >= 500 ? 'Service Error' : 'Client Error';
     }
+    Logger.log('错误提示', message);
+    const errorResponse = {
+      data: {},
+      message,
+      code: 9999, // 自定义code
+    };
+    // 设置返回的状态码、请求头、发送错误信息
+    response.status(status);
+    response.header('Content-Type', 'application/json; charset=utf-8');
+    response.send(errorResponse);
+  }
 }

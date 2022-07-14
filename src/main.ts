@@ -7,8 +7,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { HttpExceptionFilter } from './filter/http-exception.filter';
-import { ValidationPipe } from '@nestjs/common';
 import { join, resolve } from 'path';
+import { ValidationPipe } from './pipe/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -42,6 +42,8 @@ async function bootstrap() {
 
   // 全局过滤器  格式化接口异常返回数据
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  app.useGlobalPipes(new ValidationPipe());
 
   // 配置 Swagger
   const options = new DocumentBuilder()
