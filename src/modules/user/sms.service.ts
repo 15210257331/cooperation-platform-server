@@ -74,11 +74,14 @@ export class SmsService {
     return new Promise(async (resolve, reject) => {
       try {
         client.SendSms(params, (err, response) => {
+          // console.log(response);
           if (err) {
             reject(err);
           }
           if (response && response?.SendStatusSet[0].Code === 'Ok') {
             resolve(true);
+          } else {
+            resolve(response?.SendStatusSet[0].Message);
           }
         });
       } catch (e) {

@@ -1,4 +1,3 @@
-import { Task } from './entity/task.entity';
 import {
   HttpException,
   Injectable,
@@ -8,9 +7,10 @@ import {
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
-import { Flow } from './entity/flow.entity';
-import { FlowAddDTO } from './dto/flow-add.dto';
-import { FlowUpdateDTO } from './dto/flow-update.dto';
+import { Flow } from './entities/flow.entity';
+import { Task } from '../task/entities/task.entity';
+import { CreateFlowDto } from './dto/create-flow.dto';
+import { UpdateFlowDto } from './dto/update-flow.dto';
 import { NotificationService } from '../notification/notification.service';
 @Injectable()
 export class FlowService {
@@ -21,37 +21,41 @@ export class FlowService {
     private readonly notificationService: NotificationService,
   ) {}
 
-  /**
-   * 查询当前登录用户的流程列表
-   */
-  async list(keywords: string, request: any): Promise<any> {
-    const flows = await this.flowRepository
-      .createQueryBuilder('flow')
-      .where((qb) => {
-        const subQuery = qb
-          .subQuery()
-          .select('user.id')
-          .from(User, 'user')
-          .where('user.id = :id')
-          .getQuery();
-        return 'flow.belong= ' + subQuery;
-      })
-      .setParameter('id', request.user.userId)
-      .leftJoinAndSelect('flow.tasks', 'tasks')
-      .leftJoinAndSelect('tasks.subItems', 'subItems')
-      .leftJoinAndSelect('tasks.pictures', 'pictures')
-      .getMany();
-    return flows.map((item) => {
-      let tasks = item.tasks;
-      if (keywords) {
-        tasks = item.tasks.filter((item) => item.name.includes(keywords));
-      }
-      return Object.assign(item, {
-        tasks: tasks,
-      });
-    });
+  /**新增节点 */
+  async create(flowAddDTO: CreateFlowDto, request: any): Promise<any> {
+    const { name, sort, range, complete, canNew } = flowAddDTO;
+    const flow = new Flow();
+    flow.name = name;
+    flow.sort = sort;
+    flow.range = range;
+    flow.canNew = canNew;
+    flow.complete = complete;
+    flow.belong = await this.userRepository.findOne(request.user.userId);
+    flow.tasks = [];
+    console.log(flow);
+    // 消息通知
+    const content = `新创建了一个流程: <b style="color:black;">${name}</b>`;
+    this.notificationService.addMessage(
+      request.user.userId,
+      '新建流程',
+      content,
+    );
+    return await this.flowRepository.save(flow);
   }
 
+  /** 节点列表 */
+  async list(name: string, request: any): Promise<any> {
+    return await this.flowRepository
+      .createQueryBuilder('flow')
+      .where('flow.name like :name', { name: `%${name}%` })
+      .andWhere('flow.belongId = :id', {
+        id: request.user.userId,
+      })
+      .leftJoinAndSelect('flow.tasks', 'tasks')
+      .getMany();
+  }
+
+  /** 所有节点 */
   async all(request: any): Promise<any> {
     return await this.flowRepository
       .createQueryBuilder('flow')
@@ -68,29 +72,8 @@ export class FlowService {
       .getMany();
   }
 
-  // 添加节点
-  async add(flowAddDTO: FlowAddDTO, request: any): Promise<any> {
-    const { name, sort, range, complete } = flowAddDTO;
-    const flow = new Flow();
-    flow.name = name;
-    flow.sort = sort;
-    flow.range = range;
-    flow.complete = complete;
-    flow.belong = await this.userRepository.findOne(request.user.userId);
-    flow.tasks = [];
-    const doc = await this.flowRepository.save(flow);
-    // 消息通知
-    const content = `新创建了一个流程: <b style="color:black;">${name}</b>`;
-    this.notificationService.addMessage(
-      request.user.userId,
-      '新建流程',
-      content,
-    );
-    return doc;
-  }
-
   // 更新节点
-  async update(flowUpdateDTO: FlowUpdateDTO): Promise<any> {
+  async update(flowUpdateDTO: UpdateFlowDto): Promise<any> {
     const { id, name, sort, range, canNew, complete } = flowUpdateDTO;
     await this.flowRepository.update(id, {
       name: name,

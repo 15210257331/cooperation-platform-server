@@ -4,23 +4,27 @@ import { UserModule } from '../user/user.module';
 import { User } from '../user/entity/user.entity';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
-import { Task } from './entity/task.entity';
-import { SubItem } from './entity/sub-item.entity'
+import { Task } from './entities/task.entity';
 import { NotificationDetail } from '../notification/entity/notification-detail.entity';
-import { Picture } from './entity/picture.entity';
-import { FlowService } from './flow.service';
-import { FlowController } from './flow.controller';
-import { Flow } from './entity/flow.entity';
+import { Flow } from '../flow/entities/flow.entity';
 import { Notification } from '../notification/entity/notification.entity';
 import { NotificationModule } from '../notification/notification.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task, User, SubItem, Notification,NotificationDetail, Picture, Flow]),
+    TypeOrmModule.forFeature([
+      Task,
+      User,
+      Notification,
+      NotificationDetail,
+      Flow,
+    ]),
     UserModule,
-    NotificationModule
+    AuthModule,
+    NotificationModule,
   ],
-  providers: [TaskService, FlowService],
-  controllers: [TaskController, FlowController]
+  providers: [TaskService],
+  controllers: [TaskController],
 })
-export class TaskModule { }
+export class TaskModule {}

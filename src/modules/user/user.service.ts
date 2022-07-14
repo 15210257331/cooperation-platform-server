@@ -169,6 +169,7 @@ export class UserService {
     const { phone } = body;
     // 验证码
     const verificationCode = createCode();
+    console.log(verificationCode);
     const doc = await this.userRepository.findOne({ username: phone });
     if (doc) {
       throw new HttpException('该手机号已被注册!', 200);
@@ -177,11 +178,11 @@ export class UserService {
       phone,
       verificationCode,
     );
-    if (result) {
+    if (result === true) {
       this.verificationCodeMap[phone] = verificationCode;
       return '验证码发送成功！';
     } else {
-      throw new HttpException('验证码发送失败!', 200);
+      throw new HttpException('验证码发送失败!' + result.toString(), 200);
     }
   }
 

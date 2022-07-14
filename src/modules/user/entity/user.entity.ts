@@ -7,8 +7,8 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Flow } from '../../task/entity/flow.entity';
-import { Task } from '../../task/entity/task.entity';
+import { Flow } from '../../flow/entities/flow.entity';
+import { Task } from '../../task/entities/task.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { encryptPassword } from '../../../utils';
 /**

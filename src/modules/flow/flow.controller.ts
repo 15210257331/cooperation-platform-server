@@ -9,15 +9,13 @@ import {
   Query,
   ParseIntPipe,
   UsePipes,
-  ValidationPipe,
   Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { TaskAddDTO } from './dto/task-add.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { EntityManager, Transaction, TransactionManager } from 'typeorm';
-import { FlowAddDTO } from './dto/flow-add.dto';
-import { FlowUpdateDTO } from './dto/flow-update.dto';
+import { CreateFlowDto } from './dto/create-flow.dto';
+import { UpdateFlowDto } from './dto/update-flow.dto';
 import { FlowService } from './flow.service';
 
 @ApiTags('流程节点相关接口')
@@ -25,28 +23,29 @@ import { FlowService } from './flow.service';
 export class FlowController {
   constructor(private readonly flowService: FlowService) {}
 
-  @Post('/add')
+  /** 新增节点 */
+  @Post('/create')
   @UseGuards(AuthGuard('jwt'))
   public async add(
-    @Body() flowAddDTO: FlowAddDTO,
+    @Body() createFlowDto: CreateFlowDto,
     @Request() request: any,
   ): Promise<any> {
-    return this.flowService.add(flowAddDTO, request);
+    return this.flowService.create(createFlowDto, request);
   }
 
   @Post('/update')
   @UseGuards(AuthGuard('jwt'))
-  public async update(@Body() flowUpdateDTO: FlowUpdateDTO): Promise<any> {
-    return this.flowService.update(flowUpdateDTO);
+  public async update(@Body() updateFlowDto: UpdateFlowDto): Promise<any> {
+    return this.flowService.update(updateFlowDto);
   }
 
   @Get('/list')
   @UseGuards(AuthGuard('jwt'))
   public async list(
-    @Query('keywords') keywords: string,
+    @Query('name') name: string,
     @Request() request: any,
   ): Promise<any> {
-    return this.flowService.list(keywords, request);
+    return this.flowService.list(name, request);
   }
 
   @Get('/all')
@@ -55,7 +54,7 @@ export class FlowController {
     return this.flowService.all(request);
   }
 
-  // 删除分组
+  // 删除节点
   @Get('/delete/:id')
   @UseGuards(AuthGuard('jwt'))
   @Transaction()

@@ -1,32 +1,31 @@
-import { IsNotEmpty, IsString, IsNumber, IsBoolean } from "class-validator";
+import { IsNotEmpty, IsString, IsNumber, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TaskAddDTO {
-    @ApiProperty()
-    @IsNotEmpty({ message: '任务名称不能为空' })
-    readonly name: string;
+  @ApiProperty()
+  @IsNotEmpty({ message: '任务名称不能为空' })
+  readonly name: string;
 
-    @ApiProperty()
-    @IsNotEmpty({ message: '任务详情不能为空' })
-    readonly detail: string;
+  @ApiProperty()
+  @IsNotEmpty({ message: '任务描述不能为空' })
+  readonly description: string;
 
-    @IsNotEmpty({ message: '分组ID不能为空' })
-    @IsNumber()
-    readonly flowId: number;
+  @IsNotEmpty({ message: '流程ID不能为空' })
+  @IsNumber()
+  readonly flowId: number;
 
-    @ApiProperty()
-    @IsNotEmpty({ message: '任务优先级' })
-    readonly priority: number;
+  @ApiProperty()
+  @IsNotEmpty({ message: '任务优先级不能为空' })
+  readonly priority: string;
 
-    @ApiProperty()
-    @IsNotEmpty({ message: '任务提醒' })
-    readonly reminder: number;
+  @ApiProperty()
+  readonly reminder: number;
 
-    @ApiProperty()
-    @IsNotEmpty({ message: '开始时间不能为空' })
-    readonly startDate: Date;
+  @ApiProperty()
+  @IsNotEmpty({ message: '开始时间不能为空' })
+  readonly startDate: Date;
 
-    @ApiProperty()
-    @IsNotEmpty({ message: '截止时间不能为空' })
-    readonly endDate: Date;
+  @ApiProperty()
+  @IsNotEmpty({ message: '截止时间不能为空' })
+  readonly endDate: Date;
 }
