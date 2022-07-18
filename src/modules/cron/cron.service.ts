@@ -23,9 +23,9 @@ export class CronService {
     // 筛选设置了提醒的任务全部任务
     const remindTasks = await this.taskRepository.find({
       where: {
-        reminder: Not(0),
+        remind: Not(0),
       },
-      select: ['name', 'endDate', 'reminder'],
+      select: ['name', 'endDate', 'remind'],
       relations: ['owner'],
     });
 
@@ -47,16 +47,16 @@ export class CronService {
   // 计算任务提醒时间
   calculateReminderTime(task: any) {
     let reminderTime;
-    if (task.reminder === 1) {
+    if (task.remind === 1) {
       // 截止前10分钟
       reminderTime = dayjs(task.endDate).subtract(10, 'minute');
-    } else if (task.reminder === 2) {
+    } else if (task.remind === 2) {
       // 截止前一小时
       reminderTime = dayjs(task.endDate).subtract(1, 'hour');
-    } else if (task.reminder === 3) {
+    } else if (task.remind === 3) {
       // 截止前两小时
       reminderTime = dayjs(task.endDate).subtract(2, 'hour');
-    } else if (task.reminder === 4) {
+    } else if (task.remind === 4) {
       // 截止前一天
       reminderTime = dayjs(task.endDate).subtract(1, 'day');
     }

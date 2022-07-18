@@ -19,7 +19,7 @@ export class TaskAddDTO {
   readonly priority: string;
 
   @ApiProperty()
-  readonly reminder: number;
+  readonly remind: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: '开始时间不能为空' })

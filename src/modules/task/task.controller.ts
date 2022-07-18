@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Param,
   UsePipes,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,13 +24,10 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   //所有任务列表
-  @Get('/list')
+  @Post('/list')
   @UseGuards(AuthGuard('jwt'))
-  public async list(
-    @Query() keywords: string,
-    @Request() request: any,
-  ): Promise<any> {
-    return this.taskService.list(keywords, request);
+  public async list(@Body() body: any, @Request() request: any): Promise<any> {
+    return this.taskService.list(body, request);
   }
 
   //新增任务

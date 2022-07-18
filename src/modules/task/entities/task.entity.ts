@@ -60,12 +60,12 @@ export class Task {
 
   @Column({
     type: 'int',
-    name: 'reminder',
+    name: 'remind',
     default: 1,
     nullable: true,
     comment: '设置提醒',
   })
-  reminder: number;
+  remind: number;
 
   @Column({
     type: 'bool',
@@ -75,6 +75,15 @@ export class Task {
     comment: '任务是否已完成',
   })
   complete: boolean;
+
+  @Column({
+    type: 'bool',
+    name: 'delete',
+    nullable: false,
+    default: false,
+    comment: '任务是否已删除',
+  })
+  delete: boolean;
 
   @CreateDateColumn({
     type: 'timestamp',

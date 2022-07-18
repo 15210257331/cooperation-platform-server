@@ -16,25 +16,24 @@ export class TaskService {
   ) {}
 
   // 查询当前用户的所有任务
-  async list(keywords: string = '', request: any): Promise<any> {
-    const doc = await this.taskRepository
+  async list(body: any, request: any): Promise<any> {
+    const { name, size, page } = body;
+    const list = await this.taskRepository
       .createQueryBuilder('task')
-      .where((qb) => {
-        const subQuery = qb
-          .subQuery()
-          .select('user.id')
-          .from(User, 'user')
-          .where('user.id = :id')
-          .getQuery();
-        return 'task.owner= ' + subQuery;
+      .where('task.name like :name', { name: `%${name}%` })
+      .andWhere('task.delete = true')
+      .andWhere('task.owner = :id', {
+        id: request.user.userId,
       })
-      // .andWhere('task.name like "%' + keywords + '%"')
       .setParameter('id', request.user.userId)
-      .leftJoinAndSelect('task.flow', 'flow')
-      .leftJoinAndSelect('task.subItems', 'subItems')
-      .leftJoinAndSelect('task.pictures', 'pictures')
+      .take(size)
+      .skip((page - 1) * size)
+      .orderBy('task.createDate', 'DESC')
       .getMany();
-    return doc;
+    const total = await this.taskRepository.count({
+      where: { delete: true },
+    });
+    return { list, total };
   }
 
   /**
@@ -44,20 +43,13 @@ export class TaskService {
    * @returns
    */
   async create(taskAddDTO: TaskAddDTO, request: any): Promise<any> {
-    const {
-      name,
-      description,
-      flowId,
-      priority,
-      reminder,
-      startDate,
-      endDate,
-    } = taskAddDTO;
+    const { name, description, flowId, priority, remind, startDate, endDate } =
+      taskAddDTO;
     const task = new Task();
     task.name = name;
     task.description = description;
     task.priority = priority;
-    task.reminder = reminder;
+    task.remind = remind;
     task.startDate = startDate;
     task.endDate = endDate;
     task.flow = await this.flowRepository.findOne(flowId);

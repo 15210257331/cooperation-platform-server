@@ -51,7 +51,7 @@ export class FlowService {
       .andWhere('flow.belongId = :id', {
         id: request.user.userId,
       })
-      .leftJoinAndSelect('flow.tasks', 'tasks')
+      .leftJoinAndSelect('flow.tasks', 'tasks', 'tasks.delete = false')
       .getMany();
   }
 
@@ -83,7 +83,7 @@ export class FlowService {
       complete: complete,
     });
     const doc = await this.flowRepository.findOne(id, {
-      relations: ['tasks', 'tasks.subItems', 'tasks.pictures'],
+      relations: ['tasks'],
     });
     return doc;
   }
