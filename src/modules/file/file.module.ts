@@ -28,10 +28,12 @@ const audiosMimeTypes = ['mp3', 'wav', 'ogg'];
           if (audiosMimeTypes.some((item) => item === mimeType)) {
             suffix = 'audio';
           }
-          const filePath = path.resolve(__dirname, '../../public', suffix);
+          const filePath = path.resolve(__dirname, '../../public');
+          
           try {
             fs.accessSync(filePath);
           } catch (e) {
+            console.log(filePath);
             fs.mkdirSync(filePath);
           }
           cb(null, filePath);
