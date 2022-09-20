@@ -13,6 +13,7 @@ import { EnvironmentModule } from './modules/environment/environment.module';
 import { TypeormModule } from './modules/typeorm/typeorm.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { FlowModule } from './modules/flow/flow.module';
+import { ProjectModule } from './modules/project/project.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FlowModule } from './modules/flow/flow.module';
     CronModule,
     NotificationModule,
     StatisticsModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],

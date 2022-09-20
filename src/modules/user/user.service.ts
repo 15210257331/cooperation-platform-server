@@ -167,7 +167,7 @@ export class UserService {
   async sendVerificationCode(body: any): Promise<any> {
     // 手机号
     const { phone } = body;
-    // 验证码
+    // 后台随机生成验证码
     const verificationCode = createCode();
     console.log(verificationCode);
     const doc = await this.userRepository.findOne({ username: phone });
@@ -218,17 +218,17 @@ export class UserService {
 
   // 分页查询用户列表
   async userList(body: any): Promise<any> {
-    const { name, page, size } = body;
+    const { nickname, pageIndex, pageSize } = body;
     const [users, count] = await this.userRepository.findAndCount({
       where: {
-        nickname: Like(`%${name}%`),
+        nickname: Like(`%${nickname}%`),
       },
       cache: true,
       order: {
         createDate: 'ASC', //ASC 按时间正序 DESC 按时间倒序
       },
-      skip: (page - 1) * size,
-      take: size,
+      skip: (pageIndex - 1) * pageSize,
+      take: pageSize,
     });
     return {
       list: users,

@@ -12,44 +12,47 @@ import { Task } from '../task/entities/task.entity';
 import { CreateFlowDto } from './dto/create-flow.dto';
 import { UpdateFlowDto } from './dto/update-flow.dto';
 import { NotificationService } from '../notification/notification.service';
+import { Project } from '../project/entities/project.entity';
 @Injectable()
 export class FlowService {
   constructor(
     @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>,
     private readonly notificationService: NotificationService,
   ) {}
 
   /**新增节点 */
   async create(flowAddDTO: CreateFlowDto, request: any): Promise<any> {
-    const { name, sort, range, complete, canNew } = flowAddDTO;
+    const { projectId, name, sort, range, complete, canNew } = flowAddDTO;
     const flow = new Flow();
     flow.name = name;
     flow.sort = sort;
     flow.range = range;
     flow.canNew = canNew;
     flow.complete = complete;
-    flow.belong = await this.userRepository.findOne(request.user.userId);
+    flow.project = await this.projectRepository.findOne(projectId);
     flow.tasks = [];
     console.log(flow);
     // 消息通知
-    const content = `新创建了一个流程: <b style="color:black;">${name}</b>`;
+    const content = `新创建了一个分组: <b style="color:black;">${name}</b>`;
     this.notificationService.addMessage(
       request.user.userId,
-      '新建流程',
+      '新建分组',
       content,
     );
     return await this.flowRepository.save(flow);
   }
 
   /** 节点列表 */
-  async list(name: string, request: any): Promise<any> {
+  async list(projectId: number, name: string): Promise<any> {
     return await this.flowRepository
       .createQueryBuilder('flow')
       .where('flow.name like :name', { name: `%${name}%` })
-      .andWhere('flow.belongId = :id', {
-        id: request.user.userId,
+      .andWhere('flow.projectId = :id', {
+        id: projectId,
       })
       .leftJoinAndSelect('flow.tasks', 'tasks', 'tasks.delete = false')
       .getMany();

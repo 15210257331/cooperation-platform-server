@@ -170,7 +170,7 @@ export class StatisticsService {
       data = [1, 2, 3, 4, 5, 6, 7];
       return data.reverse().map((item) => {
         return {
-          date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
+          date: dayjs().subtract(item, 'day').format('MM/DD'),
           total: Math.floor(Math.random() * 101),
         };
       });
@@ -178,7 +178,7 @@ export class StatisticsService {
       data = [1, 3, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
       return data.reverse().map((item) => {
         return {
-          date: dayjs().subtract(item, 'day').format('MM.DD') + '日',
+          date: dayjs().subtract(item, 'day').format('MM/DD'),
           total: Math.floor(Math.random() * 101),
         };
       });
@@ -186,7 +186,7 @@ export class StatisticsService {
       data = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12];
       return data.reverse().map((item) => {
         return {
-          date: dayjs().subtract(item, 'month').format('YY-MM') + '月',
+          date: dayjs().subtract(item, 'month').format('YYYY/MM'),
           total: Math.floor(Math.random() * 101),
         };
       });

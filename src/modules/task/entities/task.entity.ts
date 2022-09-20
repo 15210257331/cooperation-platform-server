@@ -54,7 +54,7 @@ export class Task {
     name: 'progress',
     default: 0,
     nullable: false,
-    comment: '任务进度',
+    comment: '任务进度 1~100',
   })
   progress: number;
 

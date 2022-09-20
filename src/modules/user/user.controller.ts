@@ -105,8 +105,8 @@ export class UserController {
   }
 
   // 分页查询用户列表
-  @UseGuards(AuthGuard('jwt'))
   @Post('/list')
+  @UseGuards(AuthGuard('jwt'))
   public async list(@Body() body: any): Promise<any> {
     return this.userService.userList(body);
   }

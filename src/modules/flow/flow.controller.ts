@@ -42,10 +42,10 @@ export class FlowController {
   @Get('/list')
   @UseGuards(AuthGuard('jwt'))
   public async list(
+    @Query('projectId', new ParseIntPipe()) projectId: number,
     @Query('name') name: string,
-    @Request() request: any,
   ): Promise<any> {
-    return this.flowService.list(name, request);
+    return this.flowService.list(projectId, name);
   }
 
   @Get('/all')
