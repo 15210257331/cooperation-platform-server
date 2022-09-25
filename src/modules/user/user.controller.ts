@@ -24,6 +24,9 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as urlencode from 'urlencode';
 import { ConfigService } from '@nestjs/config';
 import { UpdateDTO } from './dto/update.dto';
+import { RoleGuard } from '../../guard/role.guard';
+import { Roles } from '../../decorators/roles.decorator';
+import { UserRole } from './entity/user.entity';
 
 @ApiTags('用户相关')
 @Controller('/user')
@@ -73,7 +76,9 @@ export class UserController {
 
   // 获取用户信息
   @Get('/info')
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(UserRole.ADMIN, UserRole.EDITOR, UserRole.GHOST)
+  // 顺序不能乱
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   // 使用此拦截器结合entity中的Exclude装饰器可以查询数据时隐藏相应的字段
   @UseInterceptors(ClassSerializerInterceptor)
   public async getUserInfo(@Request() request: any): Promise<any> {
@@ -109,5 +114,14 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   public async list(@Body() body: any): Promise<any> {
     return this.userService.userList(body);
+  }
+
+  /** 用户数据排行 */
+  @Get('/rank')
+  @UseGuards(AuthGuard('jwt'))
+  public async userRank(
+    @Query('type', new ParseIntPipe()) type: number,
+  ): Promise<any> {
+    return this.userService.rank(type);
   }
 }

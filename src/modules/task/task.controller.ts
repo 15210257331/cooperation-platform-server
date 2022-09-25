@@ -64,4 +64,13 @@ export class TaskController {
   ): Promise<any> {
     return this.taskService.delete(id, maneger);
   }
+
+  // 任务完成趋势
+  @Get('/trend')
+  @UseGuards(AuthGuard('jwt'))
+  public async trend(
+    @Query('type', new ParseIntPipe()) type: number,
+  ): Promise<any> {
+    return this.taskService.trend(type);
+  }
 }

@@ -8,7 +8,6 @@ import { TaskModule } from './modules/task/task.module';
 import { RequestModule } from './modules/request/request.module';
 import { CronModule } from './modules/cron/cron.module';
 import { NotificationModule } from './modules/notification/notification.module';
-import { StatisticsModule } from './modules/statistics/statistics.module';
 import { EnvironmentModule } from './modules/environment/environment.module';
 import { TypeormModule } from './modules/typeorm/typeorm.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
@@ -28,7 +27,6 @@ import { ProjectModule } from './modules/project/project.module';
     RequestModule,
     CronModule,
     NotificationModule,
-    StatisticsModule,
     ProjectModule,
   ],
   controllers: [AppController],

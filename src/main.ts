@@ -25,7 +25,7 @@ async function bootstrap() {
 
   // 设置静态目录 public
   // 还支持第二个参数prefix来设置虚拟目录
-  // 在地址栏输入xxxx:4000/public/test.png时会找到upload目录下的tes.png
+  // 在地址栏输入xxxx:4000/public/test.png时会找到upload目录下的test.png
   app.useStaticAssets(resolve(__dirname, './public'), { prefix: '/public' });
 
   // 设置views目录存放模板文件

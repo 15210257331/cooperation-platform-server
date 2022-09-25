@@ -17,7 +17,7 @@ import {
   WechatError,
   WechatUserInfo,
   AccessConfig,
-} from '../../interface/wechat.interface';
+} from './wechat.interface';
 
 @Injectable()
 export class UserService {
@@ -51,6 +51,7 @@ export class UserService {
         const payload = {
           username: username,
           userId: user.id,
+          role: user.role,
         };
         // 生成token
         const token = this.jwtService.sign(payload);
@@ -234,5 +235,35 @@ export class UserService {
       list: users,
       total: count,
     };
+  }
+
+  /** 用户任务完成排行 */
+  async rank(type: number): Promise<any> {
+    let users = await this.userRepository.find({
+      relations: ['tasks'],
+    });
+    let data = users.map((user, index) => {
+      const total = user.tasks.length;
+      const complete = user.tasks.filter(
+        (task) => task.complete === true,
+      ).length;
+      const percent =
+        total > 0 ? parseFloat((complete / total).toFixed(2)) * 100 : 0;
+      return {
+        nickname: user.nickname,
+        total: total,
+        complete: complete,
+        percent: percent,
+      };
+    });
+    if (type === 1) {
+      data.sort((a, b) => b.total - a.total);
+    } else {
+      data.sort((a, b) => b.percent - a.percent);
+    }
+    if (users.length > 5) {
+      data = data.slice(0, 5);
+    }
+    return data;
   }
 }

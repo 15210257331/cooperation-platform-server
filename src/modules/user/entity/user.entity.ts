@@ -7,15 +7,16 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Flow } from '../../flow/entities/flow.entity';
 import { Task } from '../../task/entities/task.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { encryptPassword } from '../../../utils';
 import { Project } from '../../project/entities/project.entity';
-/**
- * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
- * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
- */
+
+export enum UserRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  GHOST = 'ghost',
+}
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -67,13 +68,14 @@ export class User {
   avatar: string;
 
   @Column({
-    type: 'int',
+    type: 'enum',
     name: 'role',
-    default: () => 1,
+    enum: UserRole,
+    default: UserRole.GHOST,
     nullable: false,
-    comment: '用户角色 1 管理员 2 普通用户',
+    comment: '用户角色',
   })
-  role: number;
+  role: string;
 
   @Column({
     type: 'text',

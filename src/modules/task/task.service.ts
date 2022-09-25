@@ -6,6 +6,7 @@ import { User } from '../user/entity/user.entity';
 import { Task } from './entities/task.entity';
 import { Flow } from '../flow/entities/flow.entity';
 import { NotificationService } from '../notification/notification.service';
+import * as dayjs from 'dayjs';
 @Injectable()
 export class TaskService {
   constructor(
@@ -93,5 +94,35 @@ export class TaskService {
   //删除任务
   async delete(id: number, maneger: EntityManager): Promise<any> {
     return await this.taskRepository.delete(id);
+  }
+
+  // 近14天任务完成情况
+  async trend(type: number): Promise<any> {
+    let data = [];
+    if (type === 1) {
+      data = [1, 2, 3, 4, 5, 6, 7];
+      return data.reverse().map((item) => {
+        return {
+          date: dayjs().subtract(item, 'day').format('MM/DD'),
+          total: Math.floor(Math.random() * 101),
+        };
+      });
+    } else if (type === 2) {
+      data = [1, 3, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
+      return data.reverse().map((item) => {
+        return {
+          date: dayjs().subtract(item, 'day').format('MM/DD'),
+          total: Math.floor(Math.random() * 101),
+        };
+      });
+    } else {
+      data = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12];
+      return data.reverse().map((item) => {
+        return {
+          date: dayjs().subtract(item, 'month').format('YYYY/MM'),
+          total: Math.floor(Math.random() * 101),
+        };
+      });
+    }
   }
 }

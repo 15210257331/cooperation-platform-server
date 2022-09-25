@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 const COS = require('cos-nodejs-sdk-v5');
 import * as fs from 'fs';
-import { UploadFileRo } from '../../interface/file.interface';
+import { UploadFileRo } from './file.interface';
 
 @Injectable()
 export class CosService {

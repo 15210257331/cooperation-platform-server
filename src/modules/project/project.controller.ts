@@ -14,7 +14,9 @@ import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('项目接口')
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
