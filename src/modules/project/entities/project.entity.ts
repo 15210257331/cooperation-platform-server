@@ -38,6 +38,15 @@ export class Project {
   icon: string;
 
   @Column({
+    type: 'varchar',
+    nullable: false,
+    default: 'http://sallery.cn:4000/public/1639992965.webp',
+    name: 'cover',
+    comment: '项目封面',
+  })
+  cover: string;
+
+  @Column({
     type: 'int',
     name: 'type',
     nullable: false,

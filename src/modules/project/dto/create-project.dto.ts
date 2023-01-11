@@ -11,6 +11,9 @@ export class CreateProjectDto {
   readonly icon: string;
 
   @ApiProperty()
+  readonly cover: string;
+
+  @ApiProperty()
   @IsNotEmpty({ message: '项目类型不能为空' })
   @IsNumber()
   readonly type: number;

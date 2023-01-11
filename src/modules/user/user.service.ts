@@ -8,19 +8,14 @@ import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { SmsService } from './sms.service';
 import { ConfigService } from '@nestjs/config';
-import { AxiosResponse } from 'axios';
-import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { UpdateDTO } from './dto/update.dto';
-import {
-  AccessTokenInfo,
-  WechatError,
-  WechatUserInfo,
-  AccessConfig,
-} from './wechat.interface';
 
 @Injectable()
 export class UserService {
+  // 手机号---验证码 map
+  private verificationCodeMap: Map<string, string> = new Map<string, string>();
+
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private smsService: SmsService,
@@ -28,12 +23,6 @@ export class UserService {
     private httpService: HttpService,
     private readonly jwtService: JwtService,
   ) {}
-
-  // 手机号---验证码 map
-  private verificationCodeMap: Map<string, string> = new Map<string, string>();
-  // 微信accessToken信息
-  private accessTokenInfo: AccessTokenInfo;
-  public apiServer = 'https://api.weixin.qq.com';
 
   // 登录
   async login(loginDTO: LoginDTO): Promise<any> {
@@ -51,7 +40,7 @@ export class UserService {
         const payload = {
           username: username,
           userId: user.id,
-          role: user.role,
+          role: user.role, // 当前用户的角色 用于接口权限的验证
         };
         // 生成token
         const token = this.jwtService.sign(payload);
@@ -65,78 +54,6 @@ export class UserService {
     } else {
       throw new HttpException('该用户名不存在!', 200);
     }
-  }
-
-  /**
-   * 微信登录 通过code appId 换取AccessToken 通过AccessToken 请求微信接口 拉去微信用户信息
-   */
-  async loginWithWechat(code) {
-    if (!code) {
-      throw new BadRequestException('请输入微信授权码');
-    }
-    const APPID = this.configService.get('APPID');
-    const APPSECRET = this.configService.get('APPSECRET');
-    if (!APPSECRET) {
-      throw new BadRequestException('[getAccessToken]必须有appSecret');
-    }
-    if (
-      !this.accessTokenInfo ||
-      (this.accessTokenInfo && this.isExpires(this.accessTokenInfo))
-    ) {
-      // 请求accessToken数据
-      const res: AxiosResponse<WechatError & AccessConfig, any> =
-        await lastValueFrom(
-          this.httpService.get(
-            `${this.apiServer}/sns/oauth2/access_token?appid=${APPID}&secret=${APPSECRET}&code=${code}&grant_type=authorization_code`,
-          ),
-        );
-
-      if (res.data.errcode) {
-        throw new BadRequestException(
-          `[getAccessToken] errcode:${res.data.errcode}, errmsg:${res.data.errmsg}`,
-        );
-      }
-      this.accessTokenInfo = {
-        accessToken: res.data.access_token,
-        expiresIn: res.data.expires_in,
-        getTime: Date.now(),
-        openid: res.data.openid,
-      };
-    }
-    const userDoc = await this.userRepository.findOne(
-      this.accessTokenInfo.openid,
-    );
-    if (!userDoc) {
-      // 获取微信用户信息，注册新用户
-      const userInfo: WechatUserInfo = await this.getWechatUserInfo();
-      const user = new User();
-      user.username = userInfo.nickname;
-      user.password = userInfo.nickname;
-      user.nickname = userInfo.nickname;
-      user.phone = userInfo.nickname;
-      await this.userRepository.save(user);
-    }
-    return this.login(userDoc);
-  }
-
-  isExpires(access) {
-    return Date.now() - access.getTime > access.expiresIn * 1000;
-  }
-
-  async getWechatUserInfo() {
-    const result: AxiosResponse<WechatError & WechatUserInfo> =
-      await lastValueFrom(
-        this.httpService.get(
-          `${this.apiServer}/sns/userinfo?access_token=${this.accessTokenInfo.accessToken}&openid=${this.accessTokenInfo.openid}`,
-        ),
-      );
-    if (result.data.errcode) {
-      throw new BadRequestException(
-        `[getUserInfo] errcode:${result.data.errcode}, errmsg:${result.data.errmsg}`,
-      );
-    }
-    console.log('result', result.data);
-    return result.data;
   }
 
   /**

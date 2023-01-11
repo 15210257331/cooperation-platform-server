@@ -67,7 +67,7 @@ export class NotificationService {
   }
 
   // 添加消息通知
-  async addMessage(id: number, title: string, content: string) {
+  async addMessage(id: string, title: string, content: string) {
     const users = await this.userRepository.find();
     const user = users.find((item) => item.id === id);
     const messageDetail = new NotificationDetail();

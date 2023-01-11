@@ -29,7 +29,7 @@ export class WebsocketGateway {
   }
 
   // 发送任务截止提醒消息
-  sendMessage(userId: number, body: any) {
+  sendMessage(userId: string, body: any) {
     console.log(userId, body);
     if (!userId) {
       return;

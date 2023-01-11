@@ -27,10 +27,11 @@ export class ProjectService {
 
   /** 创建项目 */
   async create(createProjectDto: CreateProjectDto, request: any) {
-    const { name, icon, type } = createProjectDto;
+    const { name, icon, type, cover } = createProjectDto;
     const project = new Project();
     project.name = name;
     project.icon = icon;
+    project.cover = cover;
     project.type = type;
     project.belong = await this.userRepository.findOne(request.user.userId);
     return await this.projectRepository.save(project);
@@ -38,10 +39,11 @@ export class ProjectService {
 
   /** 更新项目信息 */
   async update(updateProjectDto: UpdateProjectDto): Promise<any> {
-    const { id, name, icon, type } = updateProjectDto;
+    const { id, name, icon, type, cover } = updateProjectDto;
     await this.projectRepository.update(id, {
       name: name,
       icon: icon,
+      cover: cover,
       type: type,
     });
     const doc = await this.projectRepository.findOne(id);

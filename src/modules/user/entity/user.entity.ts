@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   OneToMany,
   BeforeInsert,
+  Generated,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Task } from '../../task/entities/task.entity';
@@ -19,8 +20,8 @@ export enum UserRole {
 }
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     type: 'varchar',
@@ -36,7 +37,7 @@ export class User {
   @Column({
     length: 100,
     type: 'varchar',
-    nullable: false,
+    nullable: true,
     name: 'password',
     comment: '密码',
   })

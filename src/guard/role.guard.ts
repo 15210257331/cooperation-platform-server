@@ -16,7 +16,7 @@ export class RoleGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    /** 获取使用了@Role装饰器 装饰了地路由处理器上的元数据 */
+    /** 获取使用了@Role装饰器 装饰了的路由处理器上的元数据 */
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
     if (!roles) {
       return true;

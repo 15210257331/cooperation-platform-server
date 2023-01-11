@@ -4,8 +4,6 @@ import {
   Body,
   UseGuards,
   Post,
-  UsePipes,
-  Delete,
   Param,
   Request,
   Query,
@@ -27,6 +25,8 @@ import { UpdateDTO } from './dto/update.dto';
 import { RoleGuard } from '../../guard/role.guard';
 import { Roles } from '../../decorators/roles.decorator';
 import { UserRole } from './entity/user.entity';
+import { GitHubService } from './github.service';
+import { WechatService } from './wechat.service';
 
 @ApiTags('用户相关')
 @Controller('/user')
@@ -34,6 +34,8 @@ export class UserController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly gitHubService: GitHubService,
+    private readonly wechatService: WechatService,
     private configService: ConfigService,
   ) {}
 
@@ -44,22 +46,62 @@ export class UserController {
   public async login(@Body() loginDTO: LoginDTO): Promise<any> {
     return this.userService.login(loginDTO);
   }
-
-  // 跳转微信扫码页面
-  @Get('/wechatLogin')
-  public async wechatLogin(@Headers() header, @Res() res): Promise<any> {
-    const APPID = this.configService.get('secretId');
-    const host = this.configService.get('HOST');
-    const redirectUri = urlencode(host);
-    res.redirect(
-      `https://open.weixin.qq.com/connect/qrconnect?appid=${APPID}&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`,
-    );
+  /**
+   * 获取用户信息
+   * @param request
+   * @returns
+   */
+  @Get('/info')
+  // 自定义装饰器，给路由处理器设置元数据，RoleGuard中可以拿到进行处理
+  @Roles(UserRole.ADMIN, UserRole.EDITOR, UserRole.GHOST)
+  // guard的顺序不能乱
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  // 使用此拦截器结合entity中的Exclude装饰器可以查询数据时隐藏相应的字段
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async getUserInfo(@Request() request: any): Promise<any> {
+    return this.userService.getUserInfo(request);
   }
 
-  // 微信登录
-  @Post('wechat')
-  async loginWithWechat(@Body('code') code: string) {
-    return this.userService.loginWithWechat(code);
+  /**
+   * 微信登录，跳转微信扫码页面
+   * @param header
+   * @param res
+   */
+  @Get('/wechat/authorize')
+  public async wechatAuthorize(@Headers() header, @Res() res): Promise<any> {
+    return this.wechatService.wechatAuthorize();
+  }
+  /**
+   * 获取微信用户信息
+   * 微信登录 获取微信的accessToken, 使用accessToken请求用户信息
+   * @param code
+   * @returns
+   */
+  @Post('/wechat/login')
+  async wechatLogin(@Body('code') code: string) {
+    return this.wechatService.wechatLogin(code);
+  }
+
+  /**
+   * github登录，跳转到github授权页面
+   * @param header
+   * @param res
+   */
+  @Get('/github/authorize')
+  public async githubAuthorize(): Promise<any> {
+    return this.gitHubService.githubAuthorize();
+  }
+
+  /**
+   * github登录，获取accessToken
+   * github授权成功重定向到本应用界面并返回code，通过code请求accessToken
+   * 通过accessToken 请求用户信息
+   * @param header
+   * @param res
+   */
+  @Post('/github/login')
+  public async githubLogin(@Body('code') code: string): Promise<any> {
+    return this.gitHubService.githubLogin(code);
   }
 
   // 注册
@@ -72,17 +114,6 @@ export class UserController {
   @Post('/code')
   public async code(@Body() data: any): Promise<any> {
     return this.userService.sendVerificationCode(data);
-  }
-
-  // 获取用户信息
-  @Get('/info')
-  @Roles(UserRole.ADMIN, UserRole.EDITOR, UserRole.GHOST)
-  // 顺序不能乱
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
-  // 使用此拦截器结合entity中的Exclude装饰器可以查询数据时隐藏相应的字段
-  @UseInterceptors(ClassSerializerInterceptor)
-  public async getUserInfo(@Request() request: any): Promise<any> {
-    return this.userService.getUserInfo(request);
   }
 
   // 用户删除

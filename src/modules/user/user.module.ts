@@ -6,6 +6,8 @@ import { User } from './entity/user.entity';
 import { AuthModule } from '../auth/auth.module';
 import { SmsService } from './sms.service';
 import { HttpModule } from '@nestjs/axios';
+import { GitHubService } from './github.service';
+import { WechatService } from './wechat.service';
 
 @Module({
     imports: [
@@ -13,7 +15,7 @@ import { HttpModule } from '@nestjs/axios';
         AuthModule, // AuthModule 导出了 JwtModule JwtService依赖于JwtModule 否则userModule 无法使用JwtService
         HttpModule
     ],
-    providers: [UserService,SmsService],
+    providers: [UserService,SmsService,GitHubService,WechatService],
     controllers: [UserController],
     exports: [UserService]
 })
