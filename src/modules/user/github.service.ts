@@ -20,8 +20,8 @@ export class GitHubService {
     private httpService: HttpService,
     private readonly jwtService: JwtService,
   ) {
-    // this.clientId = '0110b5f3eee82d37afbe';
-    // this.clientSecret = '403445681f93b7f3455ee611563dbc80dbfc6676';
+    this.clientId = '0110b5f3eee82d37afbe';
+    this.clientSecret = '403445681f93b7f3455ee611563dbc80dbfc6676';
     this.redirectUri = 'http://127.0.0.1:8000/redirect';
   }
 

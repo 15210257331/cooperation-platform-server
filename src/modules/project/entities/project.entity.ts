@@ -67,7 +67,7 @@ export class Project {
    * 项目和分组是一对多的关系
    */
   @OneToMany(() => Flow, (flow) => flow.project)
-  flows: Flow[];
+  groups: Flow[];
 
   /**
    * 项目和用户是多对一的关系

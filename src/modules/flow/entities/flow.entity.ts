@@ -75,7 +75,7 @@ export class Flow {
   /**
    * 分组和项目是多对一的关系
    */
-  @ManyToOne(() => Project, (project) => project.flows)
+  @ManyToOne(() => Project, (project) => project.groups)
   @JoinColumn()
   project: Project;
 

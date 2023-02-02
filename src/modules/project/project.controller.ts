@@ -28,6 +28,15 @@ export class ProjectController {
     return this.projectService.list(request);
   }
 
+  // 项目详情
+  @Get('/detail/:id')
+  @UseGuards(AuthGuard('jwt'))
+  public async detail(
+    @Param('id', new ParseIntPipe()) id: number,
+  ): Promise<any> {
+    return this.projectService.detail(id);
+  }
+
   /** 创建项目 */
   @Post('create')
   @UseGuards(AuthGuard('jwt'))

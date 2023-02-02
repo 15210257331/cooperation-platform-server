@@ -25,6 +25,13 @@ export class ProjectService {
       .getMany();
   }
 
+  /** 项目详情 */
+  async detail(id: number | string): Promise<any> {
+    return await this.projectRepository.findOne(id, {
+      relations: ['groups', 'groups.tasks'],
+    });
+  }
+
   /** 创建项目 */
   async create(createProjectDto: CreateProjectDto, request: any) {
     const { name, icon, type, cover } = createProjectDto;
