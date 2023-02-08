@@ -11,8 +11,8 @@ export class TaskAddDTO {
   readonly description: string;
 
   @IsNotEmpty({ message: '流程ID不能为空' })
-  @IsNumber()
-  readonly flowId: number;
+  @IsString()
+  readonly flowId: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: '任务优先级不能为空' })

@@ -9,6 +9,7 @@ import {
   UseGuards,
   Request,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -24,16 +25,17 @@ export class ProjectController {
   //所有项目列表
   @Get('/list')
   @UseGuards(AuthGuard('jwt'))
-  public async list(@Request() request: any): Promise<any> {
-    return this.projectService.list(request);
+  public async list(
+    @Request() request: any,
+    @Query('sort') sort: string,
+  ): Promise<any> {
+    return this.projectService.list(request, sort);
   }
 
   // 项目详情
   @Get('/detail/:id')
   @UseGuards(AuthGuard('jwt'))
-  public async detail(
-    @Param('id', new ParseIntPipe()) id: number,
-  ): Promise<any> {
+  public async detail(@Param('id') id: string): Promise<any> {
     return this.projectService.detail(id);
   }
 
@@ -54,6 +56,14 @@ export class ProjectController {
     @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<any> {
     return this.projectService.update(updateProjectDto);
+  }
+
+  /** 项目星标切换 */
+  @Post('/star')
+  @UseGuards(AuthGuard('jwt'))
+  public async star(@Body() body: { id: string; star: boolean }): Promise<any> {
+    const { id, star } = body;
+    return this.projectService.star(id, star);
   }
 
   // 删除项目

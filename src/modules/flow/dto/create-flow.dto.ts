@@ -4,8 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateFlowDto {
   @ApiProperty()
   @IsNotEmpty({ message: '项目ID不能为空' })
-  @IsNumber()
-  readonly projectId: number;
+  @IsString()
+  readonly projectId: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: '流程名称不能为空' })

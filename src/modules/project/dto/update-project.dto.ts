@@ -6,6 +6,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @ApiProperty()
   @IsNotEmpty({ message: '项目ID不能为空' })
-  @IsNumber()
-  readonly id: number;
+  @IsString()
+  readonly id: string;
 }

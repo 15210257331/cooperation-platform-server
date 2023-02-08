@@ -47,7 +47,7 @@ export class FlowService {
   }
 
   /** 节点列表 */
-  async list(projectId: number, name: string): Promise<any> {
+  async list(projectId: string, name: string): Promise<any> {
     return await this.flowRepository
       .createQueryBuilder('flow')
       .where('flow.name like :name', { name: `%${name}%` })
@@ -92,7 +92,7 @@ export class FlowService {
   }
 
   // 删除节点
-  async delete(id: number, maneger: EntityManager): Promise<any> {
+  async delete(id: string, maneger: EntityManager): Promise<any> {
     const flow = await this.flowRepository.findOne(id);
     // 如果该分组下的任务不为空则不允许删除
     const tasks = await maneger.find(Task, { flow: flow });
@@ -107,7 +107,7 @@ export class FlowService {
    * 查询分组详情
    * @param groupId
    */
-  async detail(groupId: number): Promise<any> {
+  async detail(groupId: string): Promise<any> {
     // const doc = await this.taskRepository.createQueryBuilder('task')
     //     .where('task.groupId = :id', { groupId })
     //     .setParameter("id", groupId)

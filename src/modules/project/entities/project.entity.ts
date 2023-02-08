@@ -11,12 +11,13 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
 import { Flow } from '../../flow/entities/flow.entity';
-
+import { Base } from '../../../common/base.entity';
+export enum ProjectType {
+  group = 'group',
+  general = 'general',
+}
 @Entity()
-export class Project {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Project extends Base {
   @Column({
     type: 'text',
     nullable: false,
@@ -47,21 +48,23 @@ export class Project {
   cover: string;
 
   @Column({
-    type: 'int',
-    name: 'type',
+    type: 'bool',
+    name: 'star',
     nullable: false,
-    default: () => 1,
-    comment: '项目类型 1.普通项目 2.星标项目',
+    default: false,
+    comment: '是否星标项目',
   })
-  type: number;
+  star: boolean;
 
-  @CreateDateColumn({
-    type: 'timestamp',
+  @Column({
+    type: 'enum',
+    name: 'type',
+    enum: ProjectType,
+    default: ProjectType.group,
     nullable: false,
-    name: 'createDate',
-    comment: '任务创建时间',
+    comment: '项目类型',
   })
-  createDate: Date;
+  type: string;
 
   /**
    * 项目和分组是一对多的关系

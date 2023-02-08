@@ -68,7 +68,7 @@ export class TaskService {
    * 查询任务详情
    * @param id
    */
-  async detail(taskId: number): Promise<any> {
+  async detail(taskId: string): Promise<any> {
     return await this.taskRepository.findOne(taskId, {
       relations: ['owner'],
     });
@@ -92,7 +92,7 @@ export class TaskService {
   }
 
   //删除任务
-  async delete(id: number, maneger: EntityManager): Promise<any> {
+  async delete(id: string, maneger: EntityManager): Promise<any> {
     return await this.taskRepository.delete(id);
   }
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProjectDto {
   @ApiProperty()
@@ -14,7 +14,10 @@ export class CreateProjectDto {
   readonly cover: string;
 
   @ApiProperty()
+  readonly star: boolean;
+
+  @ApiProperty()
   @IsNotEmpty({ message: '项目类型不能为空' })
-  @IsNumber()
-  readonly type: number;
+  @IsString()
+  readonly type: string;
 }

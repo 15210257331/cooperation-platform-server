@@ -1,23 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  ManyToMany,
-  JoinTable,
-  OneToOne,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Task } from '../../task/entities/task.entity';
-import { User } from '../../user/entity/user.entity';
 import { Project } from '../../project/entities/project.entity';
+import { Base } from '../../../common/base.entity';
 @Entity()
-export class Flow {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Flow extends Base {
   @Column({
     type: 'varchar',
     nullable: false,
@@ -63,14 +49,6 @@ export class Flow {
     name: 'range',
   })
   range: string[];
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    nullable: false,
-    name: 'createDate',
-    comment: '流程节点建时间',
-  })
-  createDate: Date;
 
   /**
    * 分组和项目是多对一的关系

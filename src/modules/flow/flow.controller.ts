@@ -42,7 +42,7 @@ export class FlowController {
   @Get('/list')
   @UseGuards(AuthGuard('jwt'))
   public async list(
-    @Query('projectId', new ParseIntPipe()) projectId: number,
+    @Query('projectId') projectId: string,
     @Query('name') name: string,
   ): Promise<any> {
     return this.flowService.list(projectId, name);
@@ -59,7 +59,7 @@ export class FlowController {
   @UseGuards(AuthGuard('jwt'))
   @Transaction()
   public async delete(
-    @Param('id', new ParseIntPipe()) id: number,
+    @Param('id') id: string,
     @TransactionManager() maneger: EntityManager,
   ): Promise<any> {
     return this.flowService.delete(id, maneger);

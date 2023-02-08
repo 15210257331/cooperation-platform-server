@@ -50,7 +50,7 @@ export class TaskController {
   // 任务详情
   @Get('/detail')
   @UseGuards(AuthGuard('jwt'))
-  public async detail(@Query('taskId') taskId: number): Promise<any> {
+  public async detail(@Query('taskId') taskId: string): Promise<any> {
     return this.taskService.detail(taskId);
   }
 
@@ -59,7 +59,7 @@ export class TaskController {
   @UseGuards(AuthGuard('jwt'))
   @Transaction()
   public async delete(
-    @Param('id', new ParseIntPipe()) id: number,
+    @Param('id') id: string,
     @TransactionManager() maneger: EntityManager,
   ): Promise<any> {
     return this.taskService.delete(id, maneger);
