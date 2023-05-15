@@ -71,11 +71,10 @@ class App {
 
   async deploy() {
     try {
-      // await this.executeCommand('NODE_ENV=production nest build', '代码build');
-      // await this.executeCommand(
-      //   'tar -zcvf assets.tar.gz Dockerfile dist logs node_modules',
-      //   '资源打包',
-      // );
+      await this.executeCommand(
+        'tar -zcf assets.tar.gz ./*',
+        '资源打包',
+      );
       await this.uploadProjectFile();
       await this.creatImage();
       await this.removeFile('assets.tar.gz');
@@ -92,11 +91,17 @@ class App {
    *  */
   executeCommand(command, description) {
     return new Promise(function (resolve, reject) {
-      const childProcess = exec(command, (error, stdout, stderr) => {
-        console.log(error);
-        // console.log(`stdout: ${stdout}`)
-        // console.error(`stderr: ${stderr}`)
-      });
+      const childProcess = exec(
+        command,
+        {
+          maxBuffer: 500 * 1024 * 1024 /*stdout和stderr的最大长度*/,
+        },
+        (error, stdout, stderr) => {
+          console.log(error);
+          // console.log(`stdout: ${stdout}`)
+          // console.error(`stderr: ${stderr}`)
+        },
+      );
       // 将子进程的stdio 通过管道传递给当前进程，这样就会在控制台看到子进程的stdio信息，console.log 其实就是stdio的实现
       childProcess.stdout.pipe(process.stdout);
       // 监听进程的结束
