@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const db = configService.get('db');
+        // console.log(db);
         return {
           type: 'mysql',
           host: db.host,

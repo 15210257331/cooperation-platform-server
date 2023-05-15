@@ -17,7 +17,9 @@ import configuration from './environment.config';
         db_name: Joi.string(),
         db_port: Joi.number().default(3306),
         db_username: Joi.string().default('root'),
-        db_password: Joi.string().default(123456),
+        db_password: Joi.string().default('root'),
+        secretId: Joi.string(),
+        secretKey: Joi.string(),
       }),
       /**
        * allowUnknown:控制是否允许环境变量中未知的键。默认为true。
