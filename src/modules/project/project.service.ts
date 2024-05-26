@@ -17,7 +17,7 @@ export class ProjectService {
   ) {}
   /** 项目列表 */
   async list(request: any, sort: string): Promise<any> {
-    const orderP = sort ? `project.${sort}` : 'project.updateDate';
+    const orderP = sort ? `project.${sort}` : 'project.createDate';
     return await this.projectRepository
       .createQueryBuilder('project')
       .andWhere('project.belongId = :id', {

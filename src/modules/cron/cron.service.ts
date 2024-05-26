@@ -1,5 +1,5 @@
 import { Injectable, Module } from '@nestjs/common';
-import { Cron, Interval,CronExpression } from '@nestjs/schedule';
+import { Cron, Interval, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { Task } from '../task/entities/task.entity';
@@ -28,7 +28,6 @@ export class CronService {
       select: ['name', 'endDate', 'remind'],
       relations: ['owner'],
     });
-
     const now = dayjs().format('YYYY-MM-DD HH:mm');
     if (remindTasks) {
       remindTasks.map((task) => {
@@ -42,6 +41,37 @@ export class CronService {
         }
       });
     }
+  }
+
+  // 每10秒推攻击数据 全量数据
+  @Interval(10000)
+  async attackDataCron() {
+    const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const data = [
+      {
+        from: [116.405285,40.504989],
+        to: [-118.182221, 34.059679],
+        fromName: '北京',
+        toName: '洛杉矶（美国）',
+        time: now,
+        src_ip: '0.0.0.0',
+        dest_ip: '129.211.164.125',
+        level: '高级',
+        type: 'SQL注入',
+      },
+      {
+        from: [72.857005, 18.964086],
+        to: [37.681373, 55.732473],
+        fromName: '孟买（印度）',
+        toName: '莫斯科（俄罗斯）',
+        time: now,
+        src_ip: '0.0.0.0',
+        dest_ip: '129.211.164.125',
+        level: '高级',
+        type: 'SQL注入',
+      },
+    ];
+    this.websocketGateway.broadcastMessage(data);
   }
 
   // 计算任务提醒时间
