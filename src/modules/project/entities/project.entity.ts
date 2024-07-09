@@ -66,6 +66,31 @@ export class Project extends Base {
   })
   type: string;
 
+  @Column({
+    type: 'int',
+    name: 'status',
+    default: 1,
+    nullable: true,
+    comment: '项目状态',
+  })
+  status: number;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+    name: 'startDate',
+    comment: '开始时间',
+  })
+  startDate: Date;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+    name: 'endDate',
+    comment: '结束时间',
+  })
+  endDate: Date;
+
   /**
    * 项目和分组是一对多的关系
    */
@@ -73,9 +98,8 @@ export class Project extends Base {
   groups: Flow[];
 
   /**
-   * 项目和用户是多对一的关系
+   * 项目和用户是多对多的关系
    */
-  @ManyToOne(() => User, (user) => user.projects)
-  @JoinColumn()
-  belong: User;
+  @ManyToMany(() => User, (user) => user.projects)
+  members: User[];
 }

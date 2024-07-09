@@ -12,13 +12,20 @@ export class FileService {
   ) {}
 
   /**
-   * 上传文件到腾讯云COS
+   * 上传文件
    * @param file
    * @param body
    */
   async uploadFile(file: any, body: any): Promise<any> {
-    // console.log(file);
-    return await this.cosService.uploadFile(file.filename, file.path);
+    console.log(file);
+    const host = this.configService.get('host');
+    const port = this.configService.get('port');
+    return {
+      name: file.filename,
+      url: `http://${'localhost'}:${4000}/public/${file.filename}`,
+    };
+    // 上传文件到腾讯云COS
+    // return await this.cosService.uploadFile(file.filename, file.path);
   }
 
   /**

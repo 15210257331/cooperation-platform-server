@@ -20,4 +20,12 @@ export class CreateProjectDto {
   @IsNotEmpty({ message: '项目类型不能为空' })
   @IsString()
   readonly type: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: '开始时间不能为空' })
+  readonly startDate: Date;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: '结束时间不能为空' })
+  readonly endDate: Date;
 }

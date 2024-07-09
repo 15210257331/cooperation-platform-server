@@ -6,6 +6,9 @@ import {
   OneToMany,
   BeforeInsert,
   Generated,
+  ManyToMany,
+  JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Task } from '../../task/entities/task.entity';
@@ -96,9 +99,10 @@ export class User {
   createDate: Date;
 
   /**
-   * 用户和项目是一对多的关系
+   * 用户和项目是多对多的关系 主表带有@JoinTable
    *  */
-  @OneToMany(() => Project, (project) => project.belong)
+  @ManyToMany(() => Project, (project) => project.members)
+  @JoinTable()
   projects: Project[];
 
   /**
