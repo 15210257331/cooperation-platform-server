@@ -7,12 +7,14 @@ import { Task } from './entities/task.entity';
 import { Flow } from '../flow/entities/flow.entity';
 import { NotificationService } from '../notification/notification.service';
 import * as dayjs from 'dayjs';
+import { Tag } from '../tag/entities/tag.entity';
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
+    @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>,
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -44,8 +46,16 @@ export class TaskService {
    * @returns
    */
   async create(taskAddDTO: TaskAddDTO, request: any): Promise<any> {
-    const { name, description, flowId, priority, remind, startDate, endDate } =
-      taskAddDTO;
+    const {
+      name,
+      description,
+      flowId,
+      priority,
+      remind,
+      tagIds,
+      startDate,
+      endDate,
+    } = taskAddDTO;
     const task = new Task();
     task.name = name;
     task.description = description;
@@ -53,6 +63,7 @@ export class TaskService {
     task.remind = remind;
     task.startDate = startDate;
     task.endDate = endDate;
+    task.tags = await this.tagRepository.findByIds(tagIds)
     task.flow = await this.flowRepository.findOne(flowId);
     task.owner = await this.userRepository.findOne(request.user.userId);
     const content = `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`;

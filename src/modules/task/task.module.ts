@@ -10,6 +10,8 @@ import { Flow } from '../flow/entities/flow.entity';
 import { Notification } from '../notification/entity/notification.entity';
 import { NotificationModule } from '../notification/notification.module';
 import { AuthModule } from '../auth/auth.module';
+import { Tag } from '../tag/entities/tag.entity';
+import { TagModule } from '../tag/tag.module';
 
 @Module({
   imports: [
@@ -19,8 +21,10 @@ import { AuthModule } from '../auth/auth.module';
       Notification,
       NotificationDetail,
       Flow,
+      Tag
     ]),
     UserModule,
+    TagModule,
     AuthModule,
     NotificationModule,
   ],

@@ -32,7 +32,14 @@ export class ProjectService {
   /** 项目详情 */
   async detail(id: string): Promise<any> {
     return await this.projectRepository.findOne(id, {
-      relations: ['groups', 'groups.tasks','groups.tasks.owner', 'members'],
+      relations: [
+        'groups',
+        'groups.tasks',
+        'groups.tasks.owner',
+        'groups.tasks.tags',
+        'members',
+        'tags',
+      ],
     });
   }
 
@@ -64,6 +71,32 @@ export class ProjectService {
       star: star,
     });
     return await this.projectRepository.findOne(id);
+  }
+
+  // 查询项目成员
+  async findUsersByProjectId(projectId: number): Promise<User[]> {
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ['users'], // 加载关联的用户
+    });
+
+    if (!project) {
+      throw new Error('Project not found');
+    }
+
+    return project.members;
+  }
+
+  // 添加项目成员
+  async addMember({ projectId, memberId }) {
+    console.log(memberId)
+    const project = await this.projectRepository.findOne(projectId, {
+      relations: ['members'],
+    });
+    const newMembers = await this.userRepository.findOne(memberId);
+    console.log(newMembers);
+    project.members = [...project.members, newMembers];
+    return await this.projectRepository.save(project);
   }
 
   /** 更新项目星标信息 */

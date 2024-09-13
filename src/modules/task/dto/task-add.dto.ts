@@ -22,6 +22,9 @@ export class TaskAddDTO {
   readonly remind: number;
 
   @ApiProperty()
+  readonly tagIds: string[];
+
+  @ApiProperty()
   @IsNotEmpty({ message: '开始时间不能为空' })
   readonly startDate: Date;
 

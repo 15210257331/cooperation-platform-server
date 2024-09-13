@@ -58,6 +58,13 @@ export class ProjectController {
     return this.projectService.update(updateProjectDto);
   }
 
+  /** 添加项目成员 */
+  @Post('/addMember')
+  @UseGuards(AuthGuard('jwt'))
+  public async addMember(@Body() body: { projectId: string, memberId: string }): Promise<any> {
+    return this.projectService.addMember(body);
+  }
+
   /** 项目星标切换 */
   @Post('/star')
   @UseGuards(AuthGuard('jwt'))

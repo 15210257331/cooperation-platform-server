@@ -13,6 +13,7 @@ import { TypeormModule } from './modules/typeorm/typeorm.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { FlowModule } from './modules/flow/flow.module';
 import { ProjectModule } from './modules/project/project.module';
+import { TagModule} from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProjectModule } from './modules/project/project.module';
     CronModule,
     NotificationModule,
     ProjectModule,
+    TagModule
   ],
   controllers: [AppController],
   providers: [AppService],

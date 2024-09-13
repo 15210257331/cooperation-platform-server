@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         // console.log(db);
         return {
           type: 'mysql',
+          connectorPackage: "mysql2",
           host: db.host,
           port: db.port,
           username: db.username,
