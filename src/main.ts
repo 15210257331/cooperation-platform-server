@@ -48,13 +48,13 @@ async function bootstrap() {
   // 配置 Swagger
   const options = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('Nice todo api')
-    .setDescription('Nice todo 的api文档')
+    .setTitle('协作平台的接口文档')
+    .setDescription('协作平台的接口文档')
     .setVersion('1.0')
-    .addTag('这是一个测试版本')
+    .addTag('这是一个开发测试版本测试版本')
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('doc', app, document);
+  SwaggerModule.setup('/api/doc', app, document);
 
   await app.listen(4000);
 }
