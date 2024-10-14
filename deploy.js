@@ -17,7 +17,7 @@ const question1 = [
         value: '本地环境',
       },
       {
-        name: '正式环境:129.211.164.125',
+        name: '正式环境:140.143.168.25',
         value: '正式环境',
       },
     ],
@@ -47,12 +47,12 @@ inquirer.prompt(question1).then((answer1) => {
       console.log(chalk.green('开始部署'));
       const { username, password } = answer2;
       const deployConfig = {
-        projectName: 'quick-task-server',
+        projectName: 'cooperation-platform-server',
         projectPort: 4000,
         type: 'docker',
         remoteDirectory: '/root/web',
         host: {
-          host: '129.211.164.125', // 服务器 host
+          host: '140.143.168.25', // 服务器 host
           port: 22, // 服务器 port
           username: username, // 服务器用户名
           password: password, // 服务器密码

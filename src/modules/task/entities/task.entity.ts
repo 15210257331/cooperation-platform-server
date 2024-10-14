@@ -37,13 +37,13 @@ export class Task extends Base {
   description: string;
 
   @Column({
-    type: 'varchar',
+    type: 'int',
     name: 'priority',
-    default: '1',
+    default: 1,
     nullable: false,
     comment: '任务优先级 1L1  2L2  3L3 4L4 5L5 6L6  依次升高',
   })
-  priority: string;
+  priority: number;
 
   @Column({
     type: 'int',

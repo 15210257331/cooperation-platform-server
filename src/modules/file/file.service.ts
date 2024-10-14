@@ -22,7 +22,7 @@ export class FileService {
     const port = this.configService.get('port');
     return {
       name: file.filename,
-      url: `http://${'localhost'}:${4000}/public/${file.filename}`,
+      url: `http://${host}:${port}/public/${file.filename}`,
     };
     // 上传文件到腾讯云COS
     // return await this.cosService.uploadFile(file.filename, file.path);

@@ -13,6 +13,8 @@ import configuration from './environment.config';
       load: [configuration],
       // 验证环境配置文件中的键值对规则
       validationSchema: Joi.object({
+        host: Joi.string(),
+        port: Joi.number().default(4000),
         db_host: Joi.string(),
         db_name: Joi.string(),
         db_port: Joi.number().default(3306),
@@ -20,6 +22,7 @@ import configuration from './environment.config';
         db_password: Joi.string().default('root'),
         secretId: Joi.string(),
         secretKey: Joi.string(),
+
       }),
       /**
        * allowUnknown:控制是否允许环境变量中未知的键。默认为true。

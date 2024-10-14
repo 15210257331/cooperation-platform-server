@@ -19,9 +19,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // 监听所有的请求路由，使用中间件打印入参
-  // app.use(express.json()); // For parsing application/json
-  // app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
-  // app.use(logger);
+  app.use(express.json()); // For parsing application/json
+  app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+  app.use(logger);
 
   // 设置静态目录 public
   // 还支持第二个参数prefix来设置虚拟目录

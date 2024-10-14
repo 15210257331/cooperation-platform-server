@@ -16,7 +16,7 @@ export class TaskAddDTO {
 
   @ApiProperty()
   @IsNotEmpty({ message: '任务优先级不能为空' })
-  readonly priority: string;
+  readonly priority: number;
 
   @ApiProperty()
   readonly remind: number;

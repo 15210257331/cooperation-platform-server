@@ -16,6 +16,8 @@ export default () => {
       username: process.env.db_username,
       password: process.env.db_password,
     },
+    host: process.env.host,
+    port: process.env.port,
     secretId: process.env.secretId,
     secretKey: process.env.secretKey,
   };
