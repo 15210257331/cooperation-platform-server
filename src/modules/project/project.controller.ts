@@ -28,8 +28,9 @@ export class ProjectController {
   public async list(
     @Request() request: any,
     @Query('sort') sort: string,
+    @Query('keywords') keywords: string,
   ): Promise<any> {
-    return this.projectService.list(request, sort);
+    return this.projectService.list(request, keywords, sort);
   }
 
   // 项目详情
@@ -77,7 +78,7 @@ export class ProjectController {
   @Get('/delete/:id')
   @UseGuards(AuthGuard('jwt'))
   public async delete(
-    @Param('id', new ParseIntPipe()) id: number,
+    @Param('id') id: string,
   ): Promise<any> {
     return this.projectService.delete(id);
   }

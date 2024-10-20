@@ -16,10 +16,11 @@ export class ProjectService {
     private readonly notificationService: NotificationService,
   ) {}
   /** 项目列表 */
-  async list(request: any, sort: string): Promise<any> {
+  async list(request: any, keywords:string, sort: string): Promise<any> {
     const orderP = sort ? `project.${sort}` : 'project.createDate';
     return await this.projectRepository
       .createQueryBuilder('project')
+      .where('project.name like :name', { name: `%${keywords}%` })
       .innerJoin('project.members', 'members')
       .andWhere('members.id = :id', {
         id: request.user.userId,
@@ -105,7 +106,7 @@ export class ProjectService {
   }
 
   /** 删除项目 */
-  async delete(id: number) {
+  async delete(id: string) {
     return await this.projectRepository.delete(id);
   }
 }
