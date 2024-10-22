@@ -133,18 +133,53 @@ export class UserController {
     return this.userService.updateUserInfo(data, request);
   }
 
-  // 更新指定用户角色
+  // 分页查询用户列表
+  @Post('/list')
+  @UseGuards(AuthGuard('jwt'))
+  public async list(@Body() body: any): Promise<any> {
+    return this.userService.userList(body);
+  }
+
+  // 分页查询角色列表
+  @Post('/role/list')
+  @UseGuards(AuthGuard('jwt'))
+  public async roleList(@Body() body: any): Promise<any> {
+    return this.userService.roleList(body);
+  }
+
+  // 添加角色
+  @Post('/role/add')
+  @UseGuards(AuthGuard('jwt'))
+  public async roleAdd(@Body() body: any): Promise<any> {
+    return this.userService.roleAdd(body);
+  }
+
+  // 删除角色
+  @Get('/role/delete/:id')
+  @UseGuards(AuthGuard('jwt'))
+  public async roleDelete(@Param('id') id: string): Promise<any> {
+    return this.userService.roleDelete(id);
+  }
+
+  // 修改角色
+  @Post('/role/update')
+  @UseGuards(AuthGuard('jwt'))
+  public async roleUpdate(@Body() body: any): Promise<any> {
+    return this.userService.roleUpdate(body);
+  }
+
+  // 为指定用户设置角色
   @Post('/setRole')
   @UseGuards(AuthGuard('jwt'))
   public async setRole(@Body() data: any): Promise<any> {
     return this.userService.setRole(data);
   }
 
-  // 分页查询用户列表
-  @Post('/list')
+  // 设置角色权限
+  @Post('/role/setPermission')
   @UseGuards(AuthGuard('jwt'))
-  public async list(@Body() body: any): Promise<any> {
-    return this.userService.userList(body);
+  public async roleSetPermission(@Body() body: any): Promise<any> {
+    return this.userService.roleSetPermission(body);
   }
 
   /** 用户数据排行 */

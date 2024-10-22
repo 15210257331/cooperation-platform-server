@@ -92,7 +92,7 @@ export class WechatService {
       token: this.jwtService.sign({
         username: userDoc.username,
         userId: userDoc.id,
-        role: userDoc.role,
+        // role: userDoc.role,
       }),
       userInfo: userDoc,
     };

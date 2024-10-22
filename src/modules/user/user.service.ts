@@ -10,6 +10,7 @@ import { SmsService } from './sms.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { UpdateDTO } from './dto/update.dto';
+import { Role } from './entity/role.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
 
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     private smsService: SmsService,
     private configService: ConfigService,
     private httpService: HttpService,
@@ -40,7 +42,7 @@ export class UserService {
         const payload = {
           username: username,
           userId: user.id,
-          role: user.role, // 当前用户的角色 用于接口权限的验证
+          // role: user.role, // 当前用户的角色 用于接口权限的验证
         };
         // 生成token
         const token = this.jwtService.sign(payload);
@@ -111,7 +113,9 @@ export class UserService {
    */
   async getUserInfo(request: any): Promise<any> {
     const id = request.user.userId;
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.findOne(id, {
+      relations: ['roles'],
+    });
   }
 
   // 删除用户
@@ -128,18 +132,33 @@ export class UserService {
     return await this.userRepository.update(request.user.userId, updateObj);
   }
 
-  // 更新指定用户角色
-  async setRole(body: any): Promise<any> {
-    const { userId, role } = body;
-    return await this.userRepository.update(userId, { role });
-  }
-
   // 分页查询用户列表
   async userList(body: any): Promise<any> {
     const { nickname, pageIndex, pageSize } = body;
     const [users, count] = await this.userRepository.findAndCount({
       where: {
         nickname: Like(`%${nickname}%`),
+      },
+      cache: true,
+      order: {
+        createDate: 'ASC', //ASC 按时间正序 DESC 按时间倒序
+      },
+      relations: ['roles'],
+      skip: (pageIndex - 1) * pageSize,
+      take: pageSize,
+    });
+    return {
+      list: users,
+      total: count,
+    };
+  }
+
+  // 分页查询角色列表
+  async roleList(body: any): Promise<any> {
+    const { name, pageIndex, pageSize } = body;
+    const [users, count] = await this.roleRepository.findAndCount({
+      where: {
+        name: Like(`%${name}%`),
       },
       cache: true,
       order: {
@@ -152,6 +171,44 @@ export class UserService {
       list: users,
       total: count,
     };
+  }
+
+  // 添加角色
+  async roleAdd(body: any): Promise<any> {
+    const { name, description } = body;
+    const role = new Role();
+    role.name = name;
+    role.description = description;
+    return await this.roleRepository.save(role);
+  }
+
+  // 修改角色
+  async roleUpdate(body: any): Promise<any> {
+    const { id, name, description } = body;
+    return await this.roleRepository.update(id, { name, description });
+  }
+
+  // 删除角色
+  async roleDelete(id: string): Promise<any> {
+    return await this.roleRepository.delete(id);
+  }
+
+  // 更新指定用户角色
+  async setRole(body: any): Promise<any> {
+    const { userId, roleIds } = body;
+    // 查找用户
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+    user.roles = await this.roleRepository.findByIds(roleIds);
+    return await this.userRepository.save(user);
+  }
+
+  // 设置角色权限
+  async roleSetPermission(body: any): Promise<any> {
+    const { roleId, permission } = body;
+    return await this.roleRepository.update(roleId, { permission });
   }
 
   /** 用户任务完成排行 */

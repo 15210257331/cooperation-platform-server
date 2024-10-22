@@ -81,7 +81,7 @@ export class GitHubService {
         token: this.jwtService.sign({
           username: doc.username,
           userId: doc.id,
-          role: doc.role
+          // role: doc.role
         }),
         userInfo: doc,
       };

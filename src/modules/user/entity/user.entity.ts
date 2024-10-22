@@ -15,6 +15,7 @@ import { Task } from '../../task/entities/task.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { encryptPassword } from '../../../utils';
 import { Project } from '../../project/entities/project.entity';
+import { Role } from './role.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -71,15 +72,15 @@ export class User {
   })
   avatar: string;
 
-  @Column({
-    type: 'enum',
-    name: 'role',
-    enum: UserRole,
-    default: UserRole.GHOST,
-    nullable: false,
-    comment: '用户角色',
-  })
-  role: string;
+  // @Column({
+  //   type: 'enum',
+  //   name: 'role',
+  //   enum: UserRole,
+  //   default: UserRole.GHOST,
+  //   nullable: false,
+  //   comment: '用户角色',
+  // })
+  // role: string;
 
   @Column({
     type: 'text',
@@ -97,6 +98,13 @@ export class User {
     comment: '创建时间',
   })
   createDate: Date;
+
+  /**
+   * 用户和项目是多对多的关系 主表带有@JoinTable
+   *  */
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable()
+  roles: Role[];
 
   /**
    * 用户和项目是多对多的关系 主表带有@JoinTable
