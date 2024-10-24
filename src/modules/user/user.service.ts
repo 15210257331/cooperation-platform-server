@@ -33,6 +33,7 @@ export class UserService {
       where: {
         username: username,
       },
+      relations: ['roles'],
     });
     if (user) {
       // 加密后的密码
@@ -42,7 +43,7 @@ export class UserService {
         const payload = {
           username: username,
           userId: user.id,
-          // role: user.role, // 当前用户的角色 用于接口权限的验证
+          roles: user.roles, // 当前用户的角色 用于接口权限的验证
         };
         // 生成token
         const token = this.jwtService.sign(payload);

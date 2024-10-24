@@ -18,8 +18,8 @@ import { Project } from '../../project/entities/project.entity';
 import { Role } from './role.entity';
 
 export enum UserRole {
-  ADMIN = 'admin',
-  EDITOR = 'editor',
+  ADMIN = '超级管理员',
+  EDITOR = '管理员',
   GHOST = 'ghost',
 }
 @Entity()

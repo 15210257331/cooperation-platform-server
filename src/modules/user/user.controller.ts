@@ -53,7 +53,8 @@ export class UserController {
    */
   @Get('/info')
   // 自定义装饰器，给路由处理器设置元数据，RoleGuard中可以拿到进行处理
-  @Roles(UserRole.ADMIN, UserRole.EDITOR, UserRole.GHOST)
+  // 拥有角色名称为管理员 和超级管理员的用户有访问该接口的权限
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
   // guard的顺序不能乱
   @UseGuards(AuthGuard('jwt'), RoleGuard)
   // 使用此拦截器结合entity中的Exclude装饰器可以查询数据时隐藏相应的字段
