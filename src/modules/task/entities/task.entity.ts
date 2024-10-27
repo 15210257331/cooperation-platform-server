@@ -11,6 +11,7 @@ import { User } from '../../user/entity/user.entity';
 import { Flow } from '../../flow/entities/flow.entity';
 import { Base } from '../../../common/base.entity';
 import { Tag } from '../../tag/entities/tag.entity';
+import { Iteration } from '../../iteration/entities/iteration.entity';
 /**
  * 实体对应数据库中的表 字段类型会类比映射到数据库支持的类型
  * 你也可以通过在@Column装饰器中隐式指定列类型来使用数据库支持的任何列类型
@@ -116,6 +117,13 @@ export class Task extends Base {
   @ManyToOne(() => User, (user) => user.tasks)
   @JoinColumn()
   owner: User;
+
+  /**
+   * 任务和迭代是多一对的关系
+   */
+  @ManyToOne(() => Iteration, (iteration) => iteration.tasks)
+  @JoinColumn()
+  iteration: Iteration;
 
   @OneToMany(() => Tag, (tag) => tag.task)
   tags: Tag[];

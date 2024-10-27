@@ -16,6 +16,7 @@ import { Notification } from '../../notification/entity/notification.entity';
 import { encryptPassword } from '../../../utils';
 import { Project } from '../../project/entities/project.entity';
 import { Role } from './role.entity';
+import { Iteration } from '../../iteration/entities/iteration.entity';
 
 export enum UserRole {
   ADMIN = '超级管理员',
@@ -118,6 +119,12 @@ export class User {
    *  */
   @OneToMany(() => Task, (task) => task.owner)
   tasks: Task[];
+
+  /**
+   * 用户和迭代是一对多的关系
+   *  */
+  @OneToMany(() => Iteration, (iteration) => iteration.principal)
+  iterations: Iteration[];
 
   @OneToMany(() => Notification, (message) => message.belong)
   messages: Notification[];

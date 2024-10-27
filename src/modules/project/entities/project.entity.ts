@@ -12,7 +12,8 @@ import {
 import { User } from '../../user/entity/user.entity';
 import { Flow } from '../../flow/entities/flow.entity';
 import { Base } from '../../../common/base.entity';
-import { Tag } from '../../tag/entities/tag.entity'
+import { Tag } from '../../tag/entities/tag.entity';
+import { Iteration } from '../../iteration/entities/iteration.entity';
 export enum ProjectType {
   group = 'group',
   general = 'general',
@@ -103,6 +104,12 @@ export class Project extends Base {
    */
   @OneToMany(() => Tag, (tag) => tag.project)
   tags: Tag[];
+
+  /**
+   * 项目和迭代是一对多的关系
+   */
+  @OneToMany(() => Iteration, (iteration) => iteration.project)
+  iterations: Iteration[];
 
   /**
    * 项目和用户是多对多的关系

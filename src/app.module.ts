@@ -14,6 +14,7 @@ import { WebsocketModule } from './modules/websocket/websocket.module';
 import { FlowModule } from './modules/flow/flow.module';
 import { ProjectModule } from './modules/project/project.module';
 import { TagModule} from './modules/tag/tag.module';
+import { IterationModule } from './modules/iteration/iteration.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { TagModule} from './modules/tag/tag.module';
     CronModule,
     NotificationModule,
     ProjectModule,
-    TagModule
+    TagModule,
+    IterationModule
   ],
   controllers: [AppController],
   providers: [AppService],
