@@ -16,7 +16,7 @@ import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskAddDTO } from './dto/task-add.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { EntityManager, Transaction, TransactionManager } from 'typeorm';
+import { EntityManager } from 'typeorm';
 
 @ApiTags('任务相关接口')
 @Controller('task')
@@ -57,12 +57,8 @@ export class TaskController {
   // 删除任务
   @Get('/delete/:id')
   @UseGuards(AuthGuard('jwt'))
-  @Transaction()
-  public async delete(
-    @Param('id') id: string,
-    @TransactionManager() maneger: EntityManager,
-  ): Promise<any> {
-    return this.taskService.delete(id, maneger);
+  public async delete(@Param('id') id: string): Promise<any> {
+    return this.taskService.delete(id, null);
   }
 
   // 任务完成趋势

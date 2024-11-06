@@ -33,7 +33,9 @@ export class FlowService {
     flow.range = range;
     flow.canNew = canNew;
     flow.complete = complete;
-    flow.project = await this.projectRepository.findOne(projectId);
+    flow.project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
     flow.tasks = [];
     console.log(flow);
     // 消息通知
@@ -85,22 +87,27 @@ export class FlowService {
       sort: sort,
       complete: complete,
     });
-    const doc = await this.flowRepository.findOne(id, {
+    const doc = await this.flowRepository.findOne({
+      where: { id: id },
       relations: ['tasks'],
     });
     return doc;
   }
 
   // 删除节点
-  async delete(id: string, maneger: EntityManager): Promise<any> {
-    const flow = await this.flowRepository.findOne(id);
+  async delete(id: string): Promise<any> {
+    const flow = await this.flowRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
     // 如果该分组下的任务不为空则不允许删除
-    const tasks = await maneger.find(Task, { flow: flow });
-    if (tasks.length > 0) {
-      throw new HttpException('该分组任务不为空，无法删除', 200);
-    }
-    // 删除分组数据
-    return await maneger.delete(Flow, id);
+    // const tasks = await maneger.find(Task, { flow: flow });
+    // if (tasks.length > 0) {
+    //   throw new HttpException('该分组任务不为空，无法删除', 200);
+    // }
+    // // 删除分组数据
+    // return await maneger.delete(Flow, id);
   }
 
   /**
@@ -117,7 +124,8 @@ export class FlowService {
     // `)
     // .getMany()
 
-    return await this.flowRepository.findOne(groupId, {
+    return await this.flowRepository.findOne({
+      where: { id: groupId },
       relations: ['creator', 'tasks'],
     });
   }

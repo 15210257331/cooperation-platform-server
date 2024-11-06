@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { EntityManager, Transaction, TransactionManager } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { CreateFlowDto } from './dto/create-flow.dto';
 import { UpdateFlowDto } from './dto/update-flow.dto';
 import { FlowService } from './flow.service';
@@ -57,11 +57,9 @@ export class FlowController {
   // 删除节点
   @Get('/delete/:id')
   @UseGuards(AuthGuard('jwt'))
-  @Transaction()
   public async delete(
     @Param('id') id: string,
-    @TransactionManager() maneger: EntityManager,
   ): Promise<any> {
-    return this.flowService.delete(id, maneger);
+    return this.flowService.delete(id);
   }
 }

@@ -7,30 +7,31 @@ import { Task } from '../task/entities/task.entity';
 import { Project } from '../project/entities/project.entity';
 import { Iteration } from './entities/iteration.entity';
 import { CreateIterationDto } from './dto/create-iteration.dto';
+import { User } from '../user/entity/user.entity';
 @Injectable()
 export class IterationService {
   constructor(
     @InjectRepository(Iteration)
     private readonly iterationRepository: Repository<Iteration>,
-    @InjectRepository(Task) private readonly taskRepository: Repository<Task>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
     private readonly notificationService: NotificationService,
   ) {}
 
-  // 查询标签列表
+  // 查询迭代列表
   async list(projectId: string, name: string, status: string): Promise<any> {
     const queryBuilder =
       this.iterationRepository.createQueryBuilder('iteration');
     if (status) {
       // 如果传入了status，则增加查询条件
-      console.log(123, status)
+      console.log(123, status);
       queryBuilder.where('iteration.status = :status', {
         status: parseInt(status),
       });
     }
     const list = await queryBuilder
-      .where('iteration.name like :name', { name: `%${name}%` })
+      .andWhere('iteration.name like :name', { name: `%${name}%` })
       .andWhere('iteration.project = :projectId', {
         projectId: projectId,
       })
@@ -41,7 +42,7 @@ export class IterationService {
   }
 
   /**
-   * 创建标签
+   * 创建迭代
    * @param body
    * @param request
    * @returns
@@ -58,7 +59,12 @@ export class IterationService {
     iteration.content = content;
     iteration.startDate = startDate;
     iteration.endDate = endDate;
-    iteration.project = await this.projectRepository.findOne(projectId);
+    iteration.principal = await this.userRepository.findOne(
+      request.user.userId,
+    );
+    iteration.project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
     await this.notificationService.addMessage(
       request.user.userId,
       '新建迭代',

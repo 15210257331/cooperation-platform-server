@@ -18,7 +18,7 @@ export class Notification {
 
     @CreateDateColumn({
         type: 'timestamp',
-        nullable: true,
+        nullable: false,
         name: 'sendDate',
         comment: '发送时间',
     })

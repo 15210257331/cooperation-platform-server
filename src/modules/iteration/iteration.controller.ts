@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { IterationService } from './iteration.service';
 import { CreateIterationDto } from './dto/create-iteration.dto';
-
+@ApiTags('迭代接口')
 @Controller('iteration')
 export class IterationController {
   constructor(private readonly iterationService: IterationService) {}
@@ -30,7 +30,6 @@ export class IterationController {
     return this.iterationService.list(projectId, name, status);
   }
 
-  //   添加标签
   @Post('/create')
   @UseGuards(AuthGuard('jwt'))
   public async create(

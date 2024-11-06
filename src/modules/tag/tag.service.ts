@@ -38,7 +38,9 @@ export class TagService {
     const { name, projectId } = tagAddDTO;
     const tag = new Tag();
     tag.name = name;
-    tag.project = await this.projectRepository.findOne(projectId);
+    tag.project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
     await this.notificationService.addMessage(
       request.user.userId,
       '新建标签',

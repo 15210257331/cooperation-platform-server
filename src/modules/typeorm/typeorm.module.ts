@@ -9,8 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         const db = configService.get('db');
         // console.log(db);
         return {
-          type: 'mysql',
-          connectorPackage: "mysql2",
+          type: "mysql",
+          connectorPackage: 'mysql2',
           host: db.host,
           port: db.port,
           username: db.username,
@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           database: db.database,
           entities: ['dist/**/*.entity{.ts,.js}'],
           charset: 'utf8mb4',
-          synchronize: true,
+          // synchronize: true,
         };
       },
     }),

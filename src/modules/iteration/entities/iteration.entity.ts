@@ -64,6 +64,15 @@ export class Iteration extends Base {
   })
   content: string;
 
+  @Column({
+    type: 'text',
+    nullable: true,
+    charset: 'utf8mb4',
+    name: 'attachment',
+    comment: '迭代附件',
+  })
+  attachment: string;
+
   @CreateDateColumn({
     type: 'timestamp',
     nullable: false,

@@ -75,9 +75,9 @@ export class WechatService {
         openid: res.data.openid,
       };
     }
-    const userDoc = await this.userRepository.findOne(
-      this.accessTokenInfo.openid,
-    );
+    const userDoc = await this.userRepository.findOne({
+      where: { id: this.accessTokenInfo.openid },
+    });
     if (!userDoc) {
       // 获取微信用户信息，注册新用户
       const userInfo: WechatUserInfo = await this.getWechatUserInfo();

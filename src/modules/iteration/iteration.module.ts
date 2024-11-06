@@ -9,6 +9,7 @@ import { IterationController } from './iteration.controller';
 import { Project } from '../project/entities/project.entity';
 import { Iteration } from './entities/iteration.entity';
 import { IterationService } from './iteration.service';
+import { User } from '../user/entity/user.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { IterationService } from './iteration.service';
       Iteration,
       Notification,
       Task,
+      User,
       NotificationDetail,
     ]),
     AuthModule,

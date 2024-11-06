@@ -63,8 +63,10 @@ export class TaskService {
     task.remind = remind;
     task.startDate = startDate;
     task.endDate = endDate;
-    task.tags = await this.tagRepository.findByIds(tagIds)
-    task.flow = await this.flowRepository.findOne(flowId);
+    task.tags = await this.tagRepository.findByIds(tagIds);
+    task.flow = await this.flowRepository.findOne({
+      where: { id: flowId },
+    });
     task.owner = await this.userRepository.findOne(request.user.userId);
     const content = `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`;
     await this.notificationService.addMessage(
@@ -80,7 +82,8 @@ export class TaskService {
    * @param id
    */
   async detail(taskId: string): Promise<any> {
-    return await this.taskRepository.findOne(taskId, {
+    return await this.taskRepository.findOne({
+      where: { id: taskId },
       relations: ['owner'],
     });
   }

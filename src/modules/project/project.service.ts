@@ -16,7 +16,7 @@ export class ProjectService {
     private readonly notificationService: NotificationService,
   ) {}
   /** 项目列表 */
-  async list(request: any, keywords:string, sort: string): Promise<any> {
+  async list(request: any, keywords: string, sort: string): Promise<any> {
     const orderP = sort ? `project.${sort}` : 'project.createDate';
     return await this.projectRepository
       .createQueryBuilder('project')
@@ -32,7 +32,8 @@ export class ProjectService {
 
   /** 项目详情 */
   async detail(id: string): Promise<any> {
-    return await this.projectRepository.findOne(id, {
+    return await this.projectRepository.findOne({
+      where: { id },
       relations: [
         'groups',
         'groups.tasks',
@@ -71,11 +72,13 @@ export class ProjectService {
       type: type,
       star: star,
     });
-    return await this.projectRepository.findOne(id);
+    return await this.projectRepository.findOne({
+      where: { id: id },
+    });
   }
 
   // 查询项目成员
-  async findUsersByProjectId(projectId: number): Promise<User[]> {
+  async findUsersByProjectId(projectId: string): Promise<User[]> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
       relations: ['users'], // 加载关联的用户
@@ -90,8 +93,9 @@ export class ProjectService {
 
   // 添加项目成员
   async addMember({ projectId, memberId }) {
-    console.log(memberId)
-    const project = await this.projectRepository.findOne(projectId, {
+    console.log(memberId);
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
       relations: ['members'],
     });
     const newMembers = await this.userRepository.findOne(memberId);

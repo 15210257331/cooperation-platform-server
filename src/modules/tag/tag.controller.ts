@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { TagService } from './tag.service';
 import { TagAddDTO } from './dto/tag-add.dto';
-
+@ApiTags('标签接口')
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}

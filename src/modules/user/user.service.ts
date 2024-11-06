@@ -66,7 +66,11 @@ export class UserService {
    */
   async register(registerDTO: RegisterDTO): Promise<any> {
     const { nickname, phone, verificationCode, password } = registerDTO;
-    const doc = await this.userRepository.findOne({ username: phone });
+    const doc = await this.userRepository.findOne({
+      where: {
+        username: phone,
+      },
+    });
     if (doc) {
       throw new HttpException('用户已存在', 200);
     }
@@ -91,7 +95,9 @@ export class UserService {
     // 后台随机生成验证码
     const verificationCode = createCode();
     console.log(verificationCode);
-    const doc = await this.userRepository.findOne({ username: phone });
+    const doc = await this.userRepository.findOne({
+      where: { username: phone },
+    });
     if (doc) {
       throw new HttpException('该手机号已被注册!', 200);
     }
@@ -114,7 +120,8 @@ export class UserService {
    */
   async getUserInfo(request: any): Promise<any> {
     const id = request.user.userId;
-    return await this.userRepository.findOne(id, {
+    return await this.userRepository.findOne({
+      where: { id: id },
       relations: ['roles'],
     });
   }

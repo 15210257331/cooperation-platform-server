@@ -60,7 +60,9 @@ export class NotificationService {
   async unreadCount(request: any) {
     return this.notificationRepository.count({
       where: {
-        belong: await this.userRepository.findOne(request.user.userId),
+        belong: await this.userRepository.findOne({
+          where: { id: request.user.userId },
+        }),
         read: false,
       },
     });
