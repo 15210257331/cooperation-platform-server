@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           database: db.database,
           entities: ['dist/**/*.entity{.ts,.js}'],
           charset: 'utf8mb4',
-          // synchronize: true,
+          synchronize: true, // 是否自动将实体同步到数据表
         };
       },
     }),

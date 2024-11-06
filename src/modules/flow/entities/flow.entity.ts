@@ -18,7 +18,7 @@ export class Flow extends Base {
     type: 'int',
     name: 'sort',
     nullable: false,
-    default: () => 1,
+    default: 1,
     comment: '该节点对应的排序标识',
   })
   sort: number;

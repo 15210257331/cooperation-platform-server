@@ -15,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { IterationService } from './iteration.service';
 import { CreateIterationDto } from './dto/create-iteration.dto';
+import { UpdateIterationDto } from './dto/update-iteration.dto';
 @ApiTags('迭代接口')
 @Controller('iteration')
 export class IterationController {
@@ -37,5 +38,32 @@ export class IterationController {
     @Request() request: any,
   ): Promise<any> {
     return this.iterationService.create(createIterationDto, request);
+  }
+
+  @Post('/update')
+  @UseGuards(AuthGuard('jwt'))
+  public async update(
+    @Body() updateIterationDto: UpdateIterationDto,
+    @Request() request: any,
+  ): Promise<any> {
+    return this.iterationService.update(updateIterationDto, request);
+  }
+
+  @Post('/complete')
+  @UseGuards(AuthGuard('jwt'))
+  public async complete(
+    @Body() updateIterationDto: UpdateIterationDto,
+    @Request() request: any,
+  ): Promise<any> {
+    return this.iterationService.complete(updateIterationDto, request);
+  }
+
+  // 删除迭代
+  @Get('/delete/:id')
+  @UseGuards(AuthGuard('jwt'))
+  public async delete(
+    @Param('id') id: string,
+  ): Promise<any> {
+    return this.iterationService.delete(id);
   }
 }

@@ -67,7 +67,9 @@ export class TaskService {
     task.flow = await this.flowRepository.findOne({
       where: { id: flowId },
     });
-    task.owner = await this.userRepository.findOne(request.user.userId);
+    task.owner = await this.userRepository.findOne({
+      where: { id: request.user.userId },
+    });
     const content = `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`;
     await this.notificationService.addMessage(
       request.user.userId,
@@ -95,9 +97,13 @@ export class TaskService {
    */
   async updateProps(body: any): Promise<any> {
     const { taskId, propName, propValue } = body;
-    const task = await this.taskRepository.findOne(taskId);
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+    });
     if (propName === 'flow') {
-      const flow = await this.flowRepository.findOne(propValue);
+      const flow = await this.flowRepository.findOne({
+        where: { id: propValue },
+      });
       task.flow = flow;
     } else {
       task[propName] = propValue;

@@ -17,7 +17,6 @@ export class FileService {
    * @param body
    */
   async uploadFile(file: any, body: any): Promise<any> {
-    console.log(file);
     const host = this.configService.get('host');
     const port = this.configService.get('port');
     return {

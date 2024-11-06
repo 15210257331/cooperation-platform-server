@@ -51,7 +51,7 @@ export class Iteration extends Base {
     name: 'progress',
     default: 0,
     nullable: false,
-    comment: '迭代进度 1~100',
+    comment: '迭代进度 1~100 数据库默认存值为0 每次列表返回时动态计算',
   })
   progress: number;
 
@@ -65,13 +65,13 @@ export class Iteration extends Base {
   content: string;
 
   @Column({
-    type: 'text',
-    nullable: true,
+    type: 'simple-array',
     charset: 'utf8mb4',
-    name: 'attachment',
+    nullable: true,
     comment: '迭代附件',
+    name: 'attachment',
   })
-  attachment: string;
+  attachment: string[];
 
   @CreateDateColumn({
     type: 'timestamp',

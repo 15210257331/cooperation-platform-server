@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { NotificationDetail } from './notification-detail.entity';
 import { User } from '../../user/entity/user.entity';
 
@@ -6,30 +14,30 @@ import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class Notification {
-    @PrimaryGeneratedColumn()
-    id: string;
+  @PrimaryGeneratedColumn()
+  id: string;
 
-    @Column({
-        comment: '是否已读',
-        type: 'bool',
-        name: 'read',
-    })
-    read: boolean;
+  @Column({
+    type: 'bool',
+    name: 'read',
+    default: false,
+    comment: '是否已读',
+  })
+  read: boolean;
 
-    @CreateDateColumn({
-        type: 'timestamp',
-        nullable: false,
-        name: 'sendDate',
-        comment: '发送时间',
-    })
-    sendDate: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+    name: 'sendDate',
+    comment: '发送时间',
+  })
+  sendDate: Date;
 
-    @ManyToOne(() => NotificationDetail)
-    @JoinColumn()
-    detail: NotificationDetail;
+  @ManyToOne(() => NotificationDetail)
+  @JoinColumn()
+  detail: NotificationDetail;
 
-    @ManyToOne(() => User, user => user.messages)
-    @JoinColumn()
-    belong: User;
-
+  @ManyToOne(() => User, (user) => user.messages)
+  @JoinColumn()
+  belong: User;
 }

@@ -20,6 +20,12 @@ export class CreateIterationDto {
   readonly content: string;
 
   @ApiProperty()
+  readonly status: number;
+
+  @ApiProperty()
+  readonly attachment: string[];
+
+  @ApiProperty()
   @IsNotEmpty({ message: '开始时间不能为空' })
   readonly startDate: Date;
 
