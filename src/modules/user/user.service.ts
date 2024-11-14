@@ -36,7 +36,7 @@ export class UserService {
       relations: ['roles'],
     });
     if (user) {
-      // 加密后的密码
+      // 加密后的密码 123456 => qSJ7DVKZxtwkx33G4zEQVw==
       const hashPwd = encryptPassword(password);
       console.log(hashPwd);
       if (user.password === hashPwd) {
