@@ -36,6 +36,7 @@ export class IterationService {
         projectId: projectId,
       })
       .leftJoinAndSelect('iteration.principal', 'principal')
+      .leftJoinAndSelect('iteration.tasks', 'tasks')
       .orderBy('iteration.createDate', 'DESC')
       .getMany();
     const currentDate = new Date();
@@ -93,12 +94,13 @@ export class IterationService {
     updateIterationDto: UpdateIterationDto,
     request: any,
   ): Promise<any> {
-    const { id, status, name, type, content, startDate, endDate } =
+    const { id, status, name, type, content, attachment, startDate, endDate } =
       updateIterationDto;
     return await this.iterationRepository.update(id, {
       name,
       type,
       content,
+      attachment,
       startDate,
       endDate,
     });

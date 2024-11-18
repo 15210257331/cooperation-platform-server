@@ -8,6 +8,7 @@ import { Flow } from '../flow/entities/flow.entity';
 import { NotificationService } from '../notification/notification.service';
 import * as dayjs from 'dayjs';
 import { Tag } from '../tag/entities/tag.entity';
+import { Iteration } from '../iteration/entities/iteration.entity';
 @Injectable()
 export class TaskService {
   constructor(
@@ -15,8 +16,9 @@ export class TaskService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
     @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>,
+    @InjectRepository(Iteration) private readonly iterationRepository: Repository<Iteration>,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
 
   // 查询当前用户的所有任务
   async list(body: any, request: any): Promise<any> {
@@ -49,6 +51,7 @@ export class TaskService {
     const {
       name,
       description,
+      iterationId,
       flowId,
       priority,
       remind,
@@ -63,6 +66,9 @@ export class TaskService {
     task.remind = remind;
     task.startDate = startDate;
     task.endDate = endDate;
+    task.iteration = await this.iterationRepository.findOne({
+      where: { id: iterationId }
+    })
     task.tags = await this.tagRepository.findByIds(tagIds);
     task.flow = await this.flowRepository.findOne({
       where: { id: flowId },

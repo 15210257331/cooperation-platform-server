@@ -19,6 +19,10 @@ export class TaskAddDTO {
   readonly priority: number;
 
   @ApiProperty()
+  @IsNotEmpty({ message: '迭代不能为空' })
+  readonly iterationId: string;
+
+  @ApiProperty()
   readonly remind: number;
 
   @ApiProperty()
@@ -29,6 +33,6 @@ export class TaskAddDTO {
   readonly startDate: Date;
 
   @ApiProperty()
-  @IsNotEmpty({ message: '截止时间不能为空' })
+  @IsNotEmpty({ message: '结束时间不能为空' })
   readonly endDate: Date;
 }

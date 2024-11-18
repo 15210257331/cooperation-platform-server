@@ -12,6 +12,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { AuthModule } from '../auth/auth.module';
 import { Tag } from '../tag/entities/tag.entity';
 import { TagModule } from '../tag/tag.module';
+import { Iteration } from '../iteration/entities/iteration.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { TagModule } from '../tag/tag.module';
       Notification,
       NotificationDetail,
       Flow,
-      Tag
+      Tag,
+      Iteration
     ]),
     UserModule,
     TagModule,

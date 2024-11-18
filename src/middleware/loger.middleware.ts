@@ -33,6 +33,8 @@ export function logger(req: Request, res: Response, next: () => any): void {
     Params: ${JSON.stringify(req.params)}
     Query: ${JSON.stringify(req.query)}
     Body: ${JSON.stringify(req.body)}
+    --------------------
+   
   `;
   if (code >= 500) {
     Logger.error(logFormat);

@@ -39,6 +39,7 @@ export class ProjectService {
         'groups.tasks',
         'groups.tasks.owner',
         'groups.tasks.tags',
+        'groups.tasks.iteration',
         'members',
         'tags',
       ],
