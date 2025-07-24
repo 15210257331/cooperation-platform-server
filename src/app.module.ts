@@ -13,8 +13,10 @@ import { TypeormModule } from './modules/typeorm/typeorm.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { FlowModule } from './modules/flow/flow.module';
 import { ProjectModule } from './modules/project/project.module';
-import { TagModule} from './modules/tag/tag.module';
+import { TagModule } from './modules/tag/tag.module';
 import { IterationModule } from './modules/iteration/iteration.module';
+import { LargeFileUploadModule } from './modules/largeFileUpload/largeFileUpload.module';
+import { FileDownloadModule } from './modules/fileDownload/fileDownload.module';
 
 @Module({
   imports: [
@@ -31,7 +33,9 @@ import { IterationModule } from './modules/iteration/iteration.module';
     NotificationModule,
     ProjectModule,
     TagModule,
-    IterationModule
+    IterationModule,
+    LargeFileUploadModule,
+    FileDownloadModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -26,6 +26,7 @@ export function logger(req: Request, res: Response, next: () => any): void {
   // console.log(req);
   // req.parmas
   const logFormat = `
+   ----------------------------------------
     请求路径: ${req.originalUrl}
     请求方法: ${req.method}
     IP: ${req.ip}
@@ -33,8 +34,7 @@ export function logger(req: Request, res: Response, next: () => any): void {
     Params: ${JSON.stringify(req.params)}
     Query: ${JSON.stringify(req.query)}
     Body: ${JSON.stringify(req.body)}
-    --------------------
-   
+    ----------------------------------------
   `;
   if (code >= 500) {
     Logger.error(logFormat);
