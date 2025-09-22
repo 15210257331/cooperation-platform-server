@@ -16,11 +16,11 @@ export class TaskAddDTO {
 
   @ApiProperty()
   @IsNotEmpty({ message: '任务优先级不能为空' })
-  readonly priority: number;
+  readonly priority: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: '迭代不能为空' })
-  readonly iterationId: string;
+  readonly iteration: string;
 
   @ApiProperty()
   readonly remind: number;

@@ -62,7 +62,9 @@ export class ProjectController {
   /** 添加项目成员 */
   @Post('/addMember')
   @UseGuards(AuthGuard('jwt'))
-  public async addMember(@Body() body: { projectId: string, memberId: string }): Promise<any> {
+  public async addMember(
+    @Body() body: { projectId: string; memberIds: string[] },
+  ): Promise<any> {
     return this.projectService.addMember(body);
   }
 
@@ -74,12 +76,19 @@ export class ProjectController {
     return this.projectService.star(id, star);
   }
 
+  /** 设置项目提醒 */
+  @Post('/remind')
+  @UseGuards(AuthGuard('jwt'))
+  public async remind(
+    @Body() body: { id: string; remindInterval: boolean; remindType: string },
+  ): Promise<any> {
+    return this.projectService.remind(body);
+  }
+
   // 删除项目
   @Get('/delete/:id')
   @UseGuards(AuthGuard('jwt'))
-  public async delete(
-    @Param('id') id: string,
-  ): Promise<any> {
+  public async delete(@Param('id') id: string): Promise<any> {
     return this.projectService.delete(id);
   }
 }

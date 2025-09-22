@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
 import { User } from '../user/entity/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -15,7 +15,9 @@ export class ProjectService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly notificationService: NotificationService,
   ) {}
-  /** 项目列表 */
+  /** 项目列表
+   *  查询当前登录人是项目成员的全部项目并且每个项目将包含的成员列表罗列出来
+   */
   async list(request: any, keywords: string, sort: string): Promise<any> {
     const orderP = sort ? `project.${sort}` : 'project.createDate';
     return await this.projectRepository
@@ -28,6 +30,40 @@ export class ProjectService {
       .leftJoinAndSelect('project.members', 'member')
       .orderBy(orderP, 'DESC')
       .getMany();
+  }
+  /**
+   * 使用SQL
+   * @param request
+   * @param keywords
+   * @param sort
+   * @returns
+   */
+  async listsql(request: any, keywords: string, sort: string): Promise<any> {
+    const orderP = sort ? sort : 'createDate'; // 字段名
+    const userId = request.user.userId;
+    const name = `%${keywords}%`;
+
+    // ⚠️ 注意 orderP 要做白名单校验，避免 SQL 注入
+    const allowedSorts = ['createDate', 'name', 'id'];
+    const sortField = allowedSorts.includes(orderP) ? orderP : 'createDate';
+
+    const sql = `
+      SELECT p.*, m.*
+      FROM project p
+      INNER JOIN project_members pm1 
+        ON p.id = pm1.project_id
+      INNER JOIN member m1 
+        ON pm1.member_id = m1.id
+       AND m1.id = ?
+      LEFT JOIN project_members pm2 
+        ON p.id = pm2.project_id
+      LEFT JOIN member m 
+        ON pm2.member_id = m.id
+      WHERE p.name LIKE ?
+      ORDER BY p.${sortField} DESC
+    `;
+
+    return await this.projectRepository.query(sql, [userId, name]);
   }
 
   /** 项目详情 */
@@ -88,26 +124,38 @@ export class ProjectService {
     if (!project) {
       throw new Error('Project not found');
     }
-
     return project.members;
   }
 
   // 添加项目成员
-  async addMember({ projectId, memberId }) {
-    console.log(memberId);
+  async addMember({ projectId, memberIds }) {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
       relations: ['members'],
     });
-    const newMembers = await this.userRepository.findOne(memberId);
-    console.log(newMembers);
-    project.members = [...project.members, newMembers];
+    const newMembers = await this.userRepository.find({
+      where: { id: In(memberIds) },
+    });
+    project.members = newMembers;
     return await this.projectRepository.save(project);
   }
 
   /** 更新项目星标信息 */
   async star(id: string, star: boolean): Promise<any> {
-    return await this.projectRepository.update(id, { star });
+    const project = await this.projectRepository.findOne({
+      where: { id: id },
+    });
+    project.star = star;
+    return await this.projectRepository.save(project);
+  }
+  // 设置项目提醒
+  async remind({ id, remindInterval, remindType }): Promise<any> {
+    const project = await this.projectRepository.findOne({
+      where: { id: id },
+    });
+    project.remindInterval = remindInterval;
+    project.remindType = remindType;
+    return await this.projectRepository.save(project);
   }
 
   /** 删除项目 */

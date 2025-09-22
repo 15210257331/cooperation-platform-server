@@ -51,7 +51,7 @@ export class TaskService {
     const {
       name,
       description,
-      iterationId,
+      iteration,
       flowId,
       priority,
       remind,
@@ -67,7 +67,7 @@ export class TaskService {
     task.startDate = startDate;
     task.endDate = endDate;
     task.iteration = await this.iterationRepository.findOne({
-      where: { id: iterationId }
+      where: { id: iteration }
     })
     task.tags = await this.tagRepository.findByIds(tagIds);
     task.flow = await this.flowRepository.findOne({

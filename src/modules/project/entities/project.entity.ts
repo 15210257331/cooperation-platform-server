@@ -31,6 +31,15 @@ export class Project extends Base {
   name: string;
 
   @Column({
+    type: 'text',
+    nullable: true,
+    name: 'detail',
+    charset: 'utf8mb4',
+    comment: '任务描述',
+  })
+  description: string;
+
+  @Column({
     type: 'varchar',
     nullable: false,
     charset: 'utf8mb4',
@@ -67,6 +76,26 @@ export class Project extends Base {
     comment: '项目类型',
   })
   type: string;
+
+  @Column({
+    type: 'varchar',
+    name: 'remindInterval',
+    nullable: true,
+    default: '2',
+    charset: 'utf8mb4',
+    comment: '提醒间隔',
+  })
+  remindInterval: string;
+
+  @Column({
+    type: 'varchar',
+    name: 'remindType',
+    nullable: true,
+    default: '1,2,3',
+    charset: 'utf8mb4',
+    comment: '提醒方式',
+  })
+  remindType: string;
 
   @Column({
     type: 'int',
