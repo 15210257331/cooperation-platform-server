@@ -6,6 +6,7 @@ import { User } from '../user/entity/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ProjectService {
@@ -71,6 +72,7 @@ export class ProjectService {
     return await this.projectRepository.findOne({
       where: { id },
       relations: [
+        'principal',
         'groups',
         'groups.tasks',
         'groups.tasks.owner',
@@ -95,6 +97,9 @@ export class ProjectService {
     project.startDate = startDate;
     project.endDate = endDate;
     project.members = await this.userRepository.find(request.user.userId);
+    project.principal = await this.userRepository.findOne({
+      where: { id: request.user.userId },
+    });
     console.log(project);
     return await this.projectRepository.save(project);
   }
@@ -161,5 +166,52 @@ export class ProjectService {
   /** 删除项目 */
   async delete(id: string) {
     return await this.projectRepository.delete(id);
+  }
+
+  /** 项目中的任务按照不同维度统计 */
+  async taskStatistics({ id, type }): Promise<any> {
+    const project = await this.projectRepository.findOne({
+      where: { id: id },
+      relations: ['members', 'iterations'],
+    });
+    // 按照时间统计
+    if (type === '1') {
+      const startDate = dayjs(project.startDate);
+      const endDate = dayjs(project.endDate);
+      if (!startDate.isValid() || !endDate.isValid()) {
+        throw new Error('Invalid date format');
+      }
+      let list = [];
+      let current = startDate;
+      while (current.isBefore(endDate, 'day')) {
+        list.push(current.format('MM月DD日')); // 需要什么格式可以改
+        current = current.add(1, 'day');
+      }
+      return list.map((item) => {
+        return {
+          xLabel: item,
+          yValue1: Math.ceil(Math.random() * 30),
+          yValue2: Math.ceil(Math.random() * 20),
+        };
+      });
+    } else if (type === '2') {
+      // 按照成员统计
+      return project.members.map((item) => {
+        return {
+          xLabel: item.nickname,
+          yValue1: Math.ceil(Math.random() * 30),
+          yValue2: Math.ceil(Math.random() * 20),
+        };
+      });
+    } else {
+      // 按照迭代统计
+      return project.iterations.map((item) => {
+        return {
+          xLabel: item.name,
+          yValue1: Math.ceil(Math.random() * 30),
+          yValue2: Math.ceil(Math.random() * 20),
+        };
+      });
+    }
   }
 }

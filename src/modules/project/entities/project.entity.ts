@@ -33,30 +33,12 @@ export class Project extends Base {
   @Column({
     type: 'text',
     nullable: true,
-    name: 'detail',
+    unique: false,
     charset: 'utf8mb4',
-    comment: '任务描述',
+    name: 'description',
+    comment: '项目描述',
   })
   description: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: false,
-    charset: 'utf8mb4',
-    length: 30,
-    name: 'icon',
-    comment: '项目的icon 图标名称',
-  })
-  icon: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: false,
-    default: 'http://sallery.cn:4000/public/1639992965.webp',
-    name: 'cover',
-    comment: '项目封面',
-  })
-  cover: string;
 
   @Column({
     type: 'bool',
@@ -76,6 +58,25 @@ export class Project extends Base {
     comment: '项目类型',
   })
   type: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false,
+    charset: 'utf8mb4',
+    length: 30,
+    name: 'icon',
+    comment: '项目的icon 图标名称',
+  })
+  icon: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false,
+    default: 'http://sallery.cn:4000/public/1639992965.webp',
+    name: 'cover',
+    comment: '项目封面',
+  })
+  cover: string;
 
   @Column({
     type: 'varchar',
@@ -99,9 +100,9 @@ export class Project extends Base {
 
   @Column({
     type: 'int',
-    name: 'status',
     default: 1,
     nullable: true,
+    name: 'status',
     comment: '项目状态',
   })
   status: number;
@@ -141,7 +142,14 @@ export class Project extends Base {
   iterations: Iteration[];
 
   /**
-   * 项目和用户是多对多的关系
+   * 项目和项目负责人是多对一的关系
+   */
+  @ManyToOne(() => User, (user) => user.maintains)
+  @JoinColumn()
+  principal: User;
+
+  /**
+   * 项目和项目成员是多对多的关系
    */
   @ManyToMany(() => User, (user) => user.projects)
   members: User[];

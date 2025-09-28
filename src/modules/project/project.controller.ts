@@ -91,4 +91,13 @@ export class ProjectController {
   public async delete(@Param('id') id: string): Promise<any> {
     return this.projectService.delete(id);
   }
+
+  // 项目中的任务按照不同维度统计
+  @Post('/taskStatistics')
+  @UseGuards(AuthGuard('jwt'))
+  public async taskStatistics(
+    @Body() body: { id: string; type: string },
+  ): Promise<any> {
+    return this.projectService.taskStatistics(body);
+  }
 }

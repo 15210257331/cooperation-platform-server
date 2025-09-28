@@ -108,11 +108,17 @@ export class User {
   roles: Role[];
 
   /**
-   * 用户和项目是多对多的关系 主表带有@JoinTable
+   * 成员和项目是多对多的关系 主表带有@JoinTable
    *  */
   @ManyToMany(() => Project, (project) => project.members)
   @JoinTable()
   projects: Project[];
+
+  /**
+   * 用户和所拥有项目是一对多的关系
+   *  */
+  @OneToMany(() => Project, (project) => project.principal)
+  maintains: Project[];
 
   /**
    * 用户和任务是一对多的关系
