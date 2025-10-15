@@ -75,7 +75,7 @@ export class NotificationService {
     const messageDetail = new NotificationDetail();
     messageDetail.title = title;
     messageDetail.avatar = user.avatar;
-    messageDetail.content = '用户【' + user.nickname + '】' + content;
+    messageDetail.content = `用户<b style="color:black;">【${user.nickname}】</b> ${content}`;
     const messageDetailDoc = await this.notificationDetailRepository.save(
       messageDetail,
     );

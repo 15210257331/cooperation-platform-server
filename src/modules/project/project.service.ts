@@ -106,13 +106,26 @@ export class ProjectService {
 
   /** 更新项目信息 */
   async update(updateProjectDto: UpdateProjectDto): Promise<any> {
-    const { id, name, icon, type, star, cover } = updateProjectDto;
+    const {
+      id,
+      name,
+      icon,
+      type,
+      star,
+      cover,
+      description,
+      startDate,
+      endDate,
+    } = updateProjectDto;
     await this.projectRepository.update(id, {
       name: name,
       icon: icon,
       cover: cover,
       type: type,
       star: star,
+      description: description,
+      startDate: startDate,
+      endDate: endDate,
     });
     return await this.projectRepository.findOne({
       where: { id: id },
@@ -182,15 +195,17 @@ export class ProjectService {
         throw new Error('Invalid date format');
       }
       let list = [];
-      let current = startDate;
-      while (current.isBefore(endDate, 'day')) {
-        list.push(current.format('MM月DD日')); // 需要什么格式可以改
-        current = current.add(1, 'day');
+      let current = endDate;
+      let index = 1;
+      while (index < 30) {
+        list.unshift(current.format('MM月DD日'));
+        current = current.subtract(1, 'day');
+        index += 1;
       }
       return list.map((item) => {
         return {
           xLabel: item,
-          yValue1: Math.ceil(Math.random() * 30),
+          yValue1: Math.ceil(Math.random() * 30 + 30),
           yValue2: Math.ceil(Math.random() * 20),
         };
       });

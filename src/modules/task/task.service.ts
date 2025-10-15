@@ -16,9 +16,10 @@ export class TaskService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Flow) private readonly flowRepository: Repository<Flow>,
     @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>,
-    @InjectRepository(Iteration) private readonly iterationRepository: Repository<Iteration>,
+    @InjectRepository(Iteration)
+    private readonly iterationRepository: Repository<Iteration>,
     private readonly notificationService: NotificationService,
-  ) { }
+  ) {}
 
   // 查询当前用户的所有任务
   async list(body: any, request: any): Promise<any> {
@@ -67,8 +68,8 @@ export class TaskService {
     task.startDate = startDate;
     task.endDate = endDate;
     task.iteration = await this.iterationRepository.findOne({
-      where: { id: iteration }
-    })
+      where: { id: iteration },
+    });
     task.tags = await this.tagRepository.findByIds(tagIds);
     task.flow = await this.flowRepository.findOne({
       where: { id: flowId },
@@ -76,7 +77,7 @@ export class TaskService {
     task.owner = await this.userRepository.findOne({
       where: { id: request.user.userId },
     });
-    const content = `在流程【${task.flow.name}】下创建了一个新任务:<b style="color:black;">${name}</b>`;
+    const content = `在分组<b style="color:black;">【${task.flow.name}】</b>下创建了一个新任务:<b style="color:black;">【${name}】</b>`;
     await this.notificationService.addMessage(
       request.user.userId,
       '新建任务',
@@ -111,10 +112,17 @@ export class TaskService {
         where: { id: propValue },
       });
       task.flow = flow;
+    } else if (propName === 'tags') {
+      const tags = await this.tagRepository.findByIds(propValue);
+      task.tags = tags;
     } else {
       task[propName] = propValue;
     }
-    return await this.taskRepository.save(task);
+    await this.taskRepository.save(task);
+    return await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['tags', 'iteration','owner'],
+    });
   }
 
   //删除任务

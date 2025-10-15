@@ -35,16 +35,17 @@ export class TagService {
    * @returns
    */
   async create(tagAddDTO: TagAddDTO, request: any): Promise<any> {
-    const { name, projectId } = tagAddDTO;
+    const { name, type, projectId } = tagAddDTO;
     const tag = new Tag();
     tag.name = name;
+    tag.type = type
     tag.project = await this.projectRepository.findOne({
       where: { id: projectId },
     });
     await this.notificationService.addMessage(
       request.user.userId,
       '新建标签',
-      `在项目【${tag.project.name}】下创建了一个新标签:<b style="color:black;">${name}</b>`,
+      `在项目<b style="color:black;">【${tag.project.name}】</b>下创建了一个新标签:<b style="color:black;">【${name}】</b>`,
     );
     return await this.tagRepository.save(tag);
   }

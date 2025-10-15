@@ -28,4 +28,7 @@ export class CreateProjectDto {
   @ApiProperty()
   @IsNotEmpty({ message: '结束时间不能为空' })
   readonly endDate: Date;
+
+  @ApiProperty()
+  readonly description: string;
 }

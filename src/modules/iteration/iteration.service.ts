@@ -79,7 +79,7 @@ export class IterationService {
     await this.notificationService.addMessage(
       request.user.userId,
       '新建迭代',
-      `在项目【${iteration.project.name}】下创建了一个新的迭代:<b style="color:black;">${name}</b>`,
+      `在项目<b style="color:black;">【${iteration.project.name}】</b>下创建了一个新的迭代:<b style="color:black;">【${name}】</b>`,
     );
     return await this.iterationRepository.save(iteration);
   }

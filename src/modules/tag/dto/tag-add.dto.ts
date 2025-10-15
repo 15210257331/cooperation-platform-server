@@ -7,6 +7,10 @@ export class TagAddDTO {
   readonly name: string;
 
   @ApiProperty()
+  @IsNotEmpty({ message: '标签类型不能为空' })
+  readonly type: string;
+
+  @ApiProperty()
   @IsNotEmpty({ message: '项目ID不能为空' })
   readonly projectId: string;
 }

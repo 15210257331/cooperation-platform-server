@@ -39,7 +39,7 @@ export class FlowService {
     flow.tasks = [];
     console.log(flow);
     // 消息通知
-    const content = `新创建了一个分组: <b style="color:black;">${name}</b>`;
+    const content = `新创建了一个分组: <b style="color:black;">【${name}】</b>`;
     this.notificationService.addMessage(
       request.user.userId,
       '新建分组',

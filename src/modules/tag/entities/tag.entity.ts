@@ -26,6 +26,17 @@ export class Tag extends Base {
   })
   name: string;
 
+  @Column({
+    type: 'varchar',
+    nullable: false,
+    charset: 'utf8mb4',
+    length: 30,
+    default: 'default',
+    name: 'type',
+    comment: '标签类型',
+  })
+  type: string;
+
   // 标签和项目多对一
   @ManyToOne(() => Project, (project) => project.tags)
   @JoinColumn()
