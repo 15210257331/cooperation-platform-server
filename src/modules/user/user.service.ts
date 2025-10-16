@@ -133,11 +133,13 @@ export class UserService {
 
   // 更新用户信息
   async updateUserInfo(body: UpdateDTO, request: any): Promise<any> {
-    const updateObj = {};
-    Object.keys(body).map((param) => {
-      updateObj[param] = body[param];
+    const userId = request.user.userId;
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
     });
-    return await this.userRepository.update(request.user.userId, updateObj);
+    Object.assign(user, body);
+    return await this.userRepository.save(user);
   }
 
   // 分页查询用户列表

@@ -96,7 +96,9 @@ export class ProjectService {
     project.star = star;
     project.startDate = startDate;
     project.endDate = endDate;
-    project.members = await this.userRepository.find(request.user.userId);
+    project.members = await this.userRepository.find({
+      where: { id: request.user.userId },
+    });
     project.principal = await this.userRepository.findOne({
       where: { id: request.user.userId },
     });
